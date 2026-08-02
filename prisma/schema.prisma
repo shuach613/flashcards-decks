@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  passwordHash  String
+  role          String          @default("USER") // "ADMIN" | "USER"
+  createdAt     DateTime        @default(now())
+  studyProgress StudyProgress[]
+}
+
+model Deck {
+  id            String          @id @default(cuid())
+  slug          String          @unique
+  title         String
+  description   String          @default("")
+  createdAt     DateTime        @default(now())
+  cards         Card[]
+  studyProgress StudyProgress[]
+}
+
+model Card {
+  id     String @id @default(cuid())
+  deckId String
+  deck   Deck   @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  front  String
+  back   String
+  order  Int    @default(0)
+}
+
+model StudyProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deckId        String
+  deck          Deck     @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  lastStudiedAt DateTime @default(now())
+  timesStudied  Int      @default(0)
+
+  @@unique([userId, deckId])
+}
