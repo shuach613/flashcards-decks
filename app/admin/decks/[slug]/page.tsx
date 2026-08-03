@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/authz";
 import { ensureDefaultCertificates } from "@/lib/certificates-server";
+import { t } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { CopyLinkButton } from "../../copy-link-button";
 import { deleteCard, deleteDeck, updateCard } from "./actions";
@@ -14,6 +16,7 @@ export default async function AdminDeckPage({
 }) {
   await requireAdmin();
   await ensureDefaultCertificates();
+  const locale = await getLocale();
   const { slug } = await params;
 
   const [deck, certificates] = await Promise.all([
@@ -32,20 +35,22 @@ export default async function AdminDeckPage({
           {deck.title}
         </h1>
         <div className="flex shrink-0 items-center gap-3">
-          <CopyLinkButton slug={deck.slug} />
+          <CopyLinkButton slug={deck.slug} locale={locale} />
           <form action={deleteDeck.bind(null, deck.id)}>
             <button
               type="submit"
               className="rounded-full border border-sunset-orange/30 px-4 py-1.5 text-sm font-medium text-sunset-orange transition hover:bg-sunset-orange/5"
             >
-              Delete deck
+              {t(locale, "admin.deleteDeck")}
             </button>
           </form>
         </div>
       </div>
 
       <section className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <h2 className="mb-3 font-semibold text-evergreen">Deck details</h2>
+        <h2 className="mb-3 font-semibold text-evergreen">
+          {t(locale, "admin.deckDetails")}
+        </h2>
         <DeckMetaForm
           deckId={deck.id}
           title={deck.title}
@@ -54,20 +59,21 @@ export default async function AdminDeckPage({
           certificateId={deck.certificateId}
           language={deck.language}
           certificates={certificates}
+          locale={locale}
         />
       </section>
 
       <section className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <h2 className="mb-1 font-semibold text-evergreen">Import cards (TSV)</h2>
-        <p className="mb-3 text-sm text-dark-gray">
-          One card per line: front, then a tab, then back.
-        </p>
-        <ImportForm deckId={deck.id} deckSlug={deck.slug} />
+        <h2 className="mb-1 font-semibold text-evergreen">
+          {t(locale, "admin.importTitle")}
+        </h2>
+        <p className="mb-3 text-sm text-dark-gray">{t(locale, "admin.importHint")}</p>
+        <ImportForm deckId={deck.id} deckSlug={deck.slug} locale={locale} />
       </section>
 
       <section>
         <h2 className="mb-3 font-semibold text-evergreen">
-          Cards ({deck.cards.length})
+          {t(locale, "admin.cardsHeading", { count: deck.cards.length })}
         </h2>
         <ul className="flex flex-col gap-3">
           {deck.cards.map((card) => (
@@ -93,7 +99,7 @@ export default async function AdminDeckPage({
                   type="submit"
                   className="shrink-0 rounded-full border border-evergreen/20 px-4 py-1.5 text-sm font-medium text-evergreen transition hover:bg-evergreen/5"
                 >
-                  Save
+                  {t(locale, "common.save")}
                 </button>
               </form>
               <form
@@ -104,13 +110,13 @@ export default async function AdminDeckPage({
                   type="submit"
                   className="text-sm font-medium text-sunset-orange"
                 >
-                  Delete card
+                  {t(locale, "admin.deleteCard")}
                 </button>
               </form>
             </li>
           ))}
           {deck.cards.length === 0 && (
-            <p className="text-dark-gray">No cards yet — import some above.</p>
+            <p className="text-dark-gray">{t(locale, "admin.noCardsYet")}</p>
           )}
         </ul>
       </section>

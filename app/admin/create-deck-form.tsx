@@ -1,12 +1,19 @@
 "use client";
 
 import { useActionState } from "react";
-import { LANGUAGES } from "@/lib/certificates";
+import { LANGUAGE_VALUES } from "@/lib/certificates";
+import { t, type Locale } from "@/lib/i18n";
 import { createDeck } from "./actions";
 
 type Certificate = { id: string; name: string };
 
-export function CreateDeckForm({ certificates }: { certificates: Certificate[] }) {
+export function CreateDeckForm({
+  certificates,
+  locale,
+}: {
+  certificates: Certificate[];
+  locale: Locale;
+}) {
   const [state, formAction, pending] = useActionState(createDeck, undefined);
 
   const selectClass =
@@ -16,7 +23,7 @@ export function CreateDeckForm({ certificates }: { certificates: Certificate[] }
     <form action={formAction} className="flex flex-col gap-3">
       <div>
         <label className="block text-sm font-medium text-evergreen" htmlFor="title">
-          Title
+          {t(locale, "common.titleLabel")}
         </label>
         <input
           id="title"
@@ -32,7 +39,7 @@ export function CreateDeckForm({ certificates }: { certificates: Certificate[] }
             className="block text-sm font-medium text-evergreen"
             htmlFor="certificateId"
           >
-            Certificate
+            {t(locale, "common.certificateLabel")}
           </label>
           <select
             id="certificateId"
@@ -42,7 +49,7 @@ export function CreateDeckForm({ certificates }: { certificates: Certificate[] }
             className={selectClass}
           >
             <option value="" disabled>
-              Select…
+              {t(locale, "common.selectPlaceholder")}
             </option>
             {certificates.map((c) => (
               <option key={c.id} value={c.id}>
@@ -53,7 +60,7 @@ export function CreateDeckForm({ certificates }: { certificates: Certificate[] }
         </div>
         <div className="flex-1">
           <label className="block text-sm font-medium text-evergreen" htmlFor="language">
-            Language
+            {t(locale, "common.languageLabel")}
           </label>
           <select
             id="language"
@@ -62,9 +69,9 @@ export function CreateDeckForm({ certificates }: { certificates: Certificate[] }
             defaultValue="EN"
             className={selectClass}
           >
-            {LANGUAGES.map((l) => (
-              <option key={l.value} value={l.value}>
-                {l.label}
+            {LANGUAGE_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {t(locale, `language.${value}` as "language.EN" | "language.DE")}
               </option>
             ))}
           </select>
@@ -76,7 +83,7 @@ export function CreateDeckForm({ certificates }: { certificates: Certificate[] }
         type="submit"
         className="self-start rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
-        {pending ? "Creating…" : "Create"}
+        {pending ? t(locale, "common.createPending") : t(locale, "common.create")}
       </button>
     </form>
   );

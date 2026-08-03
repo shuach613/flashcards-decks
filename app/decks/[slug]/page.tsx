@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { t, tc } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 
 export default async function DeckPage({
@@ -10,6 +12,7 @@ export default async function DeckPage({
 }) {
   const { slug } = await params;
   const session = await auth();
+  const locale = await getLocale();
   if (!session?.user) {
     redirect(`/login?callbackUrl=${encodeURIComponent(`/decks/${slug}`)}`);
   }
@@ -36,16 +39,16 @@ export default async function DeckPage({
           <p className="mt-2 text-dark-gray">{deck.description}</p>
         )}
         <p className="mt-2 text-sm text-dark-gray">
-          {deck._count.cards} card{deck._count.cards === 1 ? "" : "s"}
+          {tc(locale, "deck.cardCount", deck._count.cards)}
         </p>
         {deck._count.cards === 0 ? (
-          <p className="mt-6 text-dark-gray">This deck has no cards yet.</p>
+          <p className="mt-6 text-dark-gray">{t(locale, "deck.noCards")}</p>
         ) : (
           <Link
             href={`/decks/${deck.slug}/study`}
             className="mt-6 inline-block rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
           >
-            Start studying
+            {t(locale, "deck.startStudying")}
           </Link>
         )}
       </div>

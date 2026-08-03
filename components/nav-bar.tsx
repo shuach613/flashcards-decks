@@ -1,17 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { auth, signOut } from "@/auth";
+import { t } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
+import { LanguageToggle } from "@/components/language-toggle";
 
 export async function NavBar() {
   const session = await auth();
   const user = session?.user;
+  const locale = await getLocale();
 
   return (
     <header className="border-b border-sand bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5">
           <Image src="/msit-logomark.svg" alt="" width={28} height={10} priority />
-          <span className="font-semibold text-evergreen">Flashcard Decks</span>
+          <span className="font-semibold text-evergreen">
+            {t(locale, "home.title")}
+          </span>
         </Link>
         <nav className="flex items-center gap-4 text-sm">
           {user && (
@@ -20,13 +26,13 @@ export async function NavBar() {
                 href="/"
                 className="font-medium text-evergreen underline-offset-4 hover:underline"
               >
-                My Decks
+                {t(locale, "nav.myDecks")}
               </Link>
               <Link
                 href="/decks"
                 className="font-medium text-evergreen underline-offset-4 hover:underline"
               >
-                All Decks
+                {t(locale, "nav.allDecks")}
               </Link>
             </>
           )}
@@ -35,7 +41,7 @@ export async function NavBar() {
               href="/admin"
               className="font-medium text-evergreen underline-offset-4 hover:underline"
             >
-              Admin
+              {t(locale, "nav.admin")}
             </Link>
           )}
           {user ? (
@@ -51,7 +57,7 @@ export async function NavBar() {
                   className="rounded-full border border-evergreen/20 px-4 py-1.5 font-medium text-evergreen transition hover:bg-evergreen hover:text-white"
                   type="submit"
                 >
-                  Log out
+                  {t(locale, "nav.logOut")}
                 </button>
               </form>
             </>
@@ -61,16 +67,17 @@ export async function NavBar() {
                 href="/login"
                 className="font-medium text-evergreen underline-offset-4 hover:underline"
               >
-                Log in
+                {t(locale, "nav.logIn")}
               </Link>
               <Link
                 href="/signup"
                 className="rounded-full bg-evergreen px-4 py-1.5 font-medium text-white transition hover:brightness-110"
               >
-                Sign up
+                {t(locale, "nav.signUp")}
               </Link>
             </>
           )}
+          <LanguageToggle current={locale} />
         </nav>
       </div>
     </header>

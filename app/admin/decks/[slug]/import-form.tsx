@@ -1,14 +1,17 @@
 "use client";
 
 import { useActionState } from "react";
+import { t, type Locale } from "@/lib/i18n";
 import { importCards } from "./actions";
 
 export function ImportForm({
   deckId,
   deckSlug,
+  locale,
 }: {
   deckId: string;
   deckSlug: string;
+  locale: Locale;
 }) {
   const action = importCards.bind(null, deckId, deckSlug);
   const [state, formAction, pending] = useActionState(action, undefined);
@@ -30,7 +33,7 @@ export function ImportForm({
         type="submit"
         className="self-start rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
-        {pending ? "Importing…" : "Import"}
+        {pending ? t(locale, "common.importPending") : t(locale, "common.import")}
       </button>
     </form>
   );

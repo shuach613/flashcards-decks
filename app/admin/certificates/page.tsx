@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/authz";
 import { ensureDefaultCertificates } from "@/lib/certificates-server";
+import { t, tc } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { CertificateForm } from "./certificate-form";
 
 export default async function AdminCertificatesPage() {
   await requireAdmin();
   await ensureDefaultCertificates();
+  const locale = await getLocale();
 
   const certificates = await prisma.certificate.findMany({
     orderBy: { order: "asc" },
@@ -17,23 +20,22 @@ export default async function AdminCertificatesPage() {
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
-          Certificates
+          {t(locale, "cert.title")}
         </h1>
         <Link
           href="/admin"
           className="text-sm font-medium text-evergreen underline underline-offset-4"
         >
-          Back to decks
+          {t(locale, "cert.backToDecks")}
         </Link>
       </div>
 
       <div className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <h2 className="mb-3 font-semibold text-evergreen">Add certificate</h2>
-        <p className="mb-3 text-sm text-dark-gray">
-          New certificates are added at the end of the display order on the
-          All Decks page.
-        </p>
-        <CertificateForm />
+        <h2 className="mb-3 font-semibold text-evergreen">
+          {t(locale, "cert.addCertificate")}
+        </h2>
+        <p className="mb-3 text-sm text-dark-gray">{t(locale, "cert.addHint")}</p>
+        <CertificateForm locale={locale} />
       </div>
 
       <ul className="flex flex-col gap-3">
@@ -44,8 +46,7 @@ export default async function AdminCertificatesPage() {
           >
             <p className="font-semibold text-evergreen">{certificate.name}</p>
             <p className="text-sm text-dark-gray">
-              {certificate._count.decks} deck
-              {certificate._count.decks === 1 ? "" : "s"}
+              {tc(locale, "cert.deckCount", certificate._count.decks)}
             </p>
           </li>
         ))}

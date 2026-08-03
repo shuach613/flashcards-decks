@@ -1,20 +1,20 @@
 import Link from "next/link";
 import { auth } from "@/auth";
+import { t, tc } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 
 export default async function HomePage() {
   const session = await auth();
+  const locale = await getLocale();
 
   if (!session?.user) {
     return (
       <div className="mx-auto mt-16 max-w-xl px-6 text-center">
         <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
-          Flashcard Decks
+          {t(locale, "home.title")}
         </h1>
-        <p className="mt-4 text-dark-gray">
-          Log in or sign up to start studying. If someone sent you a link to a
-          specific deck, open that link directly.
-        </p>
+        <p className="mt-4 text-dark-gray">{t(locale, "home.loggedOutBody")}</p>
       </div>
     );
   }
@@ -28,13 +28,10 @@ export default async function HomePage() {
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
-        Your decks
+        {t(locale, "home.yourDecks")}
       </h1>
       {progress.length === 0 ? (
-        <p className="text-dark-gray">
-          You haven&apos;t opened any decks yet. Open a deck link someone
-          shared with you to get started.
-        </p>
+        <p className="text-dark-gray">{t(locale, "home.empty")}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {progress.map((p) => (
@@ -47,19 +44,20 @@ export default async function HomePage() {
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-evergreen">{p.deck.title}</p>
                     <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium text-dark-gray">
-                      {p.deck.certificate?.name ?? "Uncategorized"}
+                      {p.deck.certificate?.name ?? t(locale, "common.uncategorized")}
                     </span>
                   </div>
                   <p className="text-sm text-dark-gray">
-                    Last studied {p.lastStudiedAt.toLocaleDateString()} ·{" "}
-                    {p.timesStudied} session{p.timesStudied === 1 ? "" : "s"}
+                    {tc(locale, "home.lastStudied", p.timesStudied, {
+                      date: p.lastStudiedAt.toLocaleDateString(),
+                    })}
                   </p>
                 </div>
                 <Link
                   href={`/decks/${p.deck.slug}`}
                   className="shrink-0 rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
                 >
-                  Continue
+                  {t(locale, "home.continue")}
                 </Link>
               </div>
             </li>

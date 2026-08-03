@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { t, tc, type Locale } from "@/lib/i18n";
 import { completeSession } from "./actions";
 
 type Card = { id: string; front: string; back: string };
@@ -19,10 +20,12 @@ export function StudySession({
   deckSlug,
   deckTitle,
   cards,
+  locale,
 }: {
   deckSlug: string;
   deckTitle: string;
   cards: Card[];
+  locale: Locale;
 }) {
   const total = cards.length;
   const [queue, setQueue] = useState<Card[]>(() => shuffle(cards));
@@ -73,23 +76,23 @@ export function StudySession({
     return (
       <div className="rounded-2xl border border-sand bg-white p-10 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
         <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
-          Session complete
+          {t(locale, "study.sessionComplete")}
         </h1>
         <p className="mt-2 text-dark-gray">
-          {`You reviewed ${reviewed} card${reviewed === 1 ? "" : "s"} in "${deckTitle}".`}
+          {tc(locale, "study.reviewed", reviewed, { title: deckTitle })}
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
             href={`/decks/${deckSlug}`}
             className="rounded-full border border-evergreen/20 px-5 py-2.5 font-semibold text-evergreen transition hover:bg-evergreen/5"
           >
-            Back to deck
+            {t(locale, "study.backToDeck")}
           </Link>
           <Link
             href="/"
             className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
           >
-            My decks
+            {t(locale, "study.myDecks")}
           </Link>
         </div>
       </div>
@@ -102,7 +105,7 @@ export function StudySession({
   return (
     <div>
       <p className="mb-2 text-sm font-medium text-dark-gray">
-        {queue.length} card{queue.length === 1 ? "" : "s"} left · {deckTitle}
+        {tc(locale, "study.cardsLeft", queue.length, { title: deckTitle })}
       </p>
       <div
         className="mb-6 h-2.5 w-full overflow-hidden rounded-full bg-sand"
@@ -138,7 +141,7 @@ export function StudySession({
           </>
         ) : (
           <span className="mt-4 text-xs tracking-wide text-dark-gray uppercase">
-            Tap to reveal
+            {t(locale, "study.tapToReveal")}
           </span>
         )}
       </button>
@@ -149,14 +152,14 @@ export function StudySession({
             onClick={() => rate(true)}
             className="rounded-full border border-sunset-orange/30 px-5 py-2.5 font-semibold text-sunset-orange transition hover:bg-sunset-orange/5"
           >
-            Again
+            {t(locale, "study.again")}
           </button>
           <button
             type="button"
             onClick={() => rate(false)}
             className="rounded-full bg-bright-green px-5 py-2.5 font-semibold text-evergreen transition hover:brightness-110"
           >
-            Good
+            {t(locale, "study.good")}
           </button>
         </div>
       )}

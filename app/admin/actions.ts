@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/authz";
+import { t } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { slugify } from "@/lib/tsv";
 
@@ -12,18 +14,19 @@ export async function createDeck(
   formData: FormData
 ): Promise<FormState> {
   await requireAdmin();
+  const locale = await getLocale();
   const title = String(formData.get("title") ?? "").trim();
   const certificateId = String(formData.get("certificateId") ?? "").trim();
   const language = String(formData.get("language") ?? "").trim();
 
-  if (!title) return { error: "Title is required." };
-  if (!certificateId) return { error: "Certificate is required." };
+  if (!title) return { error: t(locale, "admin.titleRequired") };
+  if (!certificateId) return { error: t(locale, "admin.certificateRequired") };
   if (language !== "EN" && language !== "DE") {
-    return { error: "Language is required." };
+    return { error: t(locale, "admin.languageRequired") };
   }
 
   let slug = slugify(title);
-  if (!slug) return { error: "Title must contain letters or numbers." };
+  if (!slug) return { error: t(locale, "admin.slugInvalid") };
 
   const existing = await prisma.deck.findUnique({ where: { slug } });
   if (existing) {

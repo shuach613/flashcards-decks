@@ -1,20 +1,23 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { LANGUAGES } from "@/lib/certificates";
+import { LANGUAGE_VALUES } from "@/lib/certificates";
+import { t } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 
 type DeckRow = { id: string; slug: string; title: string; language: string };
 
 function groupByLanguage(decks: DeckRow[]) {
-  return LANGUAGES.map((language) => ({
+  return LANGUAGE_VALUES.map((language) => ({
     language,
-    decks: decks.filter((d) => d.language === language.value),
+    decks: decks.filter((d) => d.language === language),
   })).filter((group) => group.decks.length > 0);
 }
 
 export default async function AllDecksPage() {
   const session = await auth();
+  const locale = await getLocale();
   if (!session?.user) {
     redirect(`/login?callbackUrl=${encodeURIComponent("/decks")}`);
   }
@@ -38,17 +41,17 @@ export default async function AllDecksPage() {
         groups: groupByLanguage(certificate.decks),
       })),
     ...(uncategorized.length > 0
-      ? [{ name: "Uncategorized", groups: groupByLanguage(uncategorized) }]
+      ? [{ name: t(locale, "common.uncategorized"), groups: groupByLanguage(uncategorized) }]
       : []),
   ];
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
-        All Decks
+        {t(locale, "allDecks.title")}
       </h1>
       {sections.length === 0 ? (
-        <p className="text-dark-gray">No decks yet.</p>
+        <p className="text-dark-gray">{t(locale, "allDecks.empty")}</p>
       ) : (
         <div className="flex flex-col gap-8">
           {sections.map((section) => (
@@ -58,9 +61,9 @@ export default async function AllDecksPage() {
               </h2>
               <div className="flex flex-col gap-4">
                 {section.groups.map((group) => (
-                  <div key={group.language.value}>
+                  <div key={group.language}>
                     <h3 className="mb-2 text-xs font-semibold tracking-wide text-dark-gray uppercase">
-                      {group.language.label}
+                      {t(locale, `language.${group.language}` as "language.EN" | "language.DE")}
                     </h3>
                     <ul className="flex flex-col gap-2">
                       {group.decks.map((deck) => (

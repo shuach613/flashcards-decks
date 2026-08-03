@@ -2,6 +2,8 @@
 
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
+import { t } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 
 export type FormState = { error?: string } | undefined;
 
@@ -19,7 +21,8 @@ export async function login(
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: "Invalid email or password." };
+      const locale = await getLocale();
+      return { error: t(locale, "auth.invalidCredentials") };
     }
     throw error;
   }

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { t } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { LoginForm } from "./login-form";
 
 export default async function LoginPage({
@@ -8,22 +10,23 @@ export default async function LoginPage({
 }) {
   const { callbackUrl } = await searchParams;
   const target = callbackUrl ?? "/";
+  const locale = await getLocale();
 
   return (
     <div className="mx-auto mt-16 max-w-sm px-6">
       <div className="rounded-2xl border border-sand bg-white p-8 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
         <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
-          Log in
+          {t(locale, "auth.loginTitle")}
         </h1>
-        <LoginForm callbackUrl={target} />
+        <LoginForm callbackUrl={target} locale={locale} />
       </div>
       <p className="mt-4 text-center text-sm text-dark-gray">
-        No account?{" "}
+        {t(locale, "auth.noAccount")}{" "}
         <Link
           className="font-medium text-evergreen underline underline-offset-4"
           href={`/signup?callbackUrl=${encodeURIComponent(target)}`}
         >
-          Sign up
+          {t(locale, "nav.signUp")}
         </Link>
       </p>
     </div>

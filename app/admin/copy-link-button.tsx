@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { t, type Locale } from "@/lib/i18n";
 
 function legacyCopy(text: string): boolean {
   const textarea = document.createElement("textarea");
@@ -14,7 +15,7 @@ function legacyCopy(text: string): boolean {
   return ok;
 }
 
-export function CopyLinkButton({ slug }: { slug: string }) {
+export function CopyLinkButton({ slug, locale }: { slug: string; locale: Locale }) {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
 
   async function handleCopy() {
@@ -34,7 +35,11 @@ export function CopyLinkButton({ slug }: { slug: string }) {
       onClick={handleCopy}
       className="rounded-full border border-evergreen/20 px-4 py-1.5 text-sm font-medium text-evergreen transition hover:bg-evergreen/5"
     >
-      {status === "copied" ? "Copied!" : status === "error" ? "Couldn't copy" : "Copy link"}
+      {status === "copied"
+        ? t(locale, "common.copied")
+        : status === "error"
+          ? t(locale, "common.copyFailed")
+          : t(locale, "common.copyLink")}
     </button>
   );
 }

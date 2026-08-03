@@ -6,7 +6,4 @@ export const DEFAULT_CERTIFICATES = [
   { name: "SecAI+", order: 4 },
 ];
 
-export const LANGUAGES = [
-  { value: "EN", label: "English" },
-  { value: "DE", label: "German" },
-];
+export const LANGUAGE_VALUES = ["EN", "DE"] as const;

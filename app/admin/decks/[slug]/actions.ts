@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/authz";
+import { t, tc } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { parseTsv, slugify } from "@/lib/tsv";
 
@@ -14,25 +16,26 @@ export async function updateDeckMeta(
   formData: FormData
 ): Promise<FormState> {
   await requireAdmin();
+  const locale = await getLocale();
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const slugInput = String(formData.get("slug") ?? "").trim();
   const certificateId = String(formData.get("certificateId") ?? "").trim();
   const language = String(formData.get("language") ?? "").trim();
 
-  if (!title) return { error: "Title is required." };
-  if (!certificateId) return { error: "Certificate is required." };
+  if (!title) return { error: t(locale, "admin.titleRequired") };
+  if (!certificateId) return { error: t(locale, "admin.certificateRequired") };
   if (language !== "EN" && language !== "DE") {
-    return { error: "Language is required." };
+    return { error: t(locale, "admin.languageRequired") };
   }
 
   const newSlug = slugify(slugInput || title);
-  if (!newSlug) return { error: "Slug must contain letters or numbers." };
+  if (!newSlug) return { error: t(locale, "admin.slugInvalid") };
 
   const conflict = await prisma.deck.findFirst({
     where: { slug: newSlug, NOT: { id: deckId } },
   });
-  if (conflict) return { error: "That slug is already used by another deck." };
+  if (conflict) return { error: t(locale, "admin.slugConflict") };
 
   const deck = await prisma.deck.update({
     where: { id: deckId },
@@ -48,10 +51,11 @@ export async function importCards(
   formData: FormData
 ): Promise<FormState> {
   await requireAdmin();
+  const locale = await getLocale();
   const tsv = String(formData.get("tsv") ?? "");
   const parsed = parseTsv(tsv);
   if (parsed.length === 0) {
-    return { error: "No valid rows found. Each line needs front<TAB>back." };
+    return { error: t(locale, "admin.importError") };
   }
 
   const existingCount = await prisma.card.count({ where: { deckId } });
@@ -66,7 +70,7 @@ export async function importCards(
 
   revalidatePath(`/admin/decks/${deckSlug}`);
   return {
-    success: `Imported ${parsed.length} card${parsed.length === 1 ? "" : "s"}.`,
+    success: tc(locale, "admin.importSuccess", parsed.length),
   };
 }
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { LANGUAGES } from "@/lib/certificates";
+import { LANGUAGE_VALUES } from "@/lib/certificates";
+import { t, type Locale } from "@/lib/i18n";
 import { updateDeckMeta } from "./actions";
 
 type Certificate = { id: string; name: string };
@@ -14,6 +15,7 @@ export function DeckMetaForm({
   certificateId,
   language,
   certificates,
+  locale,
 }: {
   deckId: string;
   title: string;
@@ -22,6 +24,7 @@ export function DeckMetaForm({
   certificateId: string | null;
   language: string;
   certificates: Certificate[];
+  locale: Locale;
 }) {
   const action = updateDeckMeta.bind(null, deckId);
   const [state, formAction, pending] = useActionState(action, undefined);
@@ -33,7 +36,7 @@ export function DeckMetaForm({
     <form action={formAction} className="flex flex-col gap-3">
       <div>
         <label className="block text-sm font-medium text-evergreen" htmlFor="title">
-          Title
+          {t(locale, "common.titleLabel")}
         </label>
         <input
           id="title"
@@ -45,7 +48,7 @@ export function DeckMetaForm({
       </div>
       <div>
         <label className="block text-sm font-medium text-evergreen" htmlFor="description">
-          Description
+          {t(locale, "common.descriptionLabel")}
         </label>
         <textarea
           id="description"
@@ -61,7 +64,7 @@ export function DeckMetaForm({
             className="block text-sm font-medium text-evergreen"
             htmlFor="certificateId"
           >
-            Certificate
+            {t(locale, "common.certificateLabel")}
           </label>
           <select
             id="certificateId"
@@ -71,7 +74,7 @@ export function DeckMetaForm({
             className={fieldClass}
           >
             <option value="" disabled>
-              Select…
+              {t(locale, "common.selectPlaceholder")}
             </option>
             {certificates.map((c) => (
               <option key={c.id} value={c.id}>
@@ -82,7 +85,7 @@ export function DeckMetaForm({
         </div>
         <div className="flex-1">
           <label className="block text-sm font-medium text-evergreen" htmlFor="language">
-            Language
+            {t(locale, "common.languageLabel")}
           </label>
           <select
             id="language"
@@ -91,9 +94,9 @@ export function DeckMetaForm({
             defaultValue={language}
             className={fieldClass}
           >
-            {LANGUAGES.map((l) => (
-              <option key={l.value} value={l.value}>
-                {l.label}
+            {LANGUAGE_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {t(locale, `language.${value}` as "language.EN" | "language.DE")}
               </option>
             ))}
           </select>
@@ -101,7 +104,7 @@ export function DeckMetaForm({
       </div>
       <div>
         <label className="block text-sm font-medium text-evergreen" htmlFor="slug">
-          Slug (used in the shareable link)
+          {t(locale, "common.slugLabel")}
         </label>
         <input id="slug" name="slug" defaultValue={slug} className={fieldClass} />
       </div>
@@ -111,7 +114,7 @@ export function DeckMetaForm({
         type="submit"
         className="self-start rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
-        {pending ? "Saving…" : "Save"}
+        {pending ? t(locale, "common.savePending") : t(locale, "common.save")}
       </button>
     </form>
   );
