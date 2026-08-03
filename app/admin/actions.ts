@@ -13,7 +13,14 @@ export async function createDeck(
 ): Promise<FormState> {
   await requireAdmin();
   const title = String(formData.get("title") ?? "").trim();
+  const certificateId = String(formData.get("certificateId") ?? "").trim();
+  const language = String(formData.get("language") ?? "").trim();
+
   if (!title) return { error: "Title is required." };
+  if (!certificateId) return { error: "Certificate is required." };
+  if (language !== "EN" && language !== "DE") {
+    return { error: "Language is required." };
+  }
 
   let slug = slugify(title);
   if (!slug) return { error: "Title must contain letters or numbers." };
@@ -23,7 +30,9 @@ export async function createDeck(
     slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
   }
 
-  const deck = await prisma.deck.create({ data: { title, slug } });
+  const deck = await prisma.deck.create({
+    data: { title, slug, certificateId, language },
+  });
   redirect(`/admin/decks/${deck.slug}`);
 }
 

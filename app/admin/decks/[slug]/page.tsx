@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/authz";
+import { ensureDefaultCertificates } from "@/lib/certificates-server";
 import { prisma } from "@/lib/db";
 import { deleteCard, deleteDeck, updateCard } from "./actions";
 import { DeckMetaForm } from "./deck-meta-form";
@@ -11,12 +12,16 @@ export default async function AdminDeckPage({
   params: Promise<{ slug: string }>;
 }) {
   await requireAdmin();
+  await ensureDefaultCertificates();
   const { slug } = await params;
 
-  const deck = await prisma.deck.findUnique({
-    where: { slug },
-    include: { cards: { orderBy: { order: "asc" } } },
-  });
+  const [deck, certificates] = await Promise.all([
+    prisma.deck.findUnique({
+      where: { slug },
+      include: { cards: { orderBy: { order: "asc" } } },
+    }),
+    prisma.certificate.findMany({ orderBy: { order: "asc" } }),
+  ]);
   if (!deck) notFound();
 
   return (
@@ -42,6 +47,9 @@ export default async function AdminDeckPage({
           title={deck.title}
           description={deck.description}
           slug={deck.slug}
+          certificateId={deck.certificateId}
+          language={deck.language}
+          certificates={certificates}
         />
       </section>
 

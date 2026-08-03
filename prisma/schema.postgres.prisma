@@ -20,11 +20,22 @@ model User {
   studyProgress StudyProgress[]
 }
 
+model Certificate {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  decks     Deck[]
+}
+
 model Deck {
   id            String          @id @default(cuid())
   slug          String          @unique
   title         String
   description   String          @default("")
+  certificateId String?
+  certificate   Certificate?    @relation(fields: [certificateId], references: [id])
+  language      String          @default("EN") // "EN" | "DE"
   createdAt     DateTime        @default(now())
   cards         Card[]
   studyProgress StudyProgress[]

@@ -14,6 +14,22 @@ export async function NavBar() {
           <span className="font-semibold text-evergreen">Flashcard Decks</span>
         </Link>
         <nav className="flex items-center gap-4 text-sm">
+          {user && (
+            <>
+              <Link
+                href="/"
+                className="font-medium text-evergreen underline-offset-4 hover:underline"
+              >
+                My Decks
+              </Link>
+              <Link
+                href="/decks"
+                className="font-medium text-evergreen underline-offset-4 hover:underline"
+              >
+                All Decks
+              </Link>
+            </>
+          )}
           {user?.role === "ADMIN" && (
             <Link
               href="/admin"

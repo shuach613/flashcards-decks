@@ -17,8 +17,14 @@ export async function updateDeckMeta(
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const slugInput = String(formData.get("slug") ?? "").trim();
+  const certificateId = String(formData.get("certificateId") ?? "").trim();
+  const language = String(formData.get("language") ?? "").trim();
 
   if (!title) return { error: "Title is required." };
+  if (!certificateId) return { error: "Certificate is required." };
+  if (language !== "EN" && language !== "DE") {
+    return { error: "Language is required." };
+  }
 
   const newSlug = slugify(slugInput || title);
   if (!newSlug) return { error: "Slug must contain letters or numbers." };
@@ -30,7 +36,7 @@ export async function updateDeckMeta(
 
   const deck = await prisma.deck.update({
     where: { id: deckId },
-    data: { title, description, slug: newSlug },
+    data: { title, description, slug: newSlug, certificateId, language },
   });
   redirect(`/admin/decks/${deck.slug}`);
 }
