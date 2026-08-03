@@ -28,25 +28,27 @@ export default async function DeckPage({
 
   return (
     <div className="mx-auto mt-12 max-w-xl px-6">
-      <h1 className="text-2xl font-semibold">{deck.title}</h1>
-      {deck.description && (
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          {deck.description}
+      <div className="rounded-2xl border border-sand bg-white p-8 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+          {deck.title}
+        </h1>
+        {deck.description && (
+          <p className="mt-2 text-dark-gray">{deck.description}</p>
+        )}
+        <p className="mt-2 text-sm text-dark-gray">
+          {deck._count.cards} card{deck._count.cards === 1 ? "" : "s"}
         </p>
-      )}
-      <p className="mt-2 text-sm text-zinc-500">
-        {deck._count.cards} card{deck._count.cards === 1 ? "" : "s"}
-      </p>
-      {deck._count.cards === 0 ? (
-        <p className="mt-6 text-zinc-500">This deck has no cards yet.</p>
-      ) : (
-        <Link
-          href={`/decks/${deck.slug}/study`}
-          className="mt-6 inline-block rounded bg-black px-4 py-2 text-white dark:bg-white dark:text-black"
-        >
-          Start studying
-        </Link>
-      )}
+        {deck._count.cards === 0 ? (
+          <p className="mt-6 text-dark-gray">This deck has no cards yet.</p>
+        ) : (
+          <Link
+            href={`/decks/${deck.slug}/study`}
+            className="mt-6 inline-block rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
+          >
+            Start studying
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

@@ -8,8 +8,10 @@ export default async function HomePage() {
   if (!session?.user) {
     return (
       <div className="mx-auto mt-16 max-w-xl px-6 text-center">
-        <h1 className="text-2xl font-semibold">Flashcard Decks</h1>
-        <p className="mt-4 text-zinc-600 dark:text-zinc-400">
+        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+          Flashcard Decks
+        </h1>
+        <p className="mt-4 text-dark-gray">
           Log in or sign up to start studying. If someone sent you a link to a
           specific deck, open that link directly.
         </p>
@@ -25,9 +27,11 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6">
-      <h1 className="mb-6 text-2xl font-semibold">Your decks</h1>
+      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+        Your decks
+      </h1>
       {progress.length === 0 ? (
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-dark-gray">
           You haven&apos;t opened any decks yet. Open a deck link someone
           shared with you to get started.
         </p>
@@ -36,19 +40,19 @@ export default async function HomePage() {
           {progress.map((p) => (
             <li
               key={p.id}
-              className="rounded border border-black/10 p-4 dark:border-white/10"
+              className="rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="font-medium">{p.deck.title}</p>
-                  <p className="text-sm text-zinc-500">
+                  <p className="font-semibold text-evergreen">{p.deck.title}</p>
+                  <p className="text-sm text-dark-gray">
                     Last studied {p.lastStudiedAt.toLocaleDateString()} ·{" "}
                     {p.timesStudied} session{p.timesStudied === 1 ? "" : "s"}
                   </p>
                 </div>
                 <Link
                   href={`/decks/${p.deck.slug}`}
-                  className="shrink-0 rounded bg-black px-3 py-1.5 text-sm text-white dark:bg-white dark:text-black"
+                  className="shrink-0 rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
                 >
                   Continue
                 </Link>

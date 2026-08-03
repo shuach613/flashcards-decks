@@ -54,21 +54,23 @@ export function StudySession({
 
   if (finished) {
     return (
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold">Session complete</h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+      <div className="rounded-2xl border border-sand bg-white p-10 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+          Session complete
+        </h1>
+        <p className="mt-2 text-dark-gray">
           {`You reviewed ${reviewed} card${reviewed === 1 ? "" : "s"} in "${deckTitle}".`}
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
             href={`/decks/${deckSlug}`}
-            className="rounded border border-black/15 px-4 py-2 dark:border-white/20"
+            className="rounded-full border border-evergreen/20 px-5 py-2.5 font-semibold text-evergreen transition hover:bg-evergreen/5"
           >
             Back to deck
           </Link>
           <Link
             href="/"
-            className="rounded bg-black px-4 py-2 text-white dark:bg-white dark:text-black"
+            className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
           >
             My decks
           </Link>
@@ -79,24 +81,26 @@ export function StudySession({
 
   return (
     <div>
-      <p className="mb-4 text-sm text-zinc-500">
+      <p className="mb-4 text-sm font-medium text-dark-gray">
         {queue.length} card{queue.length === 1 ? "" : "s"} left · {deckTitle}
       </p>
       <button
         type="button"
         onClick={() => setRevealed((r) => !r)}
-        className="flex min-h-48 w-full flex-col items-center justify-center rounded-lg border border-black/15 p-8 text-center text-lg dark:border-white/20"
+        className={`flex min-h-56 w-full flex-col items-center justify-center rounded-2xl border p-8 text-center text-lg shadow-[0_2px_8px_rgba(25,51,37,0.08)] transition ${
+          revealed ? "border-transparent bg-lime-green" : "border-sand bg-white"
+        }`}
       >
-        <span>{current.front}</span>
+        <span className="font-medium text-evergreen">{current.front}</span>
         {revealed ? (
           <>
-            <hr className="my-4 w-full border-black/10 dark:border-white/10" />
-            <span className="text-zinc-600 dark:text-zinc-400">
-              {current.back}
-            </span>
+            <hr className="my-4 w-full border-evergreen/10" />
+            <span className="text-dark-gray">{current.back}</span>
           </>
         ) : (
-          <span className="mt-4 text-xs text-zinc-400">Tap to reveal</span>
+          <span className="mt-4 text-xs tracking-wide text-dark-gray uppercase">
+            Tap to reveal
+          </span>
         )}
       </button>
       {revealed && (
@@ -104,14 +108,14 @@ export function StudySession({
           <button
             type="button"
             onClick={() => rate(true)}
-            className="rounded border border-red-300 px-4 py-2 text-red-600"
+            className="rounded-full border border-sunset-orange/30 px-5 py-2.5 font-semibold text-sunset-orange transition hover:bg-sunset-orange/5"
           >
             Again
           </button>
           <button
             type="button"
             onClick={() => rate(false)}
-            className="rounded bg-black px-4 py-2 text-white dark:bg-white dark:text-black"
+            className="rounded-full bg-bright-green px-5 py-2.5 font-semibold text-evergreen transition hover:brightness-110"
           >
             Good
           </button>

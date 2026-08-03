@@ -22,19 +22,21 @@ export default async function AdminDeckPage({
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
       <div className="mb-8 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold">{deck.title}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+          {deck.title}
+        </h1>
         <form action={deleteDeck.bind(null, deck.id)}>
           <button
             type="submit"
-            className="rounded border border-red-300 px-3 py-1.5 text-sm text-red-600"
+            className="rounded-full border border-sunset-orange/30 px-4 py-1.5 text-sm font-medium text-sunset-orange transition hover:bg-sunset-orange/5"
           >
             Delete deck
           </button>
         </form>
       </div>
 
-      <section className="mb-8 rounded border border-black/10 p-4 dark:border-white/10">
-        <h2 className="mb-3 font-medium">Deck details</h2>
+      <section className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h2 className="mb-3 font-semibold text-evergreen">Deck details</h2>
         <DeckMetaForm
           deckId={deck.id}
           title={deck.title}
@@ -43,21 +45,23 @@ export default async function AdminDeckPage({
         />
       </section>
 
-      <section className="mb-8 rounded border border-black/10 p-4 dark:border-white/10">
-        <h2 className="mb-1 font-medium">Import cards (TSV)</h2>
-        <p className="mb-3 text-sm text-zinc-500">
+      <section className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h2 className="mb-1 font-semibold text-evergreen">Import cards (TSV)</h2>
+        <p className="mb-3 text-sm text-dark-gray">
           One card per line: front, then a tab, then back.
         </p>
         <ImportForm deckId={deck.id} deckSlug={deck.slug} />
       </section>
 
       <section>
-        <h2 className="mb-3 font-medium">Cards ({deck.cards.length})</h2>
+        <h2 className="mb-3 font-semibold text-evergreen">
+          Cards ({deck.cards.length})
+        </h2>
         <ul className="flex flex-col gap-3">
           {deck.cards.map((card) => (
             <li
               key={card.id}
-              className="rounded border border-black/10 p-3 dark:border-white/10"
+              className="rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
             >
               <form
                 action={updateCard.bind(null, card.id, deck.slug)}
@@ -66,16 +70,16 @@ export default async function AdminDeckPage({
                 <input
                   name="front"
                   defaultValue={card.front}
-                  className="flex-1 rounded border border-black/15 px-2 py-1 dark:border-white/20 dark:bg-transparent"
+                  className="flex-1 rounded-lg border border-soft-gray px-2.5 py-1.5 text-sm outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
                 />
                 <input
                   name="back"
                   defaultValue={card.back}
-                  className="flex-1 rounded border border-black/15 px-2 py-1 dark:border-white/20 dark:bg-transparent"
+                  className="flex-1 rounded-lg border border-soft-gray px-2.5 py-1.5 text-sm outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
                 />
                 <button
                   type="submit"
-                  className="shrink-0 rounded border border-black/15 px-3 py-1 text-sm dark:border-white/20"
+                  className="shrink-0 rounded-full border border-evergreen/20 px-4 py-1.5 text-sm font-medium text-evergreen transition hover:bg-evergreen/5"
                 >
                   Save
                 </button>
@@ -84,14 +88,17 @@ export default async function AdminDeckPage({
                 action={deleteCard.bind(null, card.id, deck.slug)}
                 className="mt-2"
               >
-                <button type="submit" className="text-sm text-red-600">
+                <button
+                  type="submit"
+                  className="text-sm font-medium text-sunset-orange"
+                >
                   Delete card
                 </button>
               </form>
             </li>
           ))}
           {deck.cards.length === 0 && (
-            <p className="text-zinc-500">No cards yet — import some above.</p>
+            <p className="text-dark-gray">No cards yet — import some above.</p>
           )}
         </ul>
       </section>

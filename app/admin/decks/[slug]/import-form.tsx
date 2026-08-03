@@ -19,16 +19,16 @@ export function ImportForm({
         name="tsv"
         rows={6}
         placeholder={"front 1\tback 1\nfront 2\tback 2"}
-        className="w-full rounded border border-black/15 px-3 py-2 font-mono text-sm dark:border-white/20 dark:bg-transparent"
+        className="w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 font-mono text-sm outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
       />
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
       {state?.success && (
-        <p className="text-sm text-green-600">{state.success}</p>
+        <p className="text-sm text-grass-green">{state.success}</p>
       )}
       <button
         disabled={pending}
         type="submit"
-        className="self-start rounded bg-black px-4 py-2 text-white disabled:opacity-50 dark:bg-white dark:text-black"
+        className="self-start rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
         {pending ? "Importing…" : "Import"}
       </button>

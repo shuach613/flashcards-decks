@@ -10,7 +10,7 @@ export function CreateDeckForm() {
     <form action={formAction} className="flex flex-col gap-3">
       <div className="flex items-end gap-3">
         <div className="flex-1">
-          <label className="block text-sm font-medium" htmlFor="title">
+          <label className="block text-sm font-medium text-evergreen" htmlFor="title">
             Title
           </label>
           <input
@@ -18,18 +18,18 @@ export function CreateDeckForm() {
             name="title"
             required
             placeholder="e.g. Topic A"
-            className="mt-1 w-full rounded border border-black/15 px-3 py-2 dark:border-white/20 dark:bg-transparent"
+            className="mt-1 w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
           />
         </div>
         <button
           disabled={pending}
           type="submit"
-          className="rounded bg-black px-4 py-2 text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
         >
           {pending ? "Creating…" : "Create"}
         </button>
       </div>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
     </form>
   );
 }
