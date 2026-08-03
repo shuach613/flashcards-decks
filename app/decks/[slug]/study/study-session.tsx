@@ -24,9 +24,12 @@ export function StudySession({
   deckTitle: string;
   cards: Card[];
 }) {
+  const total = cards.length;
   const [queue, setQueue] = useState<Card[]>(() => shuffle(cards));
   const [revealed, setRevealed] = useState(false);
   const [reviewed, setReviewed] = useState(0);
+  const [doneCount, setDoneCount] = useState(0);
+  const [againIds, setAgainIds] = useState<Set<string>>(new Set());
   const reported = useRef(false);
 
   const current = queue[0];
@@ -40,7 +43,21 @@ export function StudySession({
   }, [finished, deckSlug]);
 
   function rate(again: boolean) {
+    const cardId = current.id;
     setReviewed((n) => n + 1);
+
+    if (again) {
+      setAgainIds((prev) => (prev.has(cardId) ? prev : new Set(prev).add(cardId)));
+    } else {
+      setDoneCount((n) => n + 1);
+      setAgainIds((prev) => {
+        if (!prev.has(cardId)) return prev;
+        const next = new Set(prev);
+        next.delete(cardId);
+        return next;
+      });
+    }
+
     setQueue((q) => {
       const [first, ...rest] = q;
       if (!again) return rest;
@@ -79,11 +96,33 @@ export function StudySession({
     );
   }
 
+  const donePct = (doneCount / total) * 100;
+  const againPct = (againIds.size / total) * 100;
+
   return (
     <div>
-      <p className="mb-4 text-sm font-medium text-dark-gray">
+      <p className="mb-2 text-sm font-medium text-dark-gray">
         {queue.length} card{queue.length === 1 ? "" : "s"} left · {deckTitle}
       </p>
+      <div
+        className="mb-6 h-2.5 w-full overflow-hidden rounded-full bg-sand"
+        role="progressbar"
+        aria-valuenow={doneCount}
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-label="Session progress"
+      >
+        <div className="relative h-full w-full">
+          <div
+            className="absolute inset-y-0 left-0 bg-grass-green transition-[width] duration-300 ease-out"
+            style={{ width: `${donePct}%` }}
+          />
+          <div
+            className="absolute inset-y-0 right-0 bg-sunset-orange transition-[width] duration-300 ease-out"
+            style={{ width: `${againPct}%` }}
+          />
+        </div>
+      </div>
       <button
         type="button"
         onClick={() => setRevealed((r) => !r)}
