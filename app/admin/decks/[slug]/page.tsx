@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/authz";
 import { ensureDefaultCertificates } from "@/lib/certificates-server";
 import { prisma } from "@/lib/db";
+import { CopyLinkButton } from "../../copy-link-button";
 import { deleteCard, deleteDeck, updateCard } from "./actions";
 import { DeckMetaForm } from "./deck-meta-form";
 import { ImportForm } from "./import-form";
@@ -30,14 +31,17 @@ export default async function AdminDeckPage({
         <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
           {deck.title}
         </h1>
-        <form action={deleteDeck.bind(null, deck.id)}>
-          <button
-            type="submit"
-            className="rounded-full border border-sunset-orange/30 px-4 py-1.5 text-sm font-medium text-sunset-orange transition hover:bg-sunset-orange/5"
-          >
-            Delete deck
-          </button>
-        </form>
+        <div className="flex shrink-0 items-center gap-3">
+          <CopyLinkButton slug={deck.slug} />
+          <form action={deleteDeck.bind(null, deck.id)}>
+            <button
+              type="submit"
+              className="rounded-full border border-sunset-orange/30 px-4 py-1.5 text-sm font-medium text-sunset-orange transition hover:bg-sunset-orange/5"
+            >
+              Delete deck
+            </button>
+          </form>
+        </div>
       </div>
 
       <section className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">

@@ -21,7 +21,7 @@ export default async function HomePage() {
 
   const progress = await prisma.studyProgress.findMany({
     where: { userId: session.user.id },
-    include: { deck: true },
+    include: { deck: { include: { certificate: true } } },
     orderBy: { lastStudiedAt: "desc" },
   });
 
@@ -44,7 +44,12 @@ export default async function HomePage() {
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="font-semibold text-evergreen">{p.deck.title}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-evergreen">{p.deck.title}</p>
+                    <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium text-dark-gray">
+                      {p.deck.certificate?.name ?? "Uncategorized"}
+                    </span>
+                  </div>
                   <p className="text-sm text-dark-gray">
                     Last studied {p.lastStudiedAt.toLocaleDateString()} ·{" "}
                     {p.timesStudied} session{p.timesStudied === 1 ? "" : "s"}

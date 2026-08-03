@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/authz";
 import { LANGUAGES } from "@/lib/certificates";
 import { ensureDefaultCertificates } from "@/lib/certificates-server";
 import { prisma } from "@/lib/db";
+import { CopyLinkButton } from "./copy-link-button";
 import { CreateDeckForm } from "./create-deck-form";
 import { deleteDeck } from "./actions";
 
@@ -56,6 +57,7 @@ export default async function AdminPage() {
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-3">
+              <CopyLinkButton slug={deck.slug} />
               <Link
                 href={`/admin/decks/${deck.slug}`}
                 className="rounded-full border border-evergreen/20 px-4 py-1.5 text-sm font-medium text-evergreen transition hover:bg-evergreen/5"
