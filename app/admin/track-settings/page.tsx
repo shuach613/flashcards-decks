@@ -93,11 +93,51 @@ export default async function TrackConfigurationPage({
           const selectedIds = new Set(
             track.certificates.map((item) => item.certificateId)
           );
+          const selectedCertificates = certificates.filter((certificate) =>
+            selectedIds.has(certificate.id)
+          );
           const hasMessage = params.track === track.id;
 
           return (
-            <section key={track.id} className="rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-              <form action={updateTrack.bind(null, track.id)}>
+            <details
+              key={track.id}
+              open={hasMessage || undefined}
+              className="group overflow-hidden rounded-2xl border border-sand bg-white shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 outline-none transition hover:bg-light-gray focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-evergreen/10 [&::-webkit-details-marker]:hidden">
+                <span className="min-w-0">
+                  <span className="block font-bold text-evergreen">
+                    {track.name}
+                  </span>
+                  <span className="mt-2 flex flex-wrap gap-1.5">
+                    {selectedCertificates.length > 0 ? (
+                      selectedCertificates.map((certificate) => (
+                        <span
+                          key={certificate.id}
+                          className="rounded-full bg-lime-green px-2 py-0.5 text-xs font-medium text-evergreen"
+                        >
+                          {certificate.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-dark-gray">
+                        {t(locale, "track.noCategories")}
+                      </span>
+                    )}
+                  </span>
+                </span>
+                <span className="flex shrink-0 items-center gap-2 text-sm font-semibold text-evergreen">
+                  {t(locale, "tracks.expandSettings")}
+                  <span
+                    aria-hidden="true"
+                    className="text-lg transition-transform group-open:rotate-180"
+                  >
+                    ⌄
+                  </span>
+                </span>
+              </summary>
+              <div className="border-t border-sand p-5">
+                <form action={updateTrack.bind(null, track.id)}>
                 <label htmlFor={`track-name-${track.id}`} className="block text-sm font-medium text-evergreen">
                   {t(locale, "tracks.trackName")}
                 </label>
@@ -127,8 +167,9 @@ export default async function TrackConfigurationPage({
                 <button type="submit" className="mt-5 rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110">
                   {t(locale, "tracks.save")}
                 </button>
-              </form>
-            </section>
+                </form>
+              </div>
+            </details>
           );
         })}
       </div>

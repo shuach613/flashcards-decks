@@ -196,6 +196,7 @@ const en = {
   "tracks.nameRequired": "Track name is required.",
   "tracks.nameExists": "A track with that name already exists.",
   "tracks.updateFailed": "The track could not be updated.",
+  "tracks.expandSettings": "Settings",
 } as const;
 
 type TranslationKey = keyof typeof en;
@@ -401,6 +402,7 @@ const de: Record<TranslationKey, string> = {
   "tracks.nameRequired": "Der Track-Name ist erforderlich.",
   "tracks.nameExists": "Ein Track mit diesem Namen existiert bereits.",
   "tracks.updateFailed": "Der Track konnte nicht aktualisiert werden.",
+  "tracks.expandSettings": "Einstellungen",
 };
 
 export const translations: Record<Locale, Record<TranslationKey, string>> = {
