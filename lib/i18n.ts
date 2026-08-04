@@ -65,6 +65,7 @@ const en = {
   "auth.trackLabel": "Your track",
   "auth.trackHint": "You can choose one track. An admin can change or add tracks later.",
   "auth.trackRequired": "Choose a track to create your account.",
+  "auth.noTracksAvailable": "No tracks are available. Ask an admin to create one.",
 
   "track.required": "Required to continue",
   "track.chooseTitle": "Choose your track",
@@ -72,6 +73,7 @@ const en = {
     "Your track determines which certificate categories and decks you can access. You can make this choice once; an admin can update it later.",
   "track.continue": "Save track and continue",
   "track.saving": "Saving…",
+  "track.noCategories": "No certificate categories assigned yet",
 
   "deck.cardCount_one": "{count} card",
   "deck.cardCount_other": "{count} cards",
@@ -117,6 +119,12 @@ const en = {
   "admin.tracksSaved": "The student's track access has been updated.",
   "admin.oneTrackRequired": "Select at least one track for this student.",
   "admin.trackUpdateFailed": "The track assignment could not be updated.",
+  "admin.studentTrackAssignments": "Student track assignments",
+  "admin.studentTrackAssignmentsBody":
+    "Search for a student to change their track or grant access to additional tracks.",
+  "admin.trackConfiguration": "Track configuration",
+  "admin.trackConfigurationBody":
+    "Add and rename tracks, and choose which certificate categories each track can access.",
   "admin.studentOverviewBody":
     "Search for a student by email to review their saved study activity.",
   "admin.studentEmail": "Student email",
@@ -165,11 +173,29 @@ const en = {
     "New certificates are added at the end of the display order on the All Decks page.",
   "cert.nameRequired": "Name is required.",
   "cert.nameExists": "A certificate with that name already exists.",
+  "cert.matchTracks": "Match to tracks",
+  "cert.matchTracksHint":
+    "Select every track that should show this certificate category. You can leave it unassigned.",
+  "cert.invalidTracks": "One or more selected tracks are no longer available.",
+  "cert.noTracks": "Not assigned to a track",
   "cert.deckCount_one": "{count} deck",
   "cert.deckCount_other": "{count} decks",
 
   "allDecks.title": "All Decks",
   "allDecks.empty": "No decks yet.",
+
+  "tracks.addTrack": "Add track",
+  "tracks.trackName": "Track name",
+  "tracks.availableCategories": "Certificate categories",
+  "tracks.shownCategories": "Categories shown in this track",
+  "tracks.noCertificates": "No certificate categories are available yet.",
+  "tracks.create": "Create track",
+  "tracks.save": "Save track",
+  "tracks.created": "The new track has been created.",
+  "tracks.saved": "The track has been updated.",
+  "tracks.nameRequired": "Track name is required.",
+  "tracks.nameExists": "A track with that name already exists.",
+  "tracks.updateFailed": "The track could not be updated.",
 } as const;
 
 type TranslationKey = keyof typeof en;
@@ -241,6 +267,8 @@ const de: Record<TranslationKey, string> = {
   "auth.trackHint":
     "Du kannst einen Track auswählen. Ein Admin kann Tracks später ändern oder ergänzen.",
   "auth.trackRequired": "Wähle einen Track, um dein Konto zu erstellen.",
+  "auth.noTracksAvailable":
+    "Es sind keine Tracks verfügbar. Bitte einen Admin, einen Track zu erstellen.",
 
   "track.required": "Erforderlich zum Fortfahren",
   "track.chooseTitle": "Wähle deinen Track",
@@ -248,6 +276,7 @@ const de: Record<TranslationKey, string> = {
     "Dein Track bestimmt, auf welche Zertifikatskategorien und Decks du zugreifen kannst. Du kannst diese Wahl einmal treffen; ein Admin kann sie später ändern.",
   "track.continue": "Track speichern und fortfahren",
   "track.saving": "Speichert…",
+  "track.noCategories": "Noch keine Zertifikatskategorien zugewiesen",
 
   "deck.cardCount_one": "{count} Karte",
   "deck.cardCount_other": "{count} Karten",
@@ -293,6 +322,12 @@ const de: Record<TranslationKey, string> = {
   "admin.tracksSaved": "Der Track-Zugriff des Schülers wurde aktualisiert.",
   "admin.oneTrackRequired": "Wähle mindestens einen Track für diesen Schüler aus.",
   "admin.trackUpdateFailed": "Die Track-Zuweisung konnte nicht aktualisiert werden.",
+  "admin.studentTrackAssignments": "Track-Zuweisungen",
+  "admin.studentTrackAssignmentsBody":
+    "Suche einen Schüler, um seinen Track zu ändern oder ihm zusätzliche Tracks freizuschalten.",
+  "admin.trackConfiguration": "Track-Konfiguration",
+  "admin.trackConfigurationBody":
+    "Füge Tracks hinzu, benenne sie um und wähle die Zertifikatskategorien für jeden Track aus.",
   "admin.studentOverviewBody":
     "Suche einen Schüler per E-Mail, um seine gespeicherte Lernaktivität anzusehen.",
   "admin.studentEmail": "E-Mail des Schülers",
@@ -343,11 +378,29 @@ const de: Record<TranslationKey, string> = {
     "Neue Zertifikate werden ans Ende der Anzeigereihenfolge auf der Seite „Alle Decks“ gesetzt.",
   "cert.nameRequired": "Name ist erforderlich.",
   "cert.nameExists": "Ein Zertifikat mit diesem Namen existiert bereits.",
+  "cert.matchTracks": "Tracks zuordnen",
+  "cert.matchTracksHint":
+    "Wähle alle Tracks aus, in denen diese Zertifikatskategorie angezeigt werden soll. Sie kann auch unzugewiesen bleiben.",
+  "cert.invalidTracks": "Mindestens ein ausgewählter Track ist nicht mehr verfügbar.",
+  "cert.noTracks": "Keinem Track zugewiesen",
   "cert.deckCount_one": "{count} Deck",
   "cert.deckCount_other": "{count} Decks",
 
   "allDecks.title": "Alle Decks",
   "allDecks.empty": "Noch keine Decks.",
+
+  "tracks.addTrack": "Track hinzufügen",
+  "tracks.trackName": "Track-Name",
+  "tracks.availableCategories": "Zertifikatskategorien",
+  "tracks.shownCategories": "In diesem Track angezeigte Kategorien",
+  "tracks.noCertificates": "Es sind noch keine Zertifikatskategorien verfügbar.",
+  "tracks.create": "Track erstellen",
+  "tracks.save": "Track speichern",
+  "tracks.created": "Der neue Track wurde erstellt.",
+  "tracks.saved": "Der Track wurde aktualisiert.",
+  "tracks.nameRequired": "Der Track-Name ist erforderlich.",
+  "tracks.nameExists": "Ein Track mit diesem Namen existiert bereits.",
+  "tracks.updateFailed": "Der Track konnte nicht aktualisiert werden.",
 };
 
 export const translations: Record<Locale, Record<TranslationKey, string>> = {

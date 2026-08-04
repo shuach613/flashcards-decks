@@ -2,6 +2,8 @@ import Link from "next/link";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { SignupForm } from "./signup-form";
+import { ensureDefaultTracks } from "@/lib/tracks-server";
+import { prisma } from "@/lib/db";
 
 export default async function SignupPage({
   searchParams,
@@ -11,6 +13,16 @@ export default async function SignupPage({
   const { callbackUrl } = await searchParams;
   const target = callbackUrl ?? "/";
   const locale = await getLocale();
+  await ensureDefaultTracks();
+  const tracks = await prisma.track.findMany({
+    orderBy: { order: "asc" },
+    include: {
+      certificates: {
+        include: { certificate: true },
+        orderBy: { certificate: { order: "asc" } },
+      },
+    },
+  });
 
   return (
     <div className="mx-auto mt-16 max-w-sm px-6">
@@ -18,7 +30,17 @@ export default async function SignupPage({
         <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
           {t(locale, "auth.signupTitle")}
         </h1>
-        <SignupForm callbackUrl={target} locale={locale} />
+        <SignupForm
+          callbackUrl={target}
+          locale={locale}
+          tracks={tracks.map((track) => ({
+            id: track.id,
+            name: track.name,
+            certificateNames: track.certificates.map(
+              (item) => item.certificate.name
+            ),
+          }))}
+        />
       </div>
       <p className="mt-4 text-center text-sm text-dark-gray">
         {t(locale, "auth.haveAccount")}{" "}

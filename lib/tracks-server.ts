@@ -7,36 +7,25 @@ export async function ensureDefaultTracks() {
   await ensureDefaultCertificates();
 
   for (const definition of DEFAULT_TRACKS) {
-    const track = await prisma.track.upsert({
-      where: { key: definition.key },
-      create: {
-        key: definition.key,
-        name: definition.name,
-        order: definition.order,
-      },
-      update: {
-        name: definition.name,
-        order: definition.order,
-      },
-    });
-
     const certificates = await prisma.certificate.findMany({
       where: { name: { in: [...definition.certificateNames] } },
       select: { id: true },
     });
 
-    for (const certificate of certificates) {
-      await prisma.trackCertificate.upsert({
-        where: {
-          trackId_certificateId: {
-            trackId: track.id,
+    await prisma.track.upsert({
+      where: { key: definition.key },
+      create: {
+        key: definition.key,
+        name: definition.name,
+        order: definition.order,
+        certificates: {
+          create: certificates.map((certificate) => ({
             certificateId: certificate.id,
-          },
+          })),
         },
-        create: { trackId: track.id, certificateId: certificate.id },
-        update: {},
-      });
-    }
+      },
+      update: {},
+    });
   }
 }
 

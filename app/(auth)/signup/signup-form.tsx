@@ -3,14 +3,15 @@
 import { useActionState } from "react";
 import { t, type Locale } from "@/lib/i18n";
 import { signup } from "./actions";
-import { DEFAULT_TRACKS } from "@/lib/tracks";
 
 export function SignupForm({
   callbackUrl,
   locale,
+  tracks,
 }: {
   callbackUrl: string;
   locale: Locale;
+  tracks: { id: string; name: string; certificateNames: string[] }[];
 }) {
   const [state, formAction, pending] = useActionState(signup, undefined);
 
@@ -48,29 +49,43 @@ export function SignupForm({
           {t(locale, "auth.trackLabel")}
         </legend>
         <div className="mt-2 space-y-2">
-          {DEFAULT_TRACKS.map((track) => (
+          {tracks.map((track) => (
             <label
-              key={track.key}
+              key={track.id}
               className="flex cursor-pointer gap-2 rounded-xl border border-soft-gray px-3.5 py-2.5 text-sm transition has-checked:border-evergreen has-checked:bg-lime-green/60"
             >
               <input
                 type="radio"
-                name="track"
-                value={track.key}
+                name="trackId"
+                value={track.id}
                 required
                 className="accent-evergreen"
               />
-              <span className="font-medium text-evergreen">{track.name}</span>
+              <span>
+                <span className="block font-medium text-evergreen">
+                  {track.name}
+                </span>
+                <span className="block text-xs text-dark-gray">
+                  {track.certificateNames.length > 0
+                    ? track.certificateNames.join(" · ")
+                    : t(locale, "track.noCategories")}
+                </span>
+              </span>
             </label>
           ))}
         </div>
+        {tracks.length === 0 && (
+          <p className="mt-2 text-sm text-sunset-orange">
+            {t(locale, "auth.noTracksAvailable")}
+          </p>
+        )}
         <p className="mt-1 text-xs text-dark-gray">
           {t(locale, "auth.trackHint")}
         </p>
       </fieldset>
       {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
       <button
-        disabled={pending}
+        disabled={pending || tracks.length === 0}
         type="submit"
         className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
       >

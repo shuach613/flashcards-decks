@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/authz";
 import { prisma } from "@/lib/db";
-import { isTrackKey } from "@/lib/tracks";
 import { ensureDefaultTracks, userHasTracks } from "@/lib/tracks-server";
 
 export type ChooseTrackState = { error?: string } | undefined;
@@ -26,13 +25,13 @@ export async function chooseTrack(
     redirect(callbackUrl);
   }
 
-  const trackKey = String(formData.get("track") ?? "");
-  if (!isTrackKey(trackKey)) {
+  const trackId = String(formData.get("trackId") ?? "");
+  if (!trackId) {
     return { error: "Choose a track to continue." };
   }
 
   await ensureDefaultTracks();
-  const track = await prisma.track.findUnique({ where: { key: trackKey } });
+  const track = await prisma.track.findUnique({ where: { id: trackId } });
   if (!track) return { error: "That track is not available." };
 
   await prisma.userTrack.create({

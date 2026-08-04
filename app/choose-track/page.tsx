@@ -2,8 +2,9 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/authz";
 import { getLocale } from "@/lib/i18n-server";
 import { t } from "@/lib/i18n";
-import { userHasTracks } from "@/lib/tracks-server";
+import { ensureDefaultTracks, userHasTracks } from "@/lib/tracks-server";
 import { TrackForm } from "./track-form";
+import { prisma } from "@/lib/db";
 
 export default async function ChooseTrackPage({
   searchParams,
@@ -16,6 +17,17 @@ export default async function ChooseTrackPage({
 
   if (user.role === "ADMIN" || (await userHasTracks(user.id))) redirect("/");
 
+  await ensureDefaultTracks();
+  const tracks = await prisma.track.findMany({
+    orderBy: { order: "asc" },
+    include: {
+      certificates: {
+        include: { certificate: true },
+        orderBy: { certificate: { order: "asc" } },
+      },
+    },
+  });
+
   return (
     <div className="mx-auto mt-12 max-w-xl px-6 pb-16">
       <div className="rounded-2xl border border-sand bg-white p-6 shadow-[0_2px_8px_rgba(25,51,37,0.08)] sm:p-8">
@@ -26,7 +38,17 @@ export default async function ChooseTrackPage({
           {t(locale, "track.chooseTitle")}
         </h1>
         <p className="mt-2 text-dark-gray">{t(locale, "track.chooseBody")}</p>
-        <TrackForm callbackUrl={callbackUrl} locale={locale} />
+        <TrackForm
+          callbackUrl={callbackUrl}
+          locale={locale}
+          tracks={tracks.map((track) => ({
+            id: track.id,
+            name: track.name,
+            certificateNames: track.certificates.map(
+              (item) => item.certificate.name
+            ),
+          }))}
+        />
       </div>
     </div>
   );

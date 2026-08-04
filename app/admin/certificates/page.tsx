@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/authz";
-import { ensureDefaultCertificates } from "@/lib/certificates-server";
+import { ensureDefaultTracks } from "@/lib/tracks-server";
 import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
@@ -8,13 +8,19 @@ import { CertificateForm } from "./certificate-form";
 
 export default async function AdminCertificatesPage() {
   await requireAdmin();
-  await ensureDefaultCertificates();
+  await ensureDefaultTracks();
   const locale = await getLocale();
 
-  const certificates = await prisma.certificate.findMany({
-    orderBy: { order: "asc" },
-    include: { _count: { select: { decks: true } } },
-  });
+  const [certificates, tracks] = await Promise.all([
+    prisma.certificate.findMany({
+      orderBy: { order: "asc" },
+      include: {
+        _count: { select: { decks: true } },
+        tracks: { include: { track: true } },
+      },
+    }),
+    prisma.track.findMany({ orderBy: { order: "asc" } }),
+  ]);
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
@@ -35,7 +41,7 @@ export default async function AdminCertificatesPage() {
           {t(locale, "cert.addCertificate")}
         </h2>
         <p className="mb-3 text-sm text-dark-gray">{t(locale, "cert.addHint")}</p>
-        <CertificateForm locale={locale} />
+        <CertificateForm locale={locale} tracks={tracks} />
       </div>
 
       <ul className="flex flex-col gap-3">
@@ -44,8 +50,23 @@ export default async function AdminCertificatesPage() {
             key={certificate.id}
             className="flex items-center justify-between gap-4 rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
           >
-            <p className="font-semibold text-evergreen">{certificate.name}</p>
-            <p className="text-sm text-dark-gray">
+            <div>
+              <p className="font-semibold text-evergreen">{certificate.name}</p>
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {certificate.tracks.length > 0 ? (
+                  certificate.tracks.map((assignment) => (
+                    <span key={assignment.trackId} className="rounded-full bg-lime-green px-2 py-0.5 text-xs font-medium text-evergreen">
+                      {assignment.track.name}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-dark-gray">
+                    {t(locale, "cert.noTracks")}
+                  </span>
+                )}
+              </div>
+            </div>
+            <p className="shrink-0 text-sm text-dark-gray">
               {tc(locale, "cert.deckCount", certificate._count.decks)}
             </p>
           </li>

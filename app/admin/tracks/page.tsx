@@ -12,7 +12,7 @@ type SearchParams = Promise<{
   error?: string;
 }>;
 
-export default async function TrackManagementPage({
+export default async function StudentTrackAssignmentsPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -58,10 +58,10 @@ export default async function TrackManagementPage({
 
       <section>
         <h2 className="text-xl font-bold tracking-tight text-evergreen">
-          {t(locale, "admin.trackManagement")}
+          {t(locale, "admin.studentTrackAssignments")}
         </h2>
         <p className="mt-1 text-dark-gray">
-          {t(locale, "admin.trackManagementBody")}
+          {t(locale, "admin.studentTrackAssignmentsBody")}
         </p>
 
         <form
