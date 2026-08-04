@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { CopyLinkButton } from "./copy-link-button";
 import { CreateDeckForm } from "./create-deck-form";
 import { deleteDeck } from "./actions";
+import { AdminSubnav } from "./_components/admin-subnav";
 
 export default async function AdminPage() {
   await requireAdmin();
@@ -23,10 +24,14 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
+      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+        {t(locale, "admin.heading")}
+      </h1>
+      <AdminSubnav active="decks" locale={locale} />
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+        <h2 className="text-xl font-bold tracking-tight text-evergreen">
           {t(locale, "admin.title")}
-        </h1>
+        </h2>
         <Link
           href="/admin/certificates"
           className="text-sm font-medium text-evergreen underline underline-offset-4"
