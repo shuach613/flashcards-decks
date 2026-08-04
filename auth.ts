@@ -4,6 +4,13 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // AUTH_SECRET is intentionally production-only in Vercel. Preview deployments
+  // use the secret database credential already injected by the Neon integration.
+  secret:
+    process.env.AUTH_SECRET ??
+    (process.env.VERCEL_ENV === "preview"
+      ? process.env.POSTGRES_PASSWORD
+      : undefined),
   providers: [
     Credentials({
       credentials: {

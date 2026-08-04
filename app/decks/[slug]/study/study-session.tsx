@@ -1,20 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { t, tc, type Locale } from "@/lib/i18n";
-import { completeSession } from "./actions";
+import { rateCard, restartDeck, type Rating } from "./actions";
 
-type Card = { id: string; front: string; back: string };
-
-function shuffle<T>(items: T[]): T[] {
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
+type Card = { id: string; front: string; back: string; isGood: boolean };
 
 export function StudySession({
   deckSlug,
@@ -28,60 +19,104 @@ export function StudySession({
   locale: Locale;
 }) {
   const total = cards.length;
-  const [queue, setQueue] = useState<Card[]>(() => shuffle(cards));
+  const [queue, setQueue] = useState<Card[]>(() =>
+    cards.filter((card) => !card.isGood)
+  );
+  const [goodCount, setGoodCount] = useState(
+    () => cards.filter((card) => card.isGood).length
+  );
   const [revealed, setRevealed] = useState(false);
   const [reviewed, setReviewed] = useState(0);
-  const [doneCount, setDoneCount] = useState(0);
   const [againIds, setAgainIds] = useState<Set<string>>(new Set());
-  const reported = useRef(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string>();
 
   const current = queue[0];
   const finished = queue.length === 0;
 
-  useEffect(() => {
-    if (finished && !reported.current) {
-      reported.current = true;
-      completeSession(deckSlug);
-    }
-  }, [finished, deckSlug]);
+  async function rate(rating: Rating) {
+    if (!current || pending) return;
+    setPending(true);
+    setError(undefined);
 
-  function rate(again: boolean) {
-    const cardId = current.id;
-    setReviewed((n) => n + 1);
+    try {
+      const result = await rateCard(deckSlug, current.id, rating);
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
 
-    if (again) {
-      setAgainIds((prev) => (prev.has(cardId) ? prev : new Set(prev).add(cardId)));
-    } else {
-      setDoneCount((n) => n + 1);
-      setAgainIds((prev) => {
-        if (!prev.has(cardId)) return prev;
-        const next = new Set(prev);
-        next.delete(cardId);
+      setGoodCount(result.goodCount);
+      setReviewed((count) => count + 1);
+      setQueue((currentQueue) => {
+        const [first, ...rest] = currentQueue;
+        if (rating === "GOOD") return rest;
+
+        const next = [...rest];
+        next.splice(Math.min(rest.length, 3), 0, first);
         return next;
       });
+      setAgainIds((previous) => {
+        const next = new Set(previous);
+        if (rating === "AGAIN") next.add(current.id);
+        else next.delete(current.id);
+        return next;
+      });
+      setRevealed(false);
+    } catch {
+      setError(t(locale, "study.saveFailed"));
+    } finally {
+      setPending(false);
     }
+  }
 
-    setQueue((q) => {
-      const [first, ...rest] = q;
-      if (!again) return rest;
-      const insertAt = Math.min(rest.length, 3);
-      const next = [...rest];
-      next.splice(insertAt, 0, first);
-      return next;
-    });
-    setRevealed(false);
+  async function restart() {
+    if (pending) return;
+    setPending(true);
+    setError(undefined);
+
+    try {
+      const result = await restartDeck(deckSlug);
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
+      setQueue(cards.map((card) => ({ ...card, isGood: false })));
+      setGoodCount(0);
+      setReviewed(0);
+      setAgainIds(new Set());
+      setRevealed(false);
+    } catch {
+      setError(t(locale, "study.saveFailed"));
+    } finally {
+      setPending(false);
+    }
   }
 
   if (finished) {
     return (
       <div className="rounded-2xl border border-sand bg-white p-10 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-bright-green text-2xl text-evergreen">
+          ✓
+        </div>
         <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
           {t(locale, "study.sessionComplete")}
         </h1>
         <p className="mt-2 text-dark-gray">
-          {tc(locale, "study.reviewed", reviewed, { title: deckTitle })}
+          {reviewed > 0
+            ? tc(locale, "study.reviewed", reviewed, { title: deckTitle })
+            : t(locale, "study.alreadyComplete", { title: deckTitle })}
         </p>
-        <div className="mt-6 flex justify-center gap-3">
+        {error && <p className="mt-3 text-sm text-sunset-orange">{error}</p>}
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <button
+            type="button"
+            onClick={restart}
+            disabled={pending}
+            className="rounded-full border border-evergreen/20 px-5 py-2.5 font-semibold text-evergreen transition hover:bg-evergreen/5 disabled:opacity-50"
+          >
+            {pending ? t(locale, "study.restarting") : t(locale, "study.studyAgain")}
+          </button>
           <Link
             href={`/decks/${deckSlug}`}
             className="rounded-full border border-evergreen/20 px-5 py-2.5 font-semibold text-evergreen transition hover:bg-evergreen/5"
@@ -99,26 +134,27 @@ export function StudySession({
     );
   }
 
-  const donePct = (doneCount / total) * 100;
+  const goodPct = (goodCount / total) * 100;
   const againPct = (againIds.size / total) * 100;
 
   return (
     <div>
-      <p className="mb-2 text-sm font-medium text-dark-gray">
-        {tc(locale, "study.cardsLeft", queue.length, { title: deckTitle })}
-      </p>
+      <div className="mb-2 flex items-center justify-between gap-4 text-sm font-medium text-dark-gray">
+        <p>{tc(locale, "study.cardsLeft", queue.length, { title: deckTitle })}</p>
+        <p>{t(locale, "study.progress", { good: goodCount, total })}</p>
+      </div>
       <div
         className="mb-6 h-2.5 w-full overflow-hidden rounded-full bg-sand"
         role="progressbar"
-        aria-valuenow={doneCount}
+        aria-valuenow={goodCount}
         aria-valuemin={0}
         aria-valuemax={total}
-        aria-label="Session progress"
+        aria-label={t(locale, "study.progressLabel")}
       >
         <div className="relative h-full w-full">
           <div
             className="absolute inset-y-0 left-0 bg-grass-green transition-[width] duration-300 ease-out"
-            style={{ width: `${donePct}%` }}
+            style={{ width: `${goodPct}%` }}
           />
           <div
             className="absolute inset-y-0 right-0 bg-sunset-orange transition-[width] duration-300 ease-out"
@@ -128,8 +164,9 @@ export function StudySession({
       </div>
       <button
         type="button"
-        onClick={() => setRevealed((r) => !r)}
-        className={`flex min-h-56 w-full flex-col items-center justify-center rounded-2xl border p-8 text-center text-lg shadow-[0_2px_8px_rgba(25,51,37,0.08)] transition ${
+        onClick={() => setRevealed((value) => !value)}
+        disabled={pending}
+        className={`flex min-h-56 w-full flex-col items-center justify-center rounded-2xl border p-8 text-center text-lg shadow-[0_2px_8px_rgba(25,51,37,0.08)] transition disabled:opacity-70 ${
           revealed ? "border-transparent bg-lime-green" : "border-sand bg-white"
         }`}
       >
@@ -145,21 +182,24 @@ export function StudySession({
           </span>
         )}
       </button>
+      {error && <p className="mt-3 text-center text-sm text-sunset-orange">{error}</p>}
       {revealed && (
         <div className="mt-6 flex justify-center gap-3">
           <button
             type="button"
-            onClick={() => rate(true)}
-            className="rounded-full border border-sunset-orange/30 px-5 py-2.5 font-semibold text-sunset-orange transition hover:bg-sunset-orange/5"
+            onClick={() => rate("AGAIN")}
+            disabled={pending}
+            className="rounded-full border border-sunset-orange/30 px-5 py-2.5 font-semibold text-sunset-orange transition hover:bg-sunset-orange/5 disabled:opacity-50"
           >
-            {t(locale, "study.again")}
+            {pending ? t(locale, "study.saving") : t(locale, "study.again")}
           </button>
           <button
             type="button"
-            onClick={() => rate(false)}
-            className="rounded-full bg-bright-green px-5 py-2.5 font-semibold text-evergreen transition hover:brightness-110"
+            onClick={() => rate("GOOD")}
+            disabled={pending}
+            className="rounded-full bg-bright-green px-5 py-2.5 font-semibold text-evergreen transition hover:brightness-110 disabled:opacity-50"
           >
-            {t(locale, "study.good")}
+            {pending ? t(locale, "study.saving") : t(locale, "study.good")}
           </button>
         </div>
       )}

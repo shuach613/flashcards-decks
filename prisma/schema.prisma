@@ -17,6 +17,7 @@ model User {
   role          String          @default("USER") // "ADMIN" | "USER"
   createdAt     DateTime        @default(now())
   studyProgress StudyProgress[]
+  cardProgress  CardProgress[]
 }
 
 model Certificate {
@@ -41,12 +42,29 @@ model Deck {
 }
 
 model Card {
-  id     String @id @default(cuid())
-  deckId String
-  deck   Deck   @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  front  String
-  back   String
-  order  Int    @default(0)
+  id       String         @id @default(cuid())
+  deckId   String
+  deck     Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  front    String
+  back     String
+  order    Int            @default(0)
+  progress CardProgress[]
+}
+
+model CardProgress {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId     String
+  card       Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  isGood     Boolean  @default(false)
+  timesGood  Int      @default(0)
+  timesAgain Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, cardId])
+  @@index([userId])
+  @@index([cardId])
 }
 
 model StudyProgress {

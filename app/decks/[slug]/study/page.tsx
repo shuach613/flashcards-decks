@@ -20,7 +20,17 @@ export default async function StudyPage({
 
   const deck = await prisma.deck.findUnique({
     where: { slug },
-    include: { cards: { orderBy: { order: "asc" } } },
+    include: {
+      cards: {
+        orderBy: { order: "asc" },
+        include: {
+          progress: {
+            where: { userId: session.user.id },
+            select: { isGood: true },
+          },
+        },
+      },
+    },
   });
   if (!deck || deck.cards.length === 0) notFound();
 
@@ -29,7 +39,12 @@ export default async function StudyPage({
       <StudySession
         deckSlug={deck.slug}
         deckTitle={deck.title}
-        cards={deck.cards.map((c) => ({ id: c.id, front: c.front, back: c.back }))}
+        cards={deck.cards.map((card) => ({
+          id: card.id,
+          front: card.front,
+          back: card.back,
+          isGood: card.progress[0]?.isGood ?? false,
+        }))}
         locale={locale}
       />
     </div>
