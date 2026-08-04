@@ -8,7 +8,7 @@
     "vercel-build": "cp prisma/schema.postgres.prisma prisma/schema.prisma && prisma generate && prisma db push --accept-data-loss && next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test --experimental-strip-types tests/progress.test.mts"
+    "test": "node --test --experimental-strip-types tests/*.test.mts"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.9.1",

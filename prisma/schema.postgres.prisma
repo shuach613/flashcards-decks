@@ -19,6 +19,7 @@ model User {
   createdAt     DateTime        @default(now())
   studyProgress StudyProgress[]
   cardProgress  CardProgress[]
+  tracks        UserTrack[]
 }
 
 model Certificate {
@@ -27,6 +28,38 @@ model Certificate {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   decks     Deck[]
+  tracks    TrackCertificate[]
+}
+
+model Track {
+  id           String             @id @default(cuid())
+  key          String             @unique
+  name         String             @unique
+  order        Int                @default(0)
+  createdAt    DateTime           @default(now())
+  users        UserTrack[]
+  certificates TrackCertificate[]
+}
+
+model UserTrack {
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trackId    String
+  track      Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@id([userId, trackId])
+  @@index([trackId])
+}
+
+model TrackCertificate {
+  trackId       String
+  track         Track       @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  certificateId String
+  certificate   Certificate @relation(fields: [certificateId], references: [id], onDelete: Cascade)
+
+  @@id([trackId, certificateId])
+  @@index([certificateId])
 }
 
 model Deck {

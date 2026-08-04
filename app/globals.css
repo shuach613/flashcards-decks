@@ -22,7 +22,7 @@
   --color-white: #ffffff;
 
   --background: var(--color-soft-sand);
-  --foreground: var(--color-soft-black);
+  --foreground: var(--color-evergreen);
 }
 
 @theme inline {

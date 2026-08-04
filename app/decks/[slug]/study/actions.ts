@@ -1,8 +1,9 @@
 "use server";
 
-import { requireUser } from "@/lib/authz";
+import { requireTrackedUser } from "@/lib/authz";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
+import { deckAccessWhere } from "@/lib/tracks-server";
 
 export type Rating = "GOOD" | "AGAIN";
 
@@ -11,13 +12,16 @@ export async function rateCard(
   cardId: string,
   rating: Rating
 ) {
-  const user = await requireUser();
+  const user = await requireTrackedUser(`/decks/${deckSlug}/study`);
   if (rating !== "GOOD" && rating !== "AGAIN") {
     return { error: "Invalid rating." } as const;
   }
 
   const card = await prisma.card.findFirst({
-    where: { id: cardId, deck: { slug: deckSlug } },
+    where: {
+      id: cardId,
+      deck: { slug: deckSlug, ...deckAccessWhere(user) },
+    },
     select: { id: true, deckId: true },
   });
   if (!card) return { error: "Card not found." } as const;
@@ -82,21 +86,24 @@ export async function rateCard(
   });
 }
 
-async function resetDeck(userId: string, deckSlug: string) {
-  const deck = await prisma.deck.findUnique({
-    where: { slug: deckSlug },
+async function resetDeck(
+  user: { id: string; role: string },
+  deckSlug: string
+) {
+  const deck = await prisma.deck.findFirst({
+    where: { slug: deckSlug, ...deckAccessWhere(user) },
     select: { id: true },
   });
   if (!deck) return { error: "Deck not found." } as const;
 
   await prisma.$transaction([
     prisma.cardProgress.updateMany({
-      where: { userId, card: { deckId: deck.id } },
+      where: { userId: user.id, card: { deckId: deck.id } },
       data: { isGood: false },
     }),
     prisma.studyProgress.upsert({
-      where: { userId_deckId: { userId, deckId: deck.id } },
-      create: { userId, deckId: deck.id },
+      where: { userId_deckId: { userId: user.id, deckId: deck.id } },
+      create: { userId: user.id, deckId: deck.id },
       update: { lastStudiedAt: new Date() },
     }),
   ]);
@@ -105,13 +112,13 @@ async function resetDeck(userId: string, deckSlug: string) {
 }
 
 export async function restartDeck(deckSlug: string) {
-  const user = await requireUser();
-  return resetDeck(user.id, deckSlug);
+  const user = await requireTrackedUser(`/decks/${deckSlug}/study`);
+  return resetDeck(user, deckSlug);
 }
 
 export async function restartDeckAndStudy(deckSlug: string) {
-  const user = await requireUser();
-  const result = await resetDeck(user.id, deckSlug);
+  const user = await requireTrackedUser(`/decks/${deckSlug}/study`);
+  const result = await resetDeck(user, deckSlug);
   if ("error" in result) throw new Error(result.error);
   redirect(`/decks/${deckSlug}/study`);
 }

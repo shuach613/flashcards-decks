@@ -62,6 +62,16 @@ const en = {
   "auth.passwordTooShort": "Password must be at least 8 characters.",
   "auth.emailExists": "An account with that email already exists.",
   "auth.accountCreatedPleaseLogin": "Account created — please log in.",
+  "auth.trackLabel": "Your track",
+  "auth.trackHint": "You can choose one track. An admin can change or add tracks later.",
+  "auth.trackRequired": "Choose a track to create your account.",
+
+  "track.required": "Required to continue",
+  "track.chooseTitle": "Choose your track",
+  "track.chooseBody":
+    "Your track determines which certificate categories and decks you can access. You can make this choice once; an admin can update it later.",
+  "track.continue": "Save track and continue",
+  "track.saving": "Saving…",
 
   "deck.cardCount_one": "{count} card",
   "deck.cardCount_other": "{count} cards",
@@ -97,6 +107,16 @@ const en = {
   "admin.navigation": "Admin pages",
   "admin.deckManagement": "Deck management",
   "admin.studentOverview": "Student overview",
+  "admin.trackManagement": "Track management",
+  "admin.trackManagementBody":
+    "Search for a student to change their track or grant access to additional tracks.",
+  "admin.trackSelectionHint":
+    "Select every track this student should be able to access. At least one track is required.",
+  "admin.assignedTracks": "Assigned tracks",
+  "admin.saveTracks": "Save tracks",
+  "admin.tracksSaved": "The student's track access has been updated.",
+  "admin.oneTrackRequired": "Select at least one track for this student.",
+  "admin.trackUpdateFailed": "The track assignment could not be updated.",
   "admin.studentOverviewBody":
     "Search for a student by email to review their saved study activity.",
   "admin.studentEmail": "Student email",
@@ -217,6 +237,17 @@ const de: Record<TranslationKey, string> = {
   "auth.emailExists": "Ein Konto mit dieser E-Mail existiert bereits.",
   "auth.accountCreatedPleaseLogin":
     "Konto erstellt — bitte melde dich an.",
+  "auth.trackLabel": "Dein Track",
+  "auth.trackHint":
+    "Du kannst einen Track auswählen. Ein Admin kann Tracks später ändern oder ergänzen.",
+  "auth.trackRequired": "Wähle einen Track, um dein Konto zu erstellen.",
+
+  "track.required": "Erforderlich zum Fortfahren",
+  "track.chooseTitle": "Wähle deinen Track",
+  "track.chooseBody":
+    "Dein Track bestimmt, auf welche Zertifikatskategorien und Decks du zugreifen kannst. Du kannst diese Wahl einmal treffen; ein Admin kann sie später ändern.",
+  "track.continue": "Track speichern und fortfahren",
+  "track.saving": "Speichert…",
 
   "deck.cardCount_one": "{count} Karte",
   "deck.cardCount_other": "{count} Karten",
@@ -252,6 +283,16 @@ const de: Record<TranslationKey, string> = {
   "admin.navigation": "Admin-Seiten",
   "admin.deckManagement": "Deck-Verwaltung",
   "admin.studentOverview": "Schülerübersicht",
+  "admin.trackManagement": "Track-Verwaltung",
+  "admin.trackManagementBody":
+    "Suche einen Schüler, um seinen Track zu ändern oder ihm zusätzliche Tracks freizuschalten.",
+  "admin.trackSelectionHint":
+    "Wähle alle Tracks aus, auf die dieser Schüler zugreifen darf. Mindestens ein Track ist erforderlich.",
+  "admin.assignedTracks": "Zugewiesene Tracks",
+  "admin.saveTracks": "Tracks speichern",
+  "admin.tracksSaved": "Der Track-Zugriff des Schülers wurde aktualisiert.",
+  "admin.oneTrackRequired": "Wähle mindestens einen Track für diesen Schüler aus.",
+  "admin.trackUpdateFailed": "Die Track-Zuweisung konnte nicht aktualisiert werden.",
   "admin.studentOverviewBody":
     "Suche einen Schüler per E-Mail, um seine gespeicherte Lernaktivität anzusehen.",
   "admin.studentEmail": "E-Mail des Schülers",

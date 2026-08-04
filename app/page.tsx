@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
@@ -6,6 +7,10 @@ import { summarizeProgress } from "@/lib/progress";
 import { prisma } from "@/lib/db";
 import { DeckProgress } from "@/components/deck-progress";
 import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
+import {
+  deckAccessWhere,
+  userHasTracks,
+} from "@/lib/tracks-server";
 
 export default async function HomePage() {
   const session = await auth();
@@ -22,8 +27,18 @@ export default async function HomePage() {
     );
   }
 
+  if (
+    session.user.role !== "ADMIN" &&
+    !(await userHasTracks(session.user.id))
+  ) {
+    redirect("/choose-track");
+  }
+
   const progress = await prisma.studyProgress.findMany({
-    where: { userId: session.user.id },
+    where: {
+      userId: session.user.id,
+      deck: deckAccessWhere(session.user),
+    },
     include: {
       deck: {
         include: {

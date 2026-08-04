@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { notFound } from "next/navigation";
 import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { getDeckStudyState, summarizeProgress } from "@/lib/progress";
 import { prisma } from "@/lib/db";
 import { DeckProgress } from "@/components/deck-progress";
 import { restartDeckAndStudy } from "./study/actions";
+import { requireTrackedUser } from "@/lib/authz";
+import { deckAccessWhere } from "@/lib/tracks-server";
 
 export default async function DeckPage({
   params,
@@ -14,27 +15,24 @@ export default async function DeckPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const session = await auth();
+  const user = await requireTrackedUser(`/decks/${slug}`);
   const locale = await getLocale();
-  if (!session?.user) {
-    redirect(`/login?callbackUrl=${encodeURIComponent(`/decks/${slug}`)}`);
-  }
 
-  const deck = await prisma.deck.findUnique({
-    where: { slug },
+  const deck = await prisma.deck.findFirst({
+    where: { slug, ...deckAccessWhere(user) },
     include: {
       cards: {
         orderBy: { order: "asc" },
         select: {
           id: true,
           progress: {
-            where: { userId: session.user.id },
+            where: { userId: user.id },
             select: { isGood: true },
           },
         },
       },
       studyProgress: {
-        where: { userId: session.user.id },
+        where: { userId: user.id },
         select: { id: true },
       },
     },

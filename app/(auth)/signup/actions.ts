@@ -6,6 +6,8 @@ import { signIn } from "@/auth";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
+import { isTrackKey } from "@/lib/tracks";
+import { ensureDefaultTracks } from "@/lib/tracks-server";
 
 export type FormState = { error?: string } | undefined;
 
@@ -26,12 +28,16 @@ export async function signup(
     .trim();
   const password = String(formData.get("password") ?? "");
   const callbackUrl = String(formData.get("callbackUrl") ?? "/");
+  const trackKey = String(formData.get("track") ?? "");
 
   if (!email || !password) {
     return { error: t(locale, "auth.emailPasswordRequired") };
   }
   if (password.length < 8) {
     return { error: t(locale, "auth.passwordTooShort") };
+  }
+  if (!isTrackKey(trackKey)) {
+    return { error: t(locale, "auth.trackRequired") };
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
@@ -42,7 +48,16 @@ export async function signup(
   const passwordHash = await bcrypt.hash(password, 10);
   const role = adminEmails().includes(email) ? "ADMIN" : "USER";
 
-  await prisma.user.create({ data: { email, passwordHash, role } });
+  await ensureDefaultTracks();
+
+  await prisma.user.create({
+    data: {
+      email,
+      passwordHash,
+      role,
+      tracks: { create: { track: { connect: { key: trackKey } } } },
+    },
+  });
 
   try {
     await signIn("credentials", { email, password, redirectTo: callbackUrl });

@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { LANGUAGE_VALUES } from "@/lib/certificates";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
@@ -8,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { DeckProgress } from "@/components/deck-progress";
 import { getDeckStudyState, summarizeProgress } from "@/lib/progress";
 import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
+import { requireTrackedUser } from "@/lib/authz";
 
 type DeckRow = {
   id: string;
@@ -26,28 +25,35 @@ function groupByLanguage(decks: DeckRow[]) {
 }
 
 export default async function AllDecksPage() {
-  const session = await auth();
+  const user = await requireTrackedUser("/decks");
   const locale = await getLocale();
-  if (!session?.user) {
-    redirect(`/login?callbackUrl=${encodeURIComponent("/decks")}`);
-  }
+
+  const certificateAccess =
+    user.role === "ADMIN"
+      ? {}
+      : {
+          tracks: {
+            some: { track: { users: { some: { userId: user.id } } } },
+          },
+        };
 
   const [certificates, uncategorized] = await Promise.all([
     prisma.certificate.findMany({
+      where: certificateAccess,
       orderBy: { order: "asc" },
       include: {
         decks: {
           orderBy: [{ language: "asc" }, { title: "asc" }],
           include: {
             studyProgress: {
-              where: { userId: session.user.id },
+              where: { userId: user.id },
               select: { id: true },
             },
             cards: {
               select: {
                 id: true,
                 progress: {
-                  where: { userId: session.user.id },
+                  where: { userId: user.id },
                   select: { isGood: true },
                 },
               },
@@ -56,25 +62,27 @@ export default async function AllDecksPage() {
         },
       },
     }),
-    prisma.deck.findMany({
-      where: { certificateId: null },
-      orderBy: [{ language: "asc" }, { title: "asc" }],
-      include: {
-        studyProgress: {
-          where: { userId: session.user.id },
-          select: { id: true },
-        },
-        cards: {
-          select: {
-            id: true,
-            progress: {
-              where: { userId: session.user.id },
-              select: { isGood: true },
+    user.role === "ADMIN"
+      ? prisma.deck.findMany({
+          where: { certificateId: null },
+          orderBy: [{ language: "asc" }, { title: "asc" }],
+          include: {
+            studyProgress: {
+              where: { userId: user.id },
+              select: { id: true },
+            },
+            cards: {
+              select: {
+                id: true,
+                progress: {
+                  where: { userId: user.id },
+                  select: { isGood: true },
+                },
+              },
             },
           },
-        },
-      },
-    }),
+        })
+      : Promise.resolve([]),
   ]);
 
   const sections = [

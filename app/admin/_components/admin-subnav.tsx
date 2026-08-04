@@ -5,7 +5,7 @@ export function AdminSubnav({
   active,
   locale,
 }: {
-  active: "decks" | "students";
+  active: "decks" | "students" | "tracks";
   locale: Locale;
 }) {
   const links = [
@@ -14,6 +14,11 @@ export function AdminSubnav({
       href: "/admin/students",
       label: t(locale, "admin.studentOverview"),
       id: "students",
+    },
+    {
+      href: "/admin/tracks",
+      label: t(locale, "admin.trackManagement"),
+      id: "tracks",
     },
   ] as const;
 
