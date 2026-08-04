@@ -11,12 +11,27 @@ export async function NavBar() {
   const locale = await getLocale();
 
   return (
-    <header className="border-b border-sand bg-white/80 backdrop-blur">
+    <header className="border-b border-sand bg-white/95 backdrop-blur">
       <div className="mx-auto max-w-3xl px-6">
-        <div className="flex items-center justify-between gap-4 py-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <Image src="/msit-logomark.svg" alt="" width={28} height={10} priority />
-            <span className="font-semibold text-evergreen">
+        <div className="flex items-center justify-between gap-4 py-3.5">
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-3"
+            aria-label={`${t(locale, "home.title")} · MSIT`}
+          >
+            <Image
+              src="/msit-logomark.svg"
+              alt="MSIT"
+              width={92}
+              height={33}
+              className="h-auto w-[76px] sm:w-[92px]"
+              priority
+            />
+            <span
+              className="hidden h-6 w-px bg-sand sm:block"
+              aria-hidden="true"
+            />
+            <span className="hidden font-semibold text-evergreen sm:inline">
               {t(locale, "home.title")}
             </span>
           </Link>
