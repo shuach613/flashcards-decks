@@ -13,6 +13,15 @@ type Card = {
   previouslyGood: boolean;
 };
 
+function shuffle<T>(items: T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
 export function StudySession({
   deckSlug,
   deckTitle,
@@ -26,7 +35,7 @@ export function StudySession({
 }) {
   const total = cards.length;
   const [queue, setQueue] = useState<Card[]>(() =>
-    cards.filter((card) => !card.isGood)
+    shuffle(cards.filter((card) => !card.isGood))
   );
   const [goodCount, setGoodCount] = useState(
     () => cards.filter((card) => card.isGood).length
@@ -99,11 +108,13 @@ export function StudySession({
         return;
       }
       setQueue(
-        cards.map((card) => ({
-          ...card,
-          isGood: false,
-          previouslyGood: knownGoodIds.has(card.id),
-        }))
+        shuffle(
+          cards.map((card) => ({
+            ...card,
+            isGood: false,
+            previouslyGood: knownGoodIds.has(card.id),
+          }))
+        )
       );
       setGoodCount(0);
       setReviewed(0);
