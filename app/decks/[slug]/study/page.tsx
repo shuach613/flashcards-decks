@@ -26,7 +26,7 @@ export default async function StudyPage({
         include: {
           progress: {
             where: { userId: session.user.id },
-            select: { isGood: true },
+            select: { isGood: true, timesGood: true },
           },
         },
       },
@@ -44,6 +44,7 @@ export default async function StudyPage({
           front: card.front,
           back: card.back,
           isGood: card.progress[0]?.isGood ?? false,
+          previouslyGood: (card.progress[0]?.timesGood ?? 0) > 0,
         }))}
         locale={locale}
       />

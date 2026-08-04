@@ -10,6 +10,8 @@ export type ProgressSummary = {
   isComplete: boolean;
 };
 
+export type DeckStudyState = "not-started" | "in-progress" | "complete";
+
 export function summarizeProgress(cards: CardWithProgress[]): ProgressSummary {
   const totalCount = cards.length;
   const goodCount = cards.filter((card) => card.isGood).length;
@@ -20,4 +22,13 @@ export function summarizeProgress(cards: CardWithProgress[]): ProgressSummary {
     pendingCount: totalCount - goodCount,
     isComplete: totalCount > 0 && goodCount === totalCount,
   };
+}
+
+export function getDeckStudyState(
+  progress: ProgressSummary,
+  hasStudyRecord: boolean
+): DeckStudyState {
+  if (progress.isComplete) return "complete";
+  if (hasStudyRecord || progress.goodCount > 0) return "in-progress";
+  return "not-started";
 }

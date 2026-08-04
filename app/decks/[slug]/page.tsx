@@ -3,8 +3,10 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
-import { summarizeProgress } from "@/lib/progress";
+import { getDeckStudyState, summarizeProgress } from "@/lib/progress";
 import { prisma } from "@/lib/db";
+import { DeckProgress } from "@/components/deck-progress";
+import { restartDeckAndStudy } from "./study/actions";
 
 export default async function DeckPage({
   params,
@@ -31,15 +33,13 @@ export default async function DeckPage({
           },
         },
       },
+      studyProgress: {
+        where: { userId: session.user.id },
+        select: { id: true },
+      },
     },
   });
   if (!deck) notFound();
-
-  await prisma.studyProgress.upsert({
-    where: { userId_deckId: { userId: session.user.id, deckId: deck.id } },
-    create: { userId: session.user.id, deckId: deck.id },
-    update: {},
-  });
 
   const progress = summarizeProgress(
     deck.cards.map((card) => ({
@@ -47,6 +47,7 @@ export default async function DeckPage({
       isGood: card.progress[0]?.isGood ?? false,
     }))
   );
+  const state = getDeckStudyState(progress, deck.studyProgress.length > 0);
 
   return (
     <div className="mx-auto mt-12 max-w-xl px-6">
@@ -59,36 +60,48 @@ export default async function DeckPage({
         )}
         <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-dark-gray">
           <span>{tc(locale, "deck.cardCount", progress.totalCount)}</span>
-          {progress.totalCount > 0 && (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>
-                {t(locale, "deck.progress", {
-                  good: progress.goodCount,
-                  total: progress.totalCount,
-                })}
-              </span>
-            </>
-          )}
           {progress.isComplete && (
             <span className="rounded-full bg-bright-green px-2.5 py-1 font-semibold text-evergreen">
               ✓ {t(locale, "deck.done")}
             </span>
           )}
         </div>
+        {progress.totalCount > 0 && (
+          <DeckProgress
+            goodCount={progress.goodCount}
+            totalCount={progress.totalCount}
+            label={t(locale, "deck.progress", {
+              good: progress.goodCount,
+              total: progress.totalCount,
+            })}
+            progressLabel={t(locale, "study.progressLabel")}
+          />
+        )}
         {progress.totalCount === 0 ? (
           <p className="mt-6 text-dark-gray">{t(locale, "deck.noCards")}</p>
         ) : (
-          <Link
-            href={`/decks/${deck.slug}/study`}
-            className="mt-6 inline-block rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
-          >
-            {progress.isComplete
-              ? t(locale, "deck.review")
-              : progress.goodCount > 0
+          state === "complete" ? (
+            <form
+              action={restartDeckAndStudy.bind(null, deck.slug)}
+              className="mt-6"
+            >
+              <button
+                type="submit"
+                className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
+              >
+                {t(locale, "deck.restart")}
+              </button>
+            </form>
+          ) : (
+            <Link
+              href={`/decks/${deck.slug}/study`}
+              className="mt-6 inline-block rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
+            >
+              {state === "in-progress"
                 ? t(locale, "deck.continueStudying")
                 : t(locale, "deck.startStudying")}
-          </Link>
+            </Link>
+          )
         )}
       </div>
     </div>

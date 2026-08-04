@@ -2,6 +2,7 @@
 
 import { requireUser } from "@/lib/authz";
 import { prisma } from "@/lib/db";
+import { redirect } from "next/navigation";
 
 export type Rating = "GOOD" | "AGAIN";
 
@@ -81,8 +82,7 @@ export async function rateCard(
   });
 }
 
-export async function restartDeck(deckSlug: string) {
-  const user = await requireUser();
+async function resetDeck(userId: string, deckSlug: string) {
   const deck = await prisma.deck.findUnique({
     where: { slug: deckSlug },
     select: { id: true },
@@ -91,15 +91,27 @@ export async function restartDeck(deckSlug: string) {
 
   await prisma.$transaction([
     prisma.cardProgress.updateMany({
-      where: { userId: user.id, card: { deckId: deck.id } },
+      where: { userId, card: { deckId: deck.id } },
       data: { isGood: false },
     }),
     prisma.studyProgress.upsert({
-      where: { userId_deckId: { userId: user.id, deckId: deck.id } },
-      create: { userId: user.id, deckId: deck.id },
+      where: { userId_deckId: { userId, deckId: deck.id } },
+      create: { userId, deckId: deck.id },
       update: { lastStudiedAt: new Date() },
     }),
   ]);
 
   return { restarted: true } as const;
+}
+
+export async function restartDeck(deckSlug: string) {
+  const user = await requireUser();
+  return resetDeck(user.id, deckSlug);
+}
+
+export async function restartDeckAndStudy(deckSlug: string) {
+  const user = await requireUser();
+  const result = await resetDeck(user.id, deckSlug);
+  if ("error" in result) throw new Error(result.error);
+  redirect(`/decks/${deckSlug}/study`);
 }

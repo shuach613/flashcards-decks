@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { summarizeProgress } from "../lib/progress.ts";
+import { getDeckStudyState, summarizeProgress } from "../lib/progress.ts";
 
 test("an empty deck is not complete", () => {
   assert.deepEqual(summarizeProgress([]), {
@@ -44,4 +44,25 @@ test("a deck is complete only when every current card is good", () => {
     ]).isComplete,
     false
   );
+});
+
+test("deck state distinguishes start, continue, and restart", () => {
+  const untouched = summarizeProgress([
+    { id: "one", isGood: false },
+    { id: "two", isGood: false },
+  ]);
+  assert.equal(getDeckStudyState(untouched, false), "not-started");
+  assert.equal(getDeckStudyState(untouched, true), "in-progress");
+
+  const partial = summarizeProgress([
+    { id: "one", isGood: true },
+    { id: "two", isGood: false },
+  ]);
+  assert.equal(getDeckStudyState(partial, true), "in-progress");
+
+  const complete = summarizeProgress([
+    { id: "one", isGood: true },
+    { id: "two", isGood: true },
+  ]);
+  assert.equal(getDeckStudyState(complete, true), "complete");
 });

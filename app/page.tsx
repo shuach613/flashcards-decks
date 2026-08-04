@@ -4,6 +4,8 @@ import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { summarizeProgress } from "@/lib/progress";
 import { prisma } from "@/lib/db";
+import { DeckProgress } from "@/components/deck-progress";
+import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
 
 export default async function HomePage() {
   const session = await auth();
@@ -63,8 +65,8 @@ export default async function HomePage() {
                 key={p.id}
                 className="rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div>
+                <div className="flex items-end justify-between gap-4">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-evergreen">{p.deck.title}</p>
                       <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium text-dark-gray">
@@ -77,26 +79,38 @@ export default async function HomePage() {
                         date: p.lastStudiedAt.toLocaleDateString(),
                       })}
                     </p>
-                    <div className="mt-1 flex items-center gap-2 text-sm text-dark-gray">
-                      <span>
-                        {t(locale, "home.progress", {
-                          good: summary.goodCount,
-                          total: summary.totalCount,
-                        })}
+                    <DeckProgress
+                      goodCount={summary.goodCount}
+                      totalCount={summary.totalCount}
+                      label={t(locale, "home.progress", {
+                        good: summary.goodCount,
+                        total: summary.totalCount,
+                      })}
+                      progressLabel={t(locale, "study.progressLabel")}
+                    />
+                    {summary.isComplete && (
+                      <span className="mt-2 inline-block rounded-full bg-bright-green px-2 py-0.5 text-xs font-semibold text-evergreen">
+                        ✓ {t(locale, "home.done")}
                       </span>
-                      {summary.isComplete && (
-                        <span className="rounded-full bg-bright-green px-2 py-0.5 text-xs font-semibold text-evergreen">
-                          ✓ {t(locale, "home.done")}
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
-                  <Link
-                    href={`/decks/${p.deck.slug}`}
-                    className="shrink-0 rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
-                  >
-                    {t(locale, "home.continue")}
-                  </Link>
+                  {summary.isComplete ? (
+                    <form action={restartDeckAndStudy.bind(null, p.deck.slug)}>
+                      <button
+                        type="submit"
+                        className="shrink-0 rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                      >
+                        {t(locale, "home.restart")}
+                      </button>
+                    </form>
+                  ) : (
+                    <Link
+                      href={`/decks/${p.deck.slug}/study`}
+                      className="shrink-0 rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                    >
+                      {t(locale, "home.continue")}
+                    </Link>
+                  )}
                 </div>
               </li>
             );

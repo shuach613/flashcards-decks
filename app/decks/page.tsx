@@ -5,8 +5,18 @@ import { LANGUAGE_VALUES } from "@/lib/certificates";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
+import { DeckProgress } from "@/components/deck-progress";
+import { getDeckStudyState, summarizeProgress } from "@/lib/progress";
+import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
 
-type DeckRow = { id: string; slug: string; title: string; language: string };
+type DeckRow = {
+  id: string;
+  slug: string;
+  title: string;
+  language: string;
+  studyProgress: { id: string }[];
+  cards: { id: string; progress: { isGood: boolean }[] }[];
+};
 
 function groupByLanguage(decks: DeckRow[]) {
   return LANGUAGE_VALUES.map((language) => ({
@@ -25,11 +35,45 @@ export default async function AllDecksPage() {
   const [certificates, uncategorized] = await Promise.all([
     prisma.certificate.findMany({
       orderBy: { order: "asc" },
-      include: { decks: { orderBy: [{ language: "asc" }, { title: "asc" }] } },
+      include: {
+        decks: {
+          orderBy: [{ language: "asc" }, { title: "asc" }],
+          include: {
+            studyProgress: {
+              where: { userId: session.user.id },
+              select: { id: true },
+            },
+            cards: {
+              select: {
+                id: true,
+                progress: {
+                  where: { userId: session.user.id },
+                  select: { isGood: true },
+                },
+              },
+            },
+          },
+        },
+      },
     }),
     prisma.deck.findMany({
       where: { certificateId: null },
       orderBy: [{ language: "asc" }, { title: "asc" }],
+      include: {
+        studyProgress: {
+          where: { userId: session.user.id },
+          select: { id: true },
+        },
+        cards: {
+          select: {
+            id: true,
+            progress: {
+              where: { userId: session.user.id },
+              select: { isGood: true },
+            },
+          },
+        },
+      },
     }),
   ]);
 
@@ -66,16 +110,75 @@ export default async function AllDecksPage() {
                       {t(locale, `language.${group.language}` as "language.EN" | "language.DE")}
                     </h3>
                     <ul className="flex flex-col gap-2">
-                      {group.decks.map((deck) => (
-                        <li key={deck.id}>
-                          <Link
-                            href={`/decks/${deck.slug}`}
-                            className="block rounded-2xl border border-sand bg-white px-4 py-3 font-medium text-evergreen shadow-[0_2px_8px_rgba(25,51,37,0.08)] transition hover:bg-evergreen/5"
+                      {group.decks.map((deck) => {
+                        const progress = summarizeProgress(
+                          deck.cards.map((card) => ({
+                            id: card.id,
+                            isGood: card.progress[0]?.isGood ?? false,
+                          }))
+                        );
+                        const state = getDeckStudyState(
+                          progress,
+                          deck.studyProgress.length > 0
+                        );
+
+                        return (
+                          <li
+                            key={deck.id}
+                            className="rounded-2xl border border-sand bg-white px-4 py-3 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
                           >
-                            {deck.title}
-                          </Link>
-                        </li>
-                      ))}
+                            <Link
+                              href={`/decks/${deck.slug}`}
+                              className="font-semibold text-evergreen hover:underline"
+                            >
+                              {deck.title}
+                            </Link>
+                            <DeckProgress
+                              goodCount={progress.goodCount}
+                              totalCount={progress.totalCount}
+                              label={t(locale, "deck.progress", {
+                                good: progress.goodCount,
+                                total: progress.totalCount,
+                              })}
+                              progressLabel={t(locale, "study.progressLabel")}
+                            />
+                            <div className="mt-3 flex items-center justify-between gap-3">
+                              {state === "complete" ? (
+                                <span className="rounded-full bg-bright-green px-2.5 py-1 text-xs font-semibold text-evergreen">
+                                  ✓ {t(locale, "deck.done")}
+                                </span>
+                              ) : (
+                                <span />
+                              )}
+                              {progress.totalCount > 0 &&
+                                (state === "complete" ? (
+                                  <form
+                                    action={restartDeckAndStudy.bind(
+                                      null,
+                                      deck.slug
+                                    )}
+                                  >
+                                    <button
+                                      type="submit"
+                                      className="rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                                    >
+                                      {t(locale, "deck.restart")}
+                                    </button>
+                                  </form>
+                                ) : (
+                                  <Link
+                                    href={`/decks/${deck.slug}/study`}
+                                    className="rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                                  >
+                                    {state === "in-progress"
+                                      ? t(locale, "home.continue")
+                                      : t(locale, "deck.startStudying")}
+                                  </Link>
+                                ))}
+                            </div>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 ))}

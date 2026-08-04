@@ -5,7 +5,13 @@ import Link from "next/link";
 import { t, tc, type Locale } from "@/lib/i18n";
 import { rateCard, restartDeck, type Rating } from "./actions";
 
-type Card = { id: string; front: string; back: string; isGood: boolean };
+type Card = {
+  id: string;
+  front: string;
+  back: string;
+  isGood: boolean;
+  previouslyGood: boolean;
+};
 
 export function StudySession({
   deckSlug,
@@ -28,6 +34,14 @@ export function StudySession({
   const [revealed, setRevealed] = useState(false);
   const [reviewed, setReviewed] = useState(0);
   const [againIds, setAgainIds] = useState<Set<string>>(new Set());
+  const [knownGoodIds, setKnownGoodIds] = useState<Set<string>>(
+    () =>
+      new Set(
+        cards
+          .filter((card) => card.previouslyGood || card.isGood)
+          .map((card) => card.id)
+      )
+  );
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -62,6 +76,9 @@ export function StudySession({
         else next.delete(current.id);
         return next;
       });
+      if (rating === "GOOD") {
+        setKnownGoodIds((previous) => new Set(previous).add(current.id));
+      }
       setRevealed(false);
     } catch {
       setError(t(locale, "study.saveFailed"));
@@ -81,7 +98,13 @@ export function StudySession({
         setError(result.error);
         return;
       }
-      setQueue(cards.map((card) => ({ ...card, isGood: false })));
+      setQueue(
+        cards.map((card) => ({
+          ...card,
+          isGood: false,
+          previouslyGood: knownGoodIds.has(card.id),
+        }))
+      );
       setGoodCount(0);
       setReviewed(0);
       setAgainIds(new Set());
@@ -167,9 +190,18 @@ export function StudySession({
         onClick={() => setRevealed((value) => !value)}
         disabled={pending}
         className={`flex min-h-56 w-full flex-col items-center justify-center rounded-2xl border p-8 text-center text-lg shadow-[0_2px_8px_rgba(25,51,37,0.08)] transition disabled:opacity-70 ${
-          revealed ? "border-transparent bg-lime-green" : "border-sand bg-white"
+          revealed
+            ? "border-transparent bg-lime-green"
+            : current.previouslyGood
+              ? "border-grass-green bg-grass-green/5"
+              : "border-sand bg-white"
         }`}
       >
+        {current.previouslyGood && (
+          <span className="mb-4 rounded-full bg-bright-green px-3 py-1 text-xs font-semibold text-evergreen">
+            ✓ {t(locale, "study.previouslyGood")}
+          </span>
+        )}
         <span className="font-medium text-evergreen">{current.front}</span>
         {revealed ? (
           <>

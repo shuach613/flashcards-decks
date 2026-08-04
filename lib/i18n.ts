@@ -17,6 +17,7 @@ const en = {
   "home.lastStudied_one": "Last studied {date} · {count} session",
   "home.lastStudied_other": "Last studied {date} · {count} sessions",
   "home.continue": "Continue",
+  "home.restart": "Restart",
   "home.progress": "{good} of {total} cards good",
   "home.done": "Done",
 
@@ -68,6 +69,7 @@ const en = {
   "deck.startStudying": "Start studying",
   "deck.continueStudying": "Continue studying",
   "deck.review": "Review deck",
+  "deck.restart": "Restart",
   "deck.progress": "{good} of {total} cards marked good",
   "deck.done": "Done",
 
@@ -88,6 +90,7 @@ const en = {
   "study.alreadyComplete": 'Every card in "{title}" is marked good.',
   "study.studyAgain": "Study again",
   "study.restarting": "Restarting…",
+  "study.previouslyGood": "Previously marked good",
 
   "admin.title": "Admin · Decks",
   "admin.manageCertificates": "Manage certificates",
@@ -142,6 +145,7 @@ const de: Record<TranslationKey, string> = {
   "home.lastStudied_one": "Zuletzt gelernt am {date} · {count} Sitzung",
   "home.lastStudied_other": "Zuletzt gelernt am {date} · {count} Sitzungen",
   "home.continue": "Weiter",
+  "home.restart": "Neu starten",
   "home.progress": "{good} von {total} Karten gut",
   "home.done": "Erledigt",
 
@@ -194,6 +198,7 @@ const de: Record<TranslationKey, string> = {
   "deck.startStudying": "Lernen starten",
   "deck.continueStudying": "Weiterlernen",
   "deck.review": "Deck wiederholen",
+  "deck.restart": "Neu starten",
   "deck.progress": "{good} von {total} Karten als gut markiert",
   "deck.done": "Erledigt",
 
@@ -214,6 +219,7 @@ const de: Record<TranslationKey, string> = {
   "study.alreadyComplete": 'Alle Karten in "{title}" sind als gut markiert.',
   "study.studyAgain": "Erneut lernen",
   "study.restarting": "Startet neu…",
+  "study.previouslyGood": "Früher als gut markiert",
 
   "admin.title": "Admin · Decks",
   "admin.manageCertificates": "Zertifikate verwalten",
