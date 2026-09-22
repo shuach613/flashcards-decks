@@ -12,7 +12,7 @@ const wixMadeforDisplay = Wix_Madefor_Display({
 });
 
 export const metadata: Metadata = {
-  title: "MSIT Flashcard Decks",
+  title: "ShuachCloud Flashcard Decks",
   description: "Study flashcard decks, Anki-style.",
 };
 

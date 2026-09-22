@@ -58,8 +58,12 @@ ADMIN_INITIAL_PASSWORD=<temporary-password>
 
 ADMIN_API_KEY=<long-random-api-key>
 
-RESEND_API_KEY=<Resend-api-key>
-RESEND_FROM=<verified-sender-address>
+SMTP_HOST=<smtp-host>
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=<personal-email-address>
+SMTP_PASSWORD=<smtp-password-or-app-password>
+SMTP_FROM=ShuachCloud <personal-email-address>
 `
 
 Use the public HTTPS URL instead of `http://<NAS-IP>:3000` if the application is exposed through a DSM reverse proxy.
@@ -95,22 +99,22 @@ The Compose file:
 On the first startup, the container:
 
 1. Applies all pending Prisma migrations.
-2. Creates `ADMIN_INITIAL_EMAIL` as an administrator if it does not exist.
+2. Creates `ADMIN_INITIAL_EMAIL` as an administrator only when the database has no users.
 3. Hashes `ADMIN_INITIAL_PASSWORD` with bcrypt.
-4. Leaves the account and password unchanged on later restarts.
+4. Leaves the account and password unchanged on later restarts and skips bootstrap once any user exists.
 5. Starts the application on port `3000`.
 
-After successfully logging in, remove both `ADMIN_INITIAL_EMAIL` and `ADMIN_INITIAL_PASSWORD` from `.env`, then recreate the project so the temporary password is no longer supplied to the container.
+After successfully logging in, remove both `ADMIN_INITIAL_EMAIL` and `ADMIN_INITIAL_PASSWORD` from `.env`, then recreate the project so the temporary password is no longer supplied to the container. The admin account remains in that local installation's persistent database.
 
 Do not change the SQLite data folder during this process.
 
 ## 6. Password reset email
 
-Password reset requires a Resend account and a verified sender address.
+Password reset uses a personal SMTP email account. Gmail and other providers may require an app password rather than the normal account password.
 
-The reset link is generated from `APP_URL` and expires after one hour. The NAS must be able to make outbound HTTPS connections to Resend.
+Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, and `SMTP_FROM`. The reset link is generated from `APP_URL` and expires after one hour. The NAS must be able to make outbound SMTP connections to the provider.
 
-If the email settings are missing or invalid, the application will not be able to deliver reset emails.
+If the SMTP settings are missing or invalid, the application will not be able to deliver reset emails.
 
 ## 7. Backups
 
@@ -143,6 +147,6 @@ Migrations run automatically before the application starts. Never delete the `da
 
 - **Container exits immediately:** check the project logs. Missing ` AUTH_SECRET`, incomplete initial-admin variables, or an invalid `DATABASE_URL` are common causes.
 - **Users or decks disappeared:** confirm that `./data` is still mounted to `/app/data`.
-- **Password reset emails do not arrive:** verify `RESEND_API_KEY`, `RESEND_FROM`, sender-domain verification, and outbound HTTPS access.
+- **Password reset emails do not arrive:** verify the SMTP host, port, encryption mode, username, app password, sender address, and outbound SMTP access.
 - **Login fails behind a reverse proxy:** verify `APP_URL`, HTTPS forwarding, and `AUTH_TRUST_HOST=true`.
 - **Build is slow or fails on memory:** build the `linux/amd64` image on another machine and import it into Container Manager instead of building on the NAS.

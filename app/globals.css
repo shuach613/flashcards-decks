@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-/* Current MSIT palette from the official brand guidelines. */
+/* ShuachCloud palette sampled from the supplied logo. */
 :root {
   --color-soft-black: #0a0a0a;
-  --color-evergreen: #193325;
-  --color-grass-green: #27784c;
-  --color-bright-green: #d7ff8c;
-  --color-apple-green: #e1ffaf;
-  --color-lime-green: #f1ffd5;
+  --color-evergreen: #0b3d78;
+  --color-grass-green: #087de2;
+  --color-bright-green: #a8e2ff;
+  --color-apple-green: #c9efff;
+  --color-lime-green: #e9f8ff;
   --color-sunset-orange: #ff6f3c;
   --color-peach: #ffbea4;
   --color-almond: #ffedd8;
@@ -47,8 +47,8 @@
   --color-sunset-orange: var(--color-sunset-orange);
   --font-sans: var(--font-wix-madefor-display), system-ui, -apple-system,
     "Segoe UI", sans-serif;
-  --shadow-brand-sm: 0 2px 8px rgba(25, 51, 37, 0.08);
-  --shadow-brand-md: 0 6px 20px rgba(25, 51, 37, 0.1);
+  --shadow-brand-sm: 0 2px 8px rgba(11, 61, 120, 0.08);
+  --shadow-brand-md: 0 6px 20px rgba(11, 61, 120, 0.1);
 }
 
 body {

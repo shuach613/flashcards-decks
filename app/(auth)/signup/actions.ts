@@ -10,13 +10,6 @@ import { ensureDefaultTracks } from "@/lib/tracks-server";
 
 export type FormState = { error?: string } | undefined;
 
-function adminEmails(): string[] {
-  return (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-}
-
 export async function signup(
   _prevState: FormState,
   formData: FormData
@@ -45,7 +38,6 @@ export async function signup(
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const role = adminEmails().includes(email) ? "ADMIN" : "USER";
 
   await ensureDefaultTracks();
   const track = await prisma.track.findUnique({
@@ -58,7 +50,6 @@ export async function signup(
     data: {
       email,
       passwordHash,
-      role,
       tracks: { create: { trackId: track.id } },
     },
   });

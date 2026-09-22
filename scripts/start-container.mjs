@@ -33,19 +33,9 @@ function bootstrapAdmin() {
   const db = new Database(databasePath(process.env.DATABASE_URL));
 
   try {
-    const existing = db
-      .prepare('SELECT "id", "role" FROM "User" WHERE "email" = ?')
-      .get(email);
-
-    if (existing) {
-      if (existing.role !== "ADMIN") {
-        db.prepare('UPDATE "User" SET "role" = "ADMIN" WHERE "id" = ?').run(
-          existing.id
-        );
-        console.log(`Promoted existing account ${email} to ADMIN.`);
-      } else {
-        console.log(`Initial admin ${email} already exists; leaving it unchanged.`);
-      }
+    const userCount = db.prepare('SELECT COUNT(*) AS count FROM "User"').get().count;
+    if (userCount > 0) {
+      console.log("Users already exist; skipping initial admin bootstrap.");
       return;
     }
 

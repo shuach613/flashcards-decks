@@ -27,23 +27,27 @@ For production, keep the SQLite file on persistent storage.
 
 Set a stable, long random `AUTH_SECRET`.
 
-The Synology deployment can create one initial administrator using:
+The Synology deployment creates one local initial administrator on an empty database using:
 
 `text
 ADMIN_INITIAL_EMAIL
 ADMIN_INITIAL_PASSWORD
 `
 
-Administrator access is assigned to new signups whose emails are listed in `ADMIN_EMAILS`.
+After the first administrator is created, later signups are regular users. The bootstrap variables should be removed after the first login.
 
 ## Password reset emails
 
-Password reset emails use Resend. Configure:
+Password reset emails use any SMTP-compatible personal email account. Configure:
 
 `text
 APP_URL=https://your-app.example.com
-RESEND_API_KEY=...
-RESEND_FROM=...
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@example.com
+SMTP_PASSWORD=your-smtp-password-or-app-password
+SMTP_FROM=ShuachCloud <your-email@example.com>
 `
 
 The reset-token link expires after one hour.

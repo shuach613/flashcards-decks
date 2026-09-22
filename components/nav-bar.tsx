@@ -17,14 +17,14 @@ export async function NavBar() {
           <Link
             href="/"
             className="flex shrink-0 items-center gap-3"
-            aria-label={`${t(locale, "home.title")} · MSIT`}
+            aria-label={`${t(locale, "home.title")} · ShuachCloud`}
           >
             <Image
-              src="/msit-logomark.svg"
-              alt="MSIT"
-              width={92}
-              height={33}
-              className="h-auto w-[76px] sm:w-[92px]"
+              src="/shuachcloud-logo.png"
+              alt="ShuachCloud"
+              width={64}
+              height={64}
+              className="size-12 rounded-xl object-cover sm:size-14"
               priority
             />
             <span
