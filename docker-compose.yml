@@ -1,0 +1,21 @@
+services:
+  flashcards:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flashcards-decks
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      DATABASE_URL: file:/app/data/flashcards.db
+      AUTH_SECRET: ${AUTH_SECRET}
+      APP_URL: ${APP_URL}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
+      ADMIN_EMAILS: ${ADMIN_EMAILS}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RESEND_FROM: ${RESEND_FROM}
+      AUTH_TRUST_HOST: ${AUTH_TRUST_HOST:-false}
