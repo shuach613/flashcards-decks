@@ -11,6 +11,18 @@ function databasePath(databaseUrl) {
   return decodeURIComponent(databaseUrl.slice("file:".length).split("?")[0]);
 }
 
+function validateSecurityConfig() {
+  const authSecret = process.env.AUTH_SECRET;
+  if (!authSecret || authSecret.length < 32) {
+    throw new Error("AUTH_SECRET must be configured with at least 32 characters.");
+  }
+
+  const adminApiKey = process.env.ADMIN_API_KEY;
+  if (adminApiKey && adminApiKey.length < 32) {
+    throw new Error("ADMIN_API_KEY must be at least 32 characters when configured.");
+  }
+}
+
 function bootstrapAdmin() {
   const email = process.env.ADMIN_INITIAL_EMAIL?.trim().toLowerCase();
   const password = process.env.ADMIN_INITIAL_PASSWORD;
@@ -51,6 +63,7 @@ function bootstrapAdmin() {
 }
 
 console.log("Applying database migrations...");
+validateSecurityConfig();
 execFileSync("npx", ["prisma", "migrate", "deploy"], { stdio: "inherit" });
 bootstrapAdmin();
 console.log("Starting Flashcard Decks...");

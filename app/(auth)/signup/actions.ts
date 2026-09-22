@@ -7,6 +7,7 @@ import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { ensureDefaultTracks } from "@/lib/tracks-server";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type FormState = { error?: string } | undefined;
 
@@ -21,6 +22,10 @@ export async function signup(
   const password = String(formData.get("password") ?? "");
   const callbackUrl = String(formData.get("callbackUrl") ?? "/");
   const trackId = String(formData.get("trackId") ?? "");
+
+  if (!rateLimit(`signup:${email}`, 5, 15 * 60 * 1000).allowed) {
+    return { error: "Too many signup attempts. Please try again later." };
+  }
 
   if (!email || !password) {
     return { error: t(locale, "auth.emailPasswordRequired") };

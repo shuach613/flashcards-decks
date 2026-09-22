@@ -3,6 +3,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { sendPasswordResetEmail } from "@/lib/password-reset-email";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type FormState = { message?: string; error?: string } | undefined;
 
@@ -16,6 +17,10 @@ export async function requestPasswordReset(
   const email = String(formData.get("email") ?? "").toLowerCase().trim();
 
   if (!email) return { error: "Enter your email address." };
+
+  if (!rateLimit(`password-reset:${email}`, 3, 15 * 60 * 1000).allowed) {
+    return { message: genericMessage };
+  }
 
   const user = await prisma.user.findUnique({ where: { email } });
 

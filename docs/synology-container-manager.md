@@ -4,7 +4,7 @@ This guide targets the Synology DS925+ with the newest DSM 7.x release available
 
 The application runs as one `linux/amd64` container with:
 
-- Next.js and Node.js 20
+- Next.js and Node.js 22
 - SQLite through Prisma
 - Persistent application data under `/app/data`
 - Automatic migrations on container startup
@@ -50,13 +50,13 @@ Copy `.env.example` to `.env` in the project folder. Set real values for:
 
 `text
 DATABASE_URL=file:/app/data/flashcards.db
-AUTH_SECRET=<long-random-secret>
+AUTH_SECRET=<at-least-32-character-random-secret>
 APP_URL=http://<NAS-IP>:3000
 
 ADMIN_INITIAL_EMAIL=<first-admin-email>
 ADMIN_INITIAL_PASSWORD=<temporary-password>
 
-ADMIN_API_KEY=<long-random-api-key>
+ADMIN_API_KEY=<at-least-32-character-random-api-key>
 
 SMTP_HOST=<smtp-host>
 SMTP_PORT=587
@@ -75,6 +75,8 @@ AUTH_TRUST_HOST=true
 `
 
 Keep `.env` out of GitHub. It contains passwords and API keys.
+
+Use HTTPS through a DSM reverse proxy for any access outside your trusted local network. The application adds HSTS, clickjacking, MIME-sniffing, referrer, and browser-permission protections. The login, signup, and password-reset actions also apply per-process throttling; avoid publishing the container directly to the internet without a reverse proxy or firewall.
 
 ## 4. Create the Container Manager project
 

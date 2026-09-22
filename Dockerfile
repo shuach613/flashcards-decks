@@ -14,7 +14,9 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
-RUN npm ci
+# next-auth beta declares an older optional nodemailer peer range; the app uses
+# nodemailer directly for SMTP, so install the audited patched release.
+RUN npm ci --legacy-peer-deps
 
 FROM base AS builder
 
@@ -25,7 +27,7 @@ COPY . .
 ENV DATABASE_URL=file:/app/data/flashcards.db
 RUN mkdir -p /app/data
 RUN npm run build
-RUN npm prune --omit=dev
+RUN npm prune --omit=dev --legacy-peer-deps
 
 FROM base AS runner
 
