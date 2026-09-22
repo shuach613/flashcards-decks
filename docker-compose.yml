@@ -12,15 +12,18 @@ services:
       - ./data:/app/data
     environment:
       DATABASE_URL: file:/app/data/flashcards.db
-      AUTH_SECRET: ${AUTH_SECRET}
-      APP_URL: ${APP_URL}
-      ADMIN_INITIAL_EMAIL: ${ADMIN_INITIAL_EMAIL}
-      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD}
-      ADMIN_API_KEY: ${ADMIN_API_KEY}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_SECURE: ${SMTP_SECURE:-false}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      SMTP_FROM: ${SMTP_FROM}
-      AUTH_TRUST_HOST: ${AUTH_TRUST_HOST:-false}
+      # Replace every value below before the first deployment.
+      AUTH_SECRET: "replace-with-at-least-32-random-characters"
+      # Public URL served by DSM's internal reverse proxy.
+      APP_URL: "https://flashcards.example.com"
+      # Used only when the persistent database has no users yet.
+      ADMIN_INITIAL_EMAIL: "admin@example.com"
+      ADMIN_INITIAL_PASSWORD: "replace-with-a-temporary-password"
+      ADMIN_API_KEY: "replace-with-at-least-32-random-characters"
+      SMTP_HOST: "smtp.example.com"
+      SMTP_PORT: "587"
+      SMTP_SECURE: "false"
+      SMTP_USER: "your-email@example.com"
+      SMTP_PASSWORD: "your-smtp-password-or-app-password"
+      SMTP_FROM: "ShuachCloud <your-email@example.com>"
+      AUTH_TRUST_HOST: "true"

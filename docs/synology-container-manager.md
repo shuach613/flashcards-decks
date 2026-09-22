@@ -25,7 +25,7 @@ docker/
 └── flashcards-decks/
     ├── Dockerfile
     ├── docker-compose.yml
-    ├── .env
+    ├── docker-compose.yml
     ├── data/
     └── application source
 `
@@ -44,14 +44,14 @@ The image build needs outbound internet access to download:
 
 The NAS does not need Node.js or npm installed on DSM. They are included inside the image.
 
-## 3. Create the environment file
+## 3. Configure the Compose YAML
 
-Copy `.env.example` to `.env` in the project folder. Set real values for:
+No `.env` file is required. Open `docker-compose.yml` and replace the placeholder values in its `environment` section:
 
 `text
 DATABASE_URL=file:/app/data/flashcards.db
 AUTH_SECRET=<at-least-32-character-random-secret>
-APP_URL=http://<NAS-IP>:3000
+APP_URL=https://<DSM-reverse-proxy-hostname>
 
 ADMIN_INITIAL_EMAIL=<first-admin-email>
 ADMIN_INITIAL_PASSWORD=<temporary-password>
@@ -66,17 +66,9 @@ SMTP_PASSWORD=<smtp-password-or-app-password>
 SMTP_FROM=ShuachCloud <personal-email-address>
 `
 
-Use the public HTTPS URL instead of `http://<NAS-IP>:3000` if the application is exposed through a DSM reverse proxy.
+Set `AUTH_TRUST_HOST=true` because DSM's internal reverse proxy supplies the public HTTPS endpoint. Keep the edited Compose file private because it contains passwords and API keys. The placeholder values in the repository are not usable credentials.
 
-If a reverse proxy is used, set:
-
-`text
-AUTH_TRUST_HOST=true
-`
-
-Keep `.env` out of GitHub. It contains passwords and API keys.
-
-Use HTTPS through a DSM reverse proxy for any access outside your trusted local network. The application adds HSTS, clickjacking, MIME-sniffing, referrer, and browser-permission protections. The login, signup, and password-reset actions also apply per-process throttling; avoid publishing the container directly to the internet without a reverse proxy or firewall.
+Use HTTPS through DSM's internal reverse proxy for any access outside your trusted local network. Configure the proxy in DSM itself; no reverse-proxy deployment rules are included in this repository. The application adds HSTS, clickjacking, MIME-sniffing, referrer, and browser-permission protections. The login, signup, and password-reset actions also apply per-process throttling.
 
 ## 4. Create the Container Manager project
 
@@ -106,7 +98,7 @@ On the first startup, the container:
 4. Leaves the account and password unchanged on later restarts and skips bootstrap once any user exists.
 5. Starts the application on port `3000`.
 
-After successfully logging in, remove both `ADMIN_INITIAL_EMAIL` and `ADMIN_INITIAL_PASSWORD` from `.env`, then recreate the project so the temporary password is no longer supplied to the container. The admin account remains in that local installation's persistent database.
+After successfully logging in, remove or blank both `ADMIN_INITIAL_EMAIL` and `ADMIN_INITIAL_PASSWORD` in `docker-compose.yml`, then recreate the project so the temporary password is no longer supplied to the container. The admin account remains in that local installation's persistent database.
 
 Do not change the SQLite data folder during this process.
 
