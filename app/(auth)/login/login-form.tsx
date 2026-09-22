@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { t, type Locale } from "@/lib/i18n";
 import { login } from "./actions";
@@ -29,9 +30,17 @@ export function LoginForm({
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-evergreen" htmlFor="password">
-          {t(locale, "auth.passwordLabel")}
-        </label>
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-evergreen" htmlFor="password">
+            {t(locale, "auth.passwordLabel")}
+          </label>
+          <Link
+            className="text-xs font-medium text-evergreen underline underline-offset-4"
+            href="/forgot-password"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <input
           id="password"
           name="password"
