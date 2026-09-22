@@ -1,5 +1,5 @@
 // This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// learn more about it at https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client"
@@ -11,14 +11,27 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  email         String          @unique
-  passwordHash  String
-  role          String          @default("USER") // "ADMIN" | "USER"
-  createdAt     DateTime        @default(now())
-  studyProgress StudyProgress[]
-  cardProgress  CardProgress[]
-  tracks        UserTrack[]
+  id                 String               @id @default(cuid())
+  email              String               @unique
+  passwordHash       String
+  role               String               @default("USER") // "ADMIN" | "USER"
+  createdAt          DateTime             @default(now())
+  studyProgress      StudyProgress[]
+  cardProgress       CardProgress[]
+  tracks             UserTrack[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Certificate {
