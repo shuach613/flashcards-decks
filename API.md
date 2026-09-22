@@ -3,7 +3,7 @@
 A REST API mirroring everything the admin UI can do: create/list/get/update/delete
 decks, add or edit cards, and manage certificates.
 
-**Base URL:** `https://flashcards-gules-beta.vercel.app/api/v1`
+**Base URL:** `<APP_URL>/api/v1`
 
 ## Auth
 
@@ -13,9 +13,9 @@ Every request requires an `Authorization` header with the admin API key:
 Authorization: Bearer $ADMIN_API_KEY
 ```
 
-The key is stored as the `ADMIN_API_KEY` environment variable on the server
-(Vercel project settings). It is never committed to this repo — treat it like
-a password and rotate it (just set a new env var value) if it ever leaks.
+The key is stored as the `ADMIN_API_KEY` environment variable on the server.
+It is never committed to this repo — treat it like a password and rotate it
+if it leaks.
 
 Requests without a valid key get `401 Unauthorized`.
 
@@ -42,7 +42,7 @@ unknown name returns `400` with the list of valid certificate names.
 | Action | Request |
 |---|---|
 | List cards in a deck | `GET /decks/:slug/cards` |
-| Add cards | `POST /decks/:slug/cards` — `{"tsv": "front\tback\n..."}` or `{"cards": [{"front", "back"}]}` |
+| Add cards | `POST /decks/:slug/cards` — `{"tsv": "front\tback\n..." }` or `{"cards": [{"front", "back"}]}` |
 | Update a card | `PATCH /cards/:id` — `{"front"?, "back"?}` |
 | Delete a card | `DELETE /cards/:id` |
 
@@ -51,7 +51,7 @@ unknown name returns `400` with the list of valid certificate names.
 | Action | Request |
 |---|---|
 | List certificates | `GET /certificates` |
-| Create certificate | `POST /certificates` — `{"name"}` |
+| Create certificate | `POST /certificates` — `{"name" }` |
 
 New certificates are appended to the end of the display order used on the
 "All Decks" page.
@@ -59,7 +59,7 @@ New certificates are appended to the end of the display order used on the
 ## Example
 
 ```bash
-curl -X POST https://flashcards-gules-beta.vercel.app/api/v1/decks \
+curl -X POST http://nas-host:3000/api/v1/decks \
   -H "Authorization: Bearer $ADMIN_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"title":"My Deck","certificate":"Network+","language":"EN"}'
