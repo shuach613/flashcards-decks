@@ -51,7 +51,7 @@ function bootstrapAdmin() {
 
     const passwordHash = bcrypt.hashSync(password, 10);
     db.prepare(
-      'INSERT INTO "User" ("id", "email", "passwordHash", "role", "createdAt") VALUES (?, ?, ?, "ADMIN", CURRENT_TIMESTAMP)'
+      'INSERT INTO "User" ("id", "email", "passwordHash", "role", "createdAt") VALUES (?, ?, ?, \'ADMIN\', CURRENT_TIMESTAMP)'
     ).run(randomUUID(), email, passwordHash);
 
     console.log(`Created initial admin account ${email}.`);
