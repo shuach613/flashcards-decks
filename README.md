@@ -69,6 +69,7 @@ The repository includes a Dockerfile and a Compose project for Synology Containe
 - `scripts/start-container.mjs`
 
 See `docs/synology-container-manager.md` for the complete DS925+/DSM deployment guide.
+See `docs/backup-recovery.md` for routine backups, rollback recovery, and rebuilding the installation on a new NAS.
 
 The Synology Compose project is self-contained: edit the values in `docker-compose.yml` directly. No `.env` file is required for Container Manager. Set `APP_URL` to the HTTPS address configured in DSM's internal reverse proxy; the repository does not contain or require reverse-proxy rules.
 

@@ -138,6 +138,8 @@ flashcards.db
 
 Use Hyper Backup or another SQLite-safe backup process. Before manually copying the database file, stop the project to avoid copying it during a write.
 
+For the full backup and recovery procedure, see `docs/backup-recovery.md`.
+
 ## 8. Updates
 
 For the prebuilt-image Compose deployment:
