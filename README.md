@@ -1,6 +1,66 @@
 # Flashcard Decks
 
-A Next.js application for studying and managing flashcard decks.
+A self-hosted flashcard learning application for organising small knowledge
+bases into categories, tracks, decks, and cards. It is designed for a personal
+server or small private installation, including a Synology NAS running DSM
+Container Manager.
+
+## What it does
+
+- Provides email-and-password accounts with separate user and administrator roles.
+- Lets administrators create, edit, import, and delete flashcard decks and cards.
+- Organises decks into generic categories and learning tracks.
+- Lets users choose a track and study the decks available to that track.
+- Records study progress, good/again card outcomes, and deck completion status.
+- Supports English and German interface text.
+- Provides an admin REST API for managing categories, decks, and cards.
+- Supports password reset emails through a personal SMTP account such as Gmail.
+- Creates an initial local administrator on the first deployment of an empty database.
+- Runs database migrations automatically when the container starts.
+- Includes an unauthenticated application/database health endpoint at `/api/health`.
+
+The application is a general-purpose flashcard tool. The default tracks and
+categories are generic placeholders that can be renamed and extended by an
+administrator.
+
+## Hardware and deployment requirements
+
+For the Docker deployment, use:
+
+- A 64-bit `linux/amd64` host. ARM images are not currently published.
+- Docker or Synology Container Manager with Compose support.
+- Persistent storage for the SQLite database and migration backups.
+- Enough memory for a Node.js/Next.js application; a small installation should
+  use at least 2 GB of available system memory.
+- Outbound network access when pulling the image and when sending password-reset
+  emails through the configured SMTP provider.
+- An optional public hostname and HTTPS reverse proxy. On Synology, use DSM's
+  built-in reverse proxy; this repository does not deploy one.
+
+For the Synology setup described below, keep persistent data at
+`/volume1/flashcards/data/` and expose the application through the NAS port
+configured in Container Manager.
+
+## Limitations and operational considerations
+
+- The application uses SQLite, so it is intended for a single container and a
+  small number of users. It is not designed for horizontal scaling, high write
+  concurrency, or high availability.
+- SQLite data must remain on persistent storage. Deleting or replacing the data
+  directory removes the local users, decks, and progress.
+- The application does not provide built-in LDAP, SSO, OAuth, or multi-server
+  user management. Authentication is local to the installation.
+- Password reset depends on a working SMTP account, app password, and outbound
+  SMTP access from the NAS.
+- The initial administrator variables are used only when the database contains
+  no users. They do not reset an existing administrator password.
+- Updates can apply database migrations. Back up the database before updating,
+  and roll back the image together with its matching database backup if needed.
+- The Docker image is currently published for `linux/amd64` only.
+- DSM reverse-proxy rules, HTTPS certificates, DNS, and firewall policies are
+  managed outside this repository.
+- The admin API key grants administrative API access and must be treated like a
+  password.
 
 ## Development
 
