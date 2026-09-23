@@ -74,6 +74,8 @@ The Synology Compose project is self-contained: edit the values in `docker-compo
 
 Pull requests and `codex/*` pushes automatically run the tests and validate a Linux/amd64 Docker image build. Successful pushes to `main` and version tags publish the image to GitHub Container Registry as `ghcr.io/shuach613/flashcards-decks`; feature branches never publish images.
 
+For a release tag such as `v1.2.3`, the workflow publishes `1.2.3`, `1.2`, `1`, and a commit-SHA tag. Pushes to `main` additionally update `latest`.
+
 ## Production
 
 Run the production build and server with:
