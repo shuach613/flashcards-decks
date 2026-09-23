@@ -78,6 +78,18 @@ For a release tag such as `v1.2.3`, the workflow publishes `1.2.3`, `1.2`, `1`, 
 
 The `codex/docker-v2` branch temporarily publishes `test-docker-v2` for pre-main testing. It does not update `latest` or release tags.
 
+## Updating a deployed container
+
+For a Compose deployment that uses a prebuilt GHCR image:
+
+1. Back up `/volume1/flashcards/data/` before changing the image.
+2. Change the image tag in Container Manager, or use the new release tag supplied with the update.
+3. Pull the new image and recreate the project without deleting `/volume1/flashcards/data/`.
+4. Wait for the container to become healthy. Pending database migrations run automatically before the application starts.
+5. Verify `https://your-app.example.com/api/health` returns HTTP `200`.
+
+Do not use `--build` for a prebuilt image deployment, and do not remove the persistent data folder. If migrations fail, the container remains stopped and the pre-migration backup is retained under `/volume1/flashcards/data/.migration-backups/`.
+
 ## Production
 
 Run the production build and server with:

@@ -132,14 +132,16 @@ Use Hyper Backup or another SQLite-safe backup process. Before manually copying 
 
 ## 8. Updates
 
-Before updating:
+For the prebuilt-image Compose deployment:
 
-1. Back up the `data` folder.
-2. Replace the application source with the desired revision.
-3. Rebuild the project in Container Manager.
-4. Start the project.
+1. Back up `/volume1/flashcards/data/` before changing the image.
+2. In Container Manager, edit the project YAML and change the image tag to the desired release.
+3. Pull the new image and recreate the project. Do not select a build operation.
+4. Keep the volume mapping pointed at `/volume1/flashcards/data:/app/data`.
+5. Check the project logs. The container creates a pre-migration backup, applies pending migrations, and starts the application only when migrations succeed.
+6. Verify the deployment with `https://<DSM-reverse-proxy-hostname>/api/health`. A healthy response has HTTP status `200`.
 
-Migrations run automatically before the application starts. Never delete the `data` folder during an update.
+Never delete `/volume1/flashcards/data/` during an update. If the migration fails, leave the container stopped and keep the `.migration-backups` folder for the rollback procedure.
 
 ## 9. Troubleshooting
 
