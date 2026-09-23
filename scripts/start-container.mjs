@@ -1,5 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { existsSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
+import { dirname, extname, join, basename } from "node:path";
 import Database from "better-sqlite3";
 import bcrypt from "bcryptjs";
 
@@ -20,6 +22,38 @@ function validateSecurityConfig() {
   const adminApiKey = process.env.ADMIN_API_KEY;
   if (adminApiKey && adminApiKey.length < 32) {
     throw new Error("ADMIN_API_KEY must be at least 32 characters when configured.");
+  }
+}
+
+async function backupDatabaseBeforeMigrations() {
+  const sourcePath = databasePath(process.env.DATABASE_URL);
+  if (!existsSync(sourcePath)) {
+    console.log("No existing database found; skipping pre-migration backup.");
+    return;
+  }
+
+  const backupDirectory = join(dirname(sourcePath), ".migration-backups");
+  mkdirSync(backupDirectory, { recursive: true });
+
+  const sourceName = basename(sourcePath, extname(sourcePath));
+  const timestamp = new Date().toISOString().replace(/[.:]/g, "-");
+  const backupPath = join(backupDirectory, `${sourceName}-${timestamp}.db`);
+  const db = new Database(sourcePath, { readonly: true });
+
+  try {
+    await db.backup(backupPath);
+    console.log(`Created pre-migration database backup at ${backupPath}.`);
+  } finally {
+    db.close();
+  }
+
+  const backups = readdirSync(backupDirectory)
+    .filter((name) => name.startsWith(`${sourceName}-`) && name.endsWith(".db"))
+    .sort()
+    .reverse();
+
+  for (const oldBackup of backups.slice(5)) {
+    unlinkSync(join(backupDirectory, oldBackup));
   }
 }
 
@@ -64,7 +98,10 @@ function bootstrapAdmin() {
 
 console.log("Applying database migrations...");
 validateSecurityConfig();
-execFileSync("npx", ["prisma", "migrate", "deploy"], { stdio: "inherit" });
+await backupDatabaseBeforeMigrations();
+execFileSync("npx", ["--no-install", "prisma", "migrate", "deploy"], {
+  stdio: "inherit",
+});
 bootstrapAdmin();
 console.log("Starting Flashcard Decks...");
 execFileSync("npm", ["run", "start", "--", "-H", "0.0.0.0", "-p", "3000"], {
