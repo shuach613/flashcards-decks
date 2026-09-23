@@ -5,6 +5,8 @@ import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { CategoryForm } from "./category-form";
+import { deleteCategory } from "./actions";
+import { ConfirmActionForm } from "../_components/confirm-action-form";
 
 export default async function AdminCategoriesPage() {
   await requireAdmin();
@@ -66,9 +68,18 @@ export default async function AdminCategoriesPage() {
                 )}
               </div>
             </div>
-            <p className="shrink-0 text-sm text-dark-gray">
-              {tc(locale, "category.deckCount", category._count.decks)}
-            </p>
+            <div className="flex shrink-0 flex-col items-end gap-2">
+              <p className="text-sm text-dark-gray">
+                {tc(locale, "category.deckCount", category._count.decks)}
+              </p>
+              <ConfirmActionForm
+                action={deleteCategory.bind(null, category.id)}
+                confirmation={t(locale, "category.deleteConfirmation", {
+                  name: category.name,
+                })}
+                label={t(locale, "category.deleteCategory")}
+              />
+            </div>
           </li>
         ))}
       </ul>

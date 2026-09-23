@@ -45,3 +45,22 @@ export async function createCategory(
   revalidatePath("/admin");
   revalidatePath("/admin/track-settings");
 }
+
+export async function deleteCategory(categoryId: string) {
+  await requireAdmin();
+
+  await prisma.$transaction(async (tx) => {
+    await tx.deck.updateMany({
+      where: { categoryId },
+      data: { categoryId: null },
+    });
+    await tx.category.delete({ where: { id: categoryId } });
+  });
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/admin/track-settings");
+  revalidatePath("/admin/tracks");
+  revalidatePath("/admin");
+  revalidatePath("/decks");
+  revalidatePath("/choose-track");
+}

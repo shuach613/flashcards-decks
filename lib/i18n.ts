@@ -198,6 +198,9 @@ const en = {
   "category.noTracks": "Not assigned to a track",
   "category.deckCount_one": "{count} deck",
   "category.deckCount_other": "{count} decks",
+  "category.deleteCategory": "Delete category",
+  "category.deleteConfirmation":
+    "Delete the category {name}? Its decks will become uncategorized and its track assignments will be removed.",
 
   "allDecks.title": "All Decks",
   "allDecks.empty": "No decks yet.",
@@ -212,6 +215,9 @@ const en = {
   "tracks.created": "The new track has been created.",
   "tracks.saved": "The track has been updated.",
   "tracks.nameRequired": "Track name is required.",
+  "tracks.delete": "Delete track",
+  "tracks.deleteConfirmation":
+    "Delete the track {name}? Student assignments and category assignments for this track will be removed.",
   "tracks.nameExists": "A track with that name already exists.",
   "tracks.updateFailed": "The track could not be updated.",
   "tracks.expandSettings": "Settings",
@@ -422,6 +428,9 @@ const de: Record<TranslationKey, string> = {
   "category.noTracks": "Keinem Track zugewiesen",
   "category.deckCount_one": "{count} Deck",
   "category.deckCount_other": "{count} Decks",
+  "category.deleteCategory": "Kategorie löschen",
+  "category.deleteConfirmation":
+    "Kategorie {name} löschen? Die zugehörigen Decks werden unkategorisiert und die Track-Zuweisungen entfernt.",
 
   "allDecks.title": "Alle Decks",
   "allDecks.empty": "Noch keine Decks.",
@@ -436,6 +445,9 @@ const de: Record<TranslationKey, string> = {
   "tracks.created": "Der neue Track wurde erstellt.",
   "tracks.saved": "Der Track wurde aktualisiert.",
   "tracks.nameRequired": "Der Track-Name ist erforderlich.",
+  "tracks.delete": "Track löschen",
+  "tracks.deleteConfirmation":
+    "Track {name} löschen? Die Schüler- und Kategorie-Zuweisungen für diesen Track werden entfernt.",
   "tracks.nameExists": "Ein Track mit diesem Namen existiert bereits.",
   "tracks.updateFailed": "Der Track konnte nicht aktualisiert werden.",
   "tracks.expandSettings": "Einstellungen",

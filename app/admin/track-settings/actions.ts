@@ -96,3 +96,10 @@ export async function updateTrack(trackId: string, formData: FormData) {
   query.set("saved", "1");
   redirect(`/admin/track-settings?${query}`);
 }
+
+export async function deleteTrack(trackId: string) {
+  await requireAdmin();
+  await prisma.track.delete({ where: { id: trackId } });
+
+  redirect("/admin/track-settings");
+}

@@ -4,7 +4,8 @@ import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { ensureDefaultTracks } from "@/lib/tracks-server";
 import { AdminSubnav } from "../_components/admin-subnav";
-import { createTrack, updateTrack } from "./actions";
+import { createTrack, deleteTrack, updateTrack } from "./actions";
+import { ConfirmActionForm } from "../_components/confirm-action-form";
 
 type SearchParams = Promise<{
   created?: string;
@@ -168,6 +169,14 @@ export default async function TrackConfigurationPage({
                   {t(locale, "tracks.save")}
                 </button>
                 </form>
+                <ConfirmActionForm
+                  action={deleteTrack.bind(null, track.id)}
+                  confirmation={t(locale, "tracks.deleteConfirmation", {
+                    name: track.name,
+                  })}
+                  label={t(locale, "tracks.delete")}
+                  className="mt-3"
+                />
               </div>
             </details>
           );

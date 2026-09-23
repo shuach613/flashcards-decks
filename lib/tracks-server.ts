@@ -6,13 +6,19 @@ import { DEFAULT_TRACKS } from "@/lib/tracks";
 export async function ensureDefaultTracks() {
   await ensureDefaultCategories();
 
-  for (const definition of DEFAULT_TRACKS) {
-    const categories = await prisma.category.findMany({
+  const seeded = await prisma.appSetting.findUnique({
+    where: { key: "default-tracks-seeded" },
+  });
+  if (seeded) return;
+
+  await prisma.$transaction(async (tx) => {
+    for (const definition of DEFAULT_TRACKS) {
+    const categories = await tx.category.findMany({
       where: { name: { in: [...definition.categoryNames] } },
       select: { id: true },
     });
 
-    await prisma.track.upsert({
+    await tx.track.upsert({
       where: { key: definition.key },
       create: {
         key: definition.key,
@@ -26,7 +32,13 @@ export async function ensureDefaultTracks() {
       },
       update: {},
     });
-  }
+    }
+    await tx.appSetting.upsert({
+      where: { key: "default-tracks-seeded" },
+      create: { key: "default-tracks-seeded", value: "true" },
+      update: {},
+    });
+  });
 }
 
 export function deckAccessWhere(user: { id: string; role: string }) {
