@@ -72,7 +72,7 @@ See `docs/synology-container-manager.md` for the complete DS925+/DSM deployment 
 
 The Synology Compose project is self-contained: edit the values in `docker-compose.yml` directly. No `.env` file is required for Container Manager. Set `APP_URL` to the HTTPS address configured in DSM's internal reverse proxy; the repository does not contain or require reverse-proxy rules.
 
-Pull requests and pushes to `main` or `codex/*` are automatically tested and checked by a Linux/amd64 Docker image build. The workflow validates the image but does not publish it yet.
+Pull requests automatically run the tests and validate a Linux/amd64 Docker image build. Successful pushes to `main` and version tags publish the image to GitHub Container Registry as `ghcr.io/shuach613/flashcards-decks`.
 
 ## Production
 

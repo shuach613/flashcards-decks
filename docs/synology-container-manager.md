@@ -46,6 +46,8 @@ The NAS does not need Node.js or npm installed on DSM. They are included inside 
 
 The repository also includes `docker-compose.dev.yml` for local development. Do not use that file for Synology deployment; it mounts the source tree and runs the development server.
 
+The GitHub Actions workflow publishes successful `main` builds and version tags to `ghcr.io/shuach613/flashcards-decks`. The package can later be configured as public or private in GitHub Packages. A private package requires Container Manager to authenticate to GHCR before pulling it.
+
 ## 3. Configure the Compose YAML
 
 No `.env` file is required. Open `docker-compose.yml` and replace the placeholder values in its `environment` section:
