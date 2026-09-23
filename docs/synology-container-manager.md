@@ -48,6 +48,14 @@ The repository also includes `docker-compose.dev.yml` for local development. Do 
 
 The GitHub Actions workflow publishes successful `main` builds and version tags to `ghcr.io/shuach613/flashcards-decks`. The package can later be configured as public or private in GitHub Packages. A private package requires Container Manager to authenticate to GHCR before pulling it.
 
+## DSM reverse proxy boundary
+
+The repository intentionally contains no Nginx, Traefik, Caddy, ingress, TLS,
+certificate, or reverse-proxy deployment configuration. Configure the public
+hostname, HTTPS certificate, source port, and destination NAS port only in
+DSM's built-in reverse-proxy service. Keep the container reachable on its
+published NAS port and set `APP_URL` to the resulting HTTPS URL.
+
 ## 3. Configure the Compose YAML
 
 No `.env` file is required. Open `docker-compose.yml` and replace the placeholder values in its `environment` section:
