@@ -33,9 +33,9 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Prisma config reads DATABASE_URL during generation/build.
-ENV DATABASE_URL=file:/app/data/flashcards.db
-RUN mkdir -p /app/data
+# Prisma config reads DATABASE_URL during generation/build. Keep build-time
+# database files outside /app so they cannot be copied into the runtime image.
+ENV DATABASE_URL=file:/tmp/flashcards-build.db
 RUN npm run build
 RUN npm prune --omit=dev --legacy-peer-deps
 
@@ -46,7 +46,8 @@ ENV HOSTNAME=0.0.0.0
 
 COPY --from=builder --chown=node:node /app ./
 
-RUN mkdir -p /app/data && chown node:node /app/data
+# The database is supplied only by the runtime volume, never by the image.
+RUN rm -rf /app/data && mkdir -p /app/data && chown node:node /app/data
 
 USER node
 EXPOSE 3000
