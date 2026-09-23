@@ -1,7 +1,7 @@
 # Admin API
 
 A REST API mirroring everything the admin UI can do: create/list/get/update/delete
-decks, add or edit cards, and manage certificates.
+decks, add or edit cards, and manage categories.
 
 **Base URL:** `<APP_URL>/api/v1`
 
@@ -37,18 +37,18 @@ Requests without a valid key get `401 Unauthorized`.
 | Action | Request |
 |---|---|
 | List decks | `GET /decks` |
-| Create deck | `POST /decks` — `{"title", "certificate"?, "language": "EN"\|"DE", "description"?, "slug"?}` |
+| Create deck | `POST /decks` — `{"title", "category"?, "language": "EN"\|"DE", "description"?, "slug"?}` |
 | Get one deck (incl. cards) | `GET /decks/:slug` |
-| Rename/edit deck | `PATCH /decks/:slug` — `{"title"?, "description"?, "certificate"?, "language"?, "slug"?}` |
+| Rename/edit deck | `PATCH /decks/:slug` — `{"title"?, "description"?, "category"?, "language"?, "slug"?}` |
 | Delete deck | `DELETE /decks/:slug` |
 
 Decks are identified by `slug` (also the shareable-link identifier). Every
 deck response includes a `shareUrl` field — there's no separate endpoint to
 fetch the link.
 
-`certificate` is a certificate **name** (e.g. `"Connections Basics"`), not an ID. It's
+`category` is a category **name** (e.g. `"Connections Basics"`), not an ID. It's
 optional on create — omitting it leaves the deck "Uncategorized". Passing an
-unknown name returns `400` with the list of valid certificate names.
+unknown name returns `400` with the list of valid category names.
 
 ## Cards
 
@@ -59,14 +59,14 @@ unknown name returns `400` with the list of valid certificate names.
 | Update a card | `PATCH /cards/:id` — `{"front"?, "back"?}` |
 | Delete a card | `DELETE /cards/:id` |
 
-## Certificates
+## Categories
 
 | Action | Request |
 |---|---|
-| List certificates | `GET /certificates` |
-| Create certificate | `POST /certificates` — `{"name" }` |
+| List categories | `GET /categories` |
+| Create category | `POST /categories` — `{"name" }` |
 
-New certificates are appended to the end of the display order used on the
+New categories are appended to the end of the display order used on the
 "All Decks" page.
 
 ## Example
@@ -75,5 +75,5 @@ New certificates are appended to the end of the display order used on the
 curl -X POST http://nas-host:3000/api/v1/decks \
   -H "Authorization: Bearer $ADMIN_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"title":"My Deck","certificate":"Connections Basics","language":"EN"}'
+  -d '{"title":"My Deck","category":"Connections Basics","language":"EN"}'
 ```

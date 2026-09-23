@@ -20,11 +20,11 @@ export async function updateDeckMeta(
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const slugInput = String(formData.get("slug") ?? "").trim();
-  const certificateId = String(formData.get("certificateId") ?? "").trim();
+  const categoryId = String(formData.get("categoryId") ?? "").trim();
   const language = String(formData.get("language") ?? "").trim();
 
   if (!title) return { error: t(locale, "admin.titleRequired") };
-  if (!certificateId) return { error: t(locale, "admin.certificateRequired") };
+  if (!categoryId) return { error: t(locale, "admin.categoryRequired") };
   if (language !== "EN" && language !== "DE") {
     return { error: t(locale, "admin.languageRequired") };
   }
@@ -39,7 +39,7 @@ export async function updateDeckMeta(
 
   const deck = await prisma.deck.update({
     where: { id: deckId },
-    data: { title, description, slug: newSlug, certificateId, language },
+    data: { title, description, slug: newSlug, categoryId, language },
   });
   redirect(`/admin/decks/${deck.slug}`);
 }

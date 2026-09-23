@@ -2,16 +2,16 @@
 
 import { useActionState } from "react";
 import { t, type Locale } from "@/lib/i18n";
-import { createCertificate } from "./actions";
+import { createCategory } from "./actions";
 
-export function CertificateForm({
+export function CategoryForm({
   locale,
   tracks,
 }: {
   locale: Locale;
   tracks: { id: string; name: string }[];
 }) {
-  const [state, formAction, pending] = useActionState(createCertificate, undefined);
+  const [state, formAction, pending] = useActionState(createCategory, undefined);
 
   return (
     <form action={formAction} className="flex flex-col gap-3">
@@ -29,10 +29,10 @@ export function CertificateForm({
       </div>
       <fieldset>
         <legend className="text-sm font-medium text-evergreen">
-          {t(locale, "cert.matchTracks")}
+          {t(locale, "category.matchTracks")}
         </legend>
         <p className="mt-1 text-xs text-dark-gray">
-          {t(locale, "cert.matchTracksHint")}
+          {t(locale, "category.matchTracksHint")}
         </p>
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
           {tracks.map((track) => (

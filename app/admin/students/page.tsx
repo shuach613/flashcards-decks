@@ -34,7 +34,7 @@ export default async function StudentOverviewPage({
         include: {
           deck: {
             include: {
-              certificate: true,
+              category: true,
               cards: {
                 orderBy: { order: "asc" },
                 select: {
@@ -149,7 +149,7 @@ export default async function StudentOverviewPage({
                             {study.deck.title}
                           </h3>
                           <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium text-dark-gray">
-                            {study.deck.certificate?.name ??
+                            {study.deck.category?.name ??
                               t(locale, "common.uncategorized")}
                           </span>
                         </div>

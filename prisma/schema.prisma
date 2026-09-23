@@ -35,13 +35,13 @@ model PasswordResetToken {
   @@index([expiresAt])
 }
 
-model Certificate {
+model Category {
   id        String   @id @default(cuid())
   name      String   @unique
   order     Int      @default(0)
   createdAt DateTime @default(now())
   decks     Deck[]
-  tracks    TrackCertificate[]
+  tracks    TrackCategory[]
 }
 
 model Track {
@@ -51,7 +51,7 @@ model Track {
   order        Int                @default(0)
   createdAt    DateTime           @default(now())
   users        UserTrack[]
-  certificates TrackCertificate[]
+  categories TrackCategory[]
 }
 
 model UserTrack {
@@ -65,14 +65,14 @@ model UserTrack {
   @@index([trackId])
 }
 
-model TrackCertificate {
+model TrackCategory {
   trackId       String
   track         Track       @relation(fields: [trackId], references: [id], onDelete: Cascade)
-  certificateId String
-  certificate   Certificate @relation(fields: [certificateId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  @@id([trackId, certificateId])
-  @@index([certificateId])
+  @@id([trackId, categoryId])
+  @@index([categoryId])
 }
 
 model Deck {
@@ -80,8 +80,8 @@ model Deck {
   slug          String          @unique
   title         String
   description   String          @default("")
-  certificateId String?
-  certificate   Certificate?    @relation(fields: [certificateId], references: [id])
+  categoryId String?
+  category   Category?    @relation(fields: [categoryId], references: [id])
   language      String          @default("EN") // "EN" | "DE"
   createdAt     DateTime        @default(now())
   cards         Card[]

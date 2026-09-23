@@ -16,11 +16,11 @@ export async function createDeck(
   await requireAdmin();
   const locale = await getLocale();
   const title = String(formData.get("title") ?? "").trim();
-  const certificateId = String(formData.get("certificateId") ?? "").trim();
+  const categoryId = String(formData.get("categoryId") ?? "").trim();
   const language = String(formData.get("language") ?? "").trim();
 
   if (!title) return { error: t(locale, "admin.titleRequired") };
-  if (!certificateId) return { error: t(locale, "admin.certificateRequired") };
+  if (!categoryId) return { error: t(locale, "admin.categoryRequired") };
   if (language !== "EN" && language !== "DE") {
     return { error: t(locale, "admin.languageRequired") };
   }
@@ -34,7 +34,7 @@ export async function createDeck(
   }
 
   const deck = await prisma.deck.create({
-    data: { title, slug, certificateId, language },
+    data: { title, slug, categoryId, language },
   });
   redirect(`/admin/decks/${deck.slug}`);
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LANGUAGE_VALUES } from "@/lib/certificates";
+import { LANGUAGE_VALUES } from "@/lib/categories";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
@@ -28,7 +28,7 @@ export default async function AllDecksPage() {
   const user = await requireTrackedUser("/decks");
   const locale = await getLocale();
 
-  const certificateAccess =
+  const categoryAccess =
     user.role === "ADMIN"
       ? {}
       : {
@@ -37,9 +37,9 @@ export default async function AllDecksPage() {
           },
         };
 
-  const [certificates, uncategorized] = await Promise.all([
-    prisma.certificate.findMany({
-      where: certificateAccess,
+  const [categories, uncategorized] = await Promise.all([
+    prisma.category.findMany({
+      where: categoryAccess,
       orderBy: { order: "asc" },
       include: {
         decks: {
@@ -64,7 +64,7 @@ export default async function AllDecksPage() {
     }),
     user.role === "ADMIN"
       ? prisma.deck.findMany({
-          where: { certificateId: null },
+          where: { categoryId: null },
           orderBy: [{ language: "asc" }, { title: "asc" }],
           include: {
             studyProgress: {
@@ -86,11 +86,11 @@ export default async function AllDecksPage() {
   ]);
 
   const sections = [
-    ...certificates
-      .filter((certificate) => certificate.decks.length > 0)
-      .map((certificate) => ({
-        name: certificate.name,
-        groups: groupByLanguage(certificate.decks),
+    ...categories
+      .filter((category) => category.decks.length > 0)
+      .map((category) => ({
+        name: category.name,
+        groups: groupByLanguage(category.decks),
       })),
     ...(uncategorized.length > 0
       ? [{ name: t(locale, "common.uncategorized"), groups: groupByLanguage(uncategorized) }]

@@ -30,9 +30,9 @@ export default async function StudentTrackAssignmentsPage({
     prisma.track.findMany({
       orderBy: { order: "asc" },
       include: {
-        certificates: {
-          include: { certificate: true },
-          orderBy: { certificate: { order: "asc" } },
+        categories: {
+          include: { category: true },
+          orderBy: { category: { order: "asc" } },
         },
       },
     }),
@@ -145,8 +145,8 @@ export default async function StudentTrackAssignmentsPage({
                       {track.name}
                     </span>
                     <span className="mt-1 block text-sm text-dark-gray">
-                      {track.certificates
-                        .map((item) => item.certificate.name)
+                      {track.categories
+                        .map((item) => item.category.name)
                         .join(" · ")}
                     </span>
                   </span>

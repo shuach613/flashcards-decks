@@ -27,13 +27,13 @@ export default async function TrackConfigurationPage({
 }) {
   await requireAdmin();
   await ensureDefaultTracks();
-  const [locale, params, certificates, tracks] = await Promise.all([
+  const [locale, params, categories, tracks] = await Promise.all([
     getLocale(),
     searchParams,
-    prisma.certificate.findMany({ orderBy: { order: "asc" } }),
+    prisma.category.findMany({ orderBy: { order: "asc" } }),
     prisma.track.findMany({
       orderBy: { order: "asc" },
-      include: { certificates: { select: { certificateId: true } } },
+      include: { categories: { select: { categoryId: true } } },
     }),
   ]);
   const errorMessage = messageForError(locale, params.error);
@@ -79,8 +79,8 @@ export default async function TrackConfigurationPage({
           />
           <CategoryChoices
             legend={t(locale, "tracks.availableCategories")}
-            certificates={certificates}
-            emptyLabel={t(locale, "tracks.noCertificates")}
+            categories={categories}
+            emptyLabel={t(locale, "tracks.noCategories")}
           />
           <button type="submit" className="mt-5 rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110">
             {t(locale, "tracks.create")}
@@ -91,10 +91,10 @@ export default async function TrackConfigurationPage({
       <div className="mt-6 space-y-4">
         {tracks.map((track) => {
           const selectedIds = new Set(
-            track.certificates.map((item) => item.certificateId)
+            track.categories.map((item) => item.categoryId)
           );
-          const selectedCertificates = certificates.filter((certificate) =>
-            selectedIds.has(certificate.id)
+          const selectedCategories = categories.filter((category) =>
+            selectedIds.has(category.id)
           );
           const hasMessage = params.track === track.id;
 
@@ -110,13 +110,13 @@ export default async function TrackConfigurationPage({
                     {track.name}
                   </span>
                   <span className="mt-2 flex flex-wrap gap-1.5">
-                    {selectedCertificates.length > 0 ? (
-                      selectedCertificates.map((certificate) => (
+                    {selectedCategories.length > 0 ? (
+                      selectedCategories.map((category) => (
                         <span
-                          key={certificate.id}
+                          key={category.id}
                           className="rounded-full bg-lime-green px-2 py-0.5 text-xs font-medium text-evergreen"
                         >
-                          {certificate.name}
+                          {category.name}
                         </span>
                       ))
                     ) : (
@@ -150,9 +150,9 @@ export default async function TrackConfigurationPage({
                 />
                 <CategoryChoices
                   legend={t(locale, "tracks.shownCategories")}
-                  certificates={certificates}
+                  categories={categories}
                   selectedIds={selectedIds}
-                  emptyLabel={t(locale, "tracks.noCertificates")}
+                  emptyLabel={t(locale, "tracks.noCategories")}
                 />
                 {hasMessage && params.saved === "1" && (
                   <p className="mt-4 rounded-xl bg-lime-green px-4 py-3 text-sm font-semibold text-evergreen">
@@ -179,12 +179,12 @@ export default async function TrackConfigurationPage({
 
 function CategoryChoices({
   legend,
-  certificates,
+  categories,
   selectedIds = new Set<string>(),
   emptyLabel,
 }: {
   legend: string;
-  certificates: { id: string; name: string }[];
+  categories: { id: string; name: string }[];
   selectedIds?: Set<string>;
   emptyLabel: string;
 }) {
@@ -192,20 +192,20 @@ function CategoryChoices({
     <fieldset className="mt-4">
       <legend className="text-sm font-medium text-evergreen">{legend}</legend>
       <div className="mt-2 grid gap-2 sm:grid-cols-2">
-        {certificates.map((certificate) => (
-          <label key={certificate.id} className="flex cursor-pointer items-center gap-2 rounded-xl border border-sand px-3 py-2 text-sm transition has-checked:border-evergreen has-checked:bg-lime-green/60">
+        {categories.map((category) => (
+          <label key={category.id} className="flex cursor-pointer items-center gap-2 rounded-xl border border-sand px-3 py-2 text-sm transition has-checked:border-evergreen has-checked:bg-lime-green/60">
             <input
               type="checkbox"
-              name="certificateIds"
-              value={certificate.id}
-              defaultChecked={selectedIds.has(certificate.id)}
+              name="categoryIds"
+              value={category.id}
+              defaultChecked={selectedIds.has(category.id)}
               className="size-4 accent-evergreen"
             />
-            <span className="font-medium text-evergreen">{certificate.name}</span>
+            <span className="font-medium text-evergreen">{category.name}</span>
           </label>
         ))}
       </div>
-      {certificates.length === 0 && (
+      {categories.length === 0 && (
         <p className="mt-2 text-sm text-dark-gray">{emptyLabel}</p>
       )}
     </fieldset>

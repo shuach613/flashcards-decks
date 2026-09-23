@@ -1,6 +1,6 @@
 import "server-only";
 
-type Certificate = { id: string; name: string; order: number };
+type Category = { id: string; name: string; order: number };
 
 type Card = {
   id: string;
@@ -16,7 +16,7 @@ type Deck = {
   description: string;
   language: string;
   createdAt: Date;
-  certificate: Certificate | null;
+  category: Category | null;
   cards?: Card[];
   _count?: { cards: number };
 };
@@ -28,8 +28,8 @@ export function serializeDeck(deck: Deck, origin: string) {
     title: deck.title,
     description: deck.description,
     language: deck.language,
-    certificate: deck.certificate
-      ? { id: deck.certificate.id, name: deck.certificate.name }
+    category: deck.category
+      ? { id: deck.category.id, name: deck.category.name }
       : null,
     cardCount: deck._count?.cards ?? deck.cards?.length,
     cards: deck.cards?.map(serializeCard),
@@ -47,13 +47,13 @@ export function serializeCard(card: Card) {
   };
 }
 
-export function serializeCertificate(
-  certificate: Certificate & { _count?: { decks: number } }
+export function serializeCategory(
+  category: Category & { _count?: { decks: number } }
 ) {
   return {
-    id: certificate.id,
-    name: certificate.name,
-    order: certificate.order,
-    deckCount: certificate._count?.decks,
+    id: category.id,
+    name: category.name,
+    order: category.order,
+    deckCount: category._count?.decks,
   };
 }

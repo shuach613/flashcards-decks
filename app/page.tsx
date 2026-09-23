@@ -42,7 +42,7 @@ export default async function HomePage() {
     include: {
       deck: {
         include: {
-          certificate: true,
+          category: true,
           cards: {
             select: {
               id: true,
@@ -85,7 +85,7 @@ export default async function HomePage() {
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-evergreen">{p.deck.title}</p>
                       <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium text-dark-gray">
-                        {p.deck.certificate?.name ??
+                        {p.deck.category?.name ??
                           t(locale, "common.uncategorized")}
                       </span>
                     </div>

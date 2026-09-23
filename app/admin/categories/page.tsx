@@ -4,15 +4,15 @@ import { ensureDefaultTracks } from "@/lib/tracks-server";
 import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
-import { CertificateForm } from "./certificate-form";
+import { CategoryForm } from "./category-form";
 
-export default async function AdminCertificatesPage() {
+export default async function AdminCategoriesPage() {
   await requireAdmin();
   await ensureDefaultTracks();
   const locale = await getLocale();
 
-  const [certificates, tracks] = await Promise.all([
-    prisma.certificate.findMany({
+  const [categories, tracks] = await Promise.all([
+    prisma.category.findMany({
       orderBy: { order: "asc" },
       include: {
         _count: { select: { decks: true } },
@@ -26,48 +26,48 @@ export default async function AdminCertificatesPage() {
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
-          {t(locale, "cert.title")}
+          {t(locale, "category.title")}
         </h1>
         <Link
           href="/admin"
           className="text-sm font-medium text-evergreen underline underline-offset-4"
         >
-          {t(locale, "cert.backToDecks")}
+          {t(locale, "category.backToDecks")}
         </Link>
       </div>
 
       <div className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
         <h2 className="mb-3 font-semibold text-evergreen">
-          {t(locale, "cert.addCertificate")}
+          {t(locale, "category.addCategory")}
         </h2>
-        <p className="mb-3 text-sm text-dark-gray">{t(locale, "cert.addHint")}</p>
-        <CertificateForm locale={locale} tracks={tracks} />
+        <p className="mb-3 text-sm text-dark-gray">{t(locale, "category.addHint")}</p>
+        <CategoryForm locale={locale} tracks={tracks} />
       </div>
 
       <ul className="flex flex-col gap-3">
-        {certificates.map((certificate) => (
+        {categories.map((category) => (
           <li
-            key={certificate.id}
+            key={category.id}
             className="flex items-center justify-between gap-4 rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
           >
             <div>
-              <p className="font-semibold text-evergreen">{certificate.name}</p>
+              <p className="font-semibold text-evergreen">{category.name}</p>
               <div className="mt-1 flex flex-wrap gap-1.5">
-                {certificate.tracks.length > 0 ? (
-                  certificate.tracks.map((assignment) => (
+                {category.tracks.length > 0 ? (
+                  category.tracks.map((assignment) => (
                     <span key={assignment.trackId} className="rounded-full bg-lime-green px-2 py-0.5 text-xs font-medium text-evergreen">
                       {assignment.track.name}
                     </span>
                   ))
                 ) : (
                   <span className="text-xs text-dark-gray">
-                    {t(locale, "cert.noTracks")}
+                    {t(locale, "category.noTracks")}
                   </span>
                 )}
               </div>
             </div>
             <p className="shrink-0 text-sm text-dark-gray">
-              {tc(locale, "cert.deckCount", certificate._count.decks)}
+              {tc(locale, "category.deckCount", category._count.decks)}
             </p>
           </li>
         ))}

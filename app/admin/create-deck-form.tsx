@@ -1,17 +1,17 @@
 "use client";
 
 import { useActionState } from "react";
-import { LANGUAGE_VALUES } from "@/lib/certificates";
+import { LANGUAGE_VALUES } from "@/lib/categories";
 import { t, type Locale } from "@/lib/i18n";
 import { createDeck } from "./actions";
 
-type Certificate = { id: string; name: string };
+type Category = { id: string; name: string };
 
 export function CreateDeckForm({
-  certificates,
+  categories,
   locale,
 }: {
-  certificates: Certificate[];
+  categories: Category[];
   locale: Locale;
 }) {
   const [state, formAction, pending] = useActionState(createDeck, undefined);
@@ -37,13 +37,13 @@ export function CreateDeckForm({
         <div className="flex-1">
           <label
             className="block text-sm font-medium text-evergreen"
-            htmlFor="certificateId"
+            htmlFor="categoryId"
           >
-            {t(locale, "common.certificateLabel")}
+            {t(locale, "common.categoryLabel")}
           </label>
           <select
-            id="certificateId"
-            name="certificateId"
+            id="categoryId"
+            name="categoryId"
             required
             defaultValue=""
             className={selectClass}
@@ -51,7 +51,7 @@ export function CreateDeckForm({
             <option value="" disabled>
               {t(locale, "common.selectPlaceholder")}
             </option>
-            {certificates.map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/authz";
-import { ensureDefaultCertificates } from "@/lib/certificates-server";
+import { ensureDefaultCategories } from "@/lib/categories-server";
 import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
@@ -11,15 +11,15 @@ import { AdminSubnav } from "./_components/admin-subnav";
 
 export default async function AdminPage() {
   await requireAdmin();
-  await ensureDefaultCertificates();
+  await ensureDefaultCategories();
   const locale = await getLocale();
 
-  const [decks, certificates] = await Promise.all([
+  const [decks, categories] = await Promise.all([
     prisma.deck.findMany({
       orderBy: { createdAt: "desc" },
-      include: { _count: { select: { cards: true } }, certificate: true },
+      include: { _count: { select: { cards: true } }, category: true },
     }),
-    prisma.certificate.findMany({ orderBy: { order: "asc" } }),
+    prisma.category.findMany({ orderBy: { order: "asc" } }),
   ]);
 
   return (
@@ -33,10 +33,10 @@ export default async function AdminPage() {
           {t(locale, "admin.title")}
         </h2>
         <Link
-          href="/admin/certificates"
+          href="/admin/categories"
           className="text-sm font-medium text-evergreen underline underline-offset-4"
         >
-          {t(locale, "admin.manageCertificates")}
+          {t(locale, "admin.manageCategories")}
         </Link>
       </div>
 
@@ -44,7 +44,7 @@ export default async function AdminPage() {
         <h2 className="mb-3 font-semibold text-evergreen">
           {t(locale, "admin.newDeck")}
         </h2>
-        <CreateDeckForm certificates={certificates} locale={locale} />
+        <CreateDeckForm categories={categories} locale={locale} />
       </div>
 
       <ul className="flex flex-col gap-3">
@@ -57,7 +57,7 @@ export default async function AdminPage() {
               <p className="font-semibold text-evergreen">{deck.title}</p>
               <p className="text-sm text-dark-gray">
                 /decks/{deck.slug} · {tc(locale, "deck.cardCount", deck._count.cards)} ·{" "}
-                {deck.certificate?.name ?? t(locale, "common.uncategorized")} ·{" "}
+                {deck.category?.name ?? t(locale, "common.uncategorized")} ·{" "}
                 {t(locale, `language.${deck.language}` as "language.EN" | "language.DE")}
               </p>
             </div>

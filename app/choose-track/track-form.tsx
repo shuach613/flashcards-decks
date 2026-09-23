@@ -11,7 +11,7 @@ export function TrackForm({
 }: {
   callbackUrl: string;
   locale: Locale;
-  tracks: { id: string; name: string; certificateNames: string[] }[];
+  tracks: { id: string; name: string; categoryNames: string[] }[];
 }) {
   const [state, formAction, pending] = useActionState(chooseTrack, undefined);
 
@@ -35,8 +35,8 @@ export function TrackForm({
             <span>
               <span className="block font-bold text-evergreen">{track.name}</span>
               <span className="mt-1 block text-sm text-dark-gray">
-                {track.certificateNames.length > 0
-                  ? track.certificateNames.join(" · ")
+                {track.categoryNames.length > 0
+                  ? track.categoryNames.join(" · ")
                   : t(locale, "track.noCategories")}
               </span>
             </span>

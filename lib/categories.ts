@@ -1,4 +1,4 @@
-export const DEFAULT_CERTIFICATES = [
+export const DEFAULT_CATEGORIES = [
   { name: "General Basics 1", order: 0 },
   { name: "General Basics 2", order: 1 },
   { name: "Connections Basics", order: 2 },

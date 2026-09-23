@@ -4,32 +4,32 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/authz";
 import { prisma } from "@/lib/db";
 
-function selectedCertificateIds(formData: FormData) {
-  return [...new Set(formData.getAll("certificateIds").map(String).filter(Boolean))];
+function selectedCategoryIds(formData: FormData) {
+  return [...new Set(formData.getAll("categoryIds").map(String).filter(Boolean))];
 }
 
-async function certificateIdsAreValid(certificateIds: string[]) {
-  if (certificateIds.length === 0) return true;
+async function categoryIdsAreValid(categoryIds: string[]) {
+  if (categoryIds.length === 0) return true;
   return (
-    (await prisma.certificate.count({
-      where: { id: { in: certificateIds } },
-    })) === certificateIds.length
+    (await prisma.category.count({
+      where: { id: { in: categoryIds } },
+    })) === categoryIds.length
   );
 }
 
 export async function createTrack(formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") ?? "").trim();
-  const certificateIds = selectedCertificateIds(formData);
+  const categoryIds = selectedCategoryIds(formData);
 
   if (!name) redirect("/admin/track-settings?error=name");
-  const [existing, validCertificates, lastTrack] = await Promise.all([
+  const [existing, validCategories, lastTrack] = await Promise.all([
     prisma.track.findUnique({ where: { name } }),
-    certificateIdsAreValid(certificateIds),
+    categoryIdsAreValid(categoryIds),
     prisma.track.findFirst({ orderBy: { order: "desc" }, select: { order: true } }),
   ]);
   if (existing) redirect("/admin/track-settings?error=duplicate");
-  if (!validCertificates) redirect("/admin/track-settings?error=invalid");
+  if (!validCategories) redirect("/admin/track-settings?error=invalid");
 
   await prisma.$transaction(async (tx) => {
     const track = await tx.track.create({
@@ -39,11 +39,11 @@ export async function createTrack(formData: FormData) {
         order: (lastTrack?.order ?? -1) + 1,
       },
     });
-    if (certificateIds.length > 0) {
-      await tx.trackCertificate.createMany({
-        data: certificateIds.map((certificateId) => ({
+    if (categoryIds.length > 0) {
+      await tx.trackCategory.createMany({
+        data: categoryIds.map((categoryId) => ({
           trackId: track.id,
-          certificateId,
+          categoryId,
         })),
       });
     }
@@ -55,7 +55,7 @@ export async function createTrack(formData: FormData) {
 export async function updateTrack(trackId: string, formData: FormData) {
   await requireAdmin();
   const name = String(formData.get("name") ?? "").trim();
-  const certificateIds = selectedCertificateIds(formData);
+  const categoryIds = selectedCategoryIds(formData);
   const query = new URLSearchParams({ track: trackId });
 
   if (!name) {
@@ -63,15 +63,15 @@ export async function updateTrack(trackId: string, formData: FormData) {
     redirect(`/admin/track-settings?${query}`);
   }
 
-  const [track, conflict, validCertificates] = await Promise.all([
+  const [track, conflict, validCategories] = await Promise.all([
     prisma.track.findUnique({ where: { id: trackId }, select: { id: true } }),
     prisma.track.findFirst({
       where: { name, NOT: { id: trackId } },
       select: { id: true },
     }),
-    certificateIdsAreValid(certificateIds),
+    categoryIdsAreValid(categoryIds),
   ]);
-  if (!track || !validCertificates) {
+  if (!track || !validCategories) {
     query.set("error", "invalid");
     redirect(`/admin/track-settings?${query}`);
   }
@@ -82,12 +82,12 @@ export async function updateTrack(trackId: string, formData: FormData) {
 
   await prisma.$transaction(async (tx) => {
     await tx.track.update({ where: { id: trackId }, data: { name } });
-    await tx.trackCertificate.deleteMany({ where: { trackId } });
-    if (certificateIds.length > 0) {
-      await tx.trackCertificate.createMany({
-        data: certificateIds.map((certificateId) => ({
+    await tx.trackCategory.deleteMany({ where: { trackId } });
+    if (categoryIds.length > 0) {
+      await tx.trackCategory.createMany({
+        data: categoryIds.map((categoryId) => ({
           trackId,
-          certificateId,
+          categoryId,
         })),
       });
     }

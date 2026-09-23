@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
   const decks = await prisma.deck.findMany({
     orderBy: { createdAt: "desc" },
-    include: { certificate: true, _count: { select: { cards: true } } },
+    include: { category: true, _count: { select: { cards: true } } },
   });
 
   const origin = new URL(request.url).origin;
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   const title = String(body.title ?? "").trim();
-  const certificateName = String(body.certificate ?? "").trim();
+  const categoryName = String(body.category ?? "").trim();
   const language = String(body.language ?? "").trim();
   const description = String(body.description ?? "").trim();
   const slugInput = String(body.slug ?? "").trim();
@@ -44,25 +44,25 @@ export async function POST(request: Request) {
     );
   }
 
-  let certificateId: string | null = null;
-  if (certificateName) {
-    const certificate = await prisma.certificate.findUnique({
-      where: { name: certificateName },
+  let categoryId: string | null = null;
+  if (categoryName) {
+    const category = await prisma.category.findUnique({
+      where: { name: categoryName },
     });
-    if (!certificate) {
-      const available = await prisma.certificate.findMany({
+    if (!category) {
+      const available = await prisma.category.findMany({
         select: { name: true },
         orderBy: { order: "asc" },
       });
       return NextResponse.json(
         {
-          error: `Certificate '${certificateName}' not found.`,
-          availableCertificates: available.map((c) => c.name),
+          error: `Category '${categoryName}' not found.`,
+          availableCategories: available.map((c) => c.name),
         },
         { status: 400 }
       );
     }
-    certificateId = certificate.id;
+    categoryId = category.id;
   }
 
   let slug = slugify(slugInput || title);
@@ -84,8 +84,8 @@ export async function POST(request: Request) {
   }
 
   const deck = await prisma.deck.create({
-    data: { title, description, slug, certificateId, language },
-    include: { certificate: true, _count: { select: { cards: true } } },
+    data: { title, description, slug, categoryId, language },
+    include: { category: true, _count: { select: { cards: true } } },
   });
 
   const origin = new URL(request.url).origin;

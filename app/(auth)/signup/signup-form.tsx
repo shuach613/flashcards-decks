@@ -11,7 +11,7 @@ export function SignupForm({
 }: {
   callbackUrl: string;
   locale: Locale;
-  tracks: { id: string; name: string; certificateNames: string[] }[];
+  tracks: { id: string; name: string; categoryNames: string[] }[];
 }) {
   const [state, formAction, pending] = useActionState(signup, undefined);
 
@@ -66,8 +66,8 @@ export function SignupForm({
                   {track.name}
                 </span>
                 <span className="block text-xs text-dark-gray">
-                  {track.certificateNames.length > 0
-                    ? track.certificateNames.join(" · ")
+                  {track.categoryNames.length > 0
+                    ? track.categoryNames.join(" · ")
                     : t(locale, "track.noCategories")}
                 </span>
               </span>

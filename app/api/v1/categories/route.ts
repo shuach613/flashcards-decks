@@ -1,21 +1,21 @@
 import { NextResponse } from "next/server";
 import { requireApiKey } from "@/lib/api-auth";
-import { ensureDefaultCertificates } from "@/lib/certificates-server";
-import { serializeCertificate } from "@/lib/api-serialize";
+import { ensureDefaultCategories } from "@/lib/categories-server";
+import { serializeCategory } from "@/lib/api-serialize";
 import { prisma } from "@/lib/db";
 
 export async function GET(request: Request) {
   const authError = requireApiKey(request);
   if (authError) return authError;
 
-  await ensureDefaultCertificates();
-  const certificates = await prisma.certificate.findMany({
+  await ensureDefaultCategories();
+  const categories = await prisma.category.findMany({
     orderBy: { order: "asc" },
     include: { _count: { select: { decks: true } } },
   });
 
   return NextResponse.json({
-    certificates: certificates.map(serializeCertificate),
+    categories: categories.map(serializeCategory),
   });
 }
 
@@ -33,22 +33,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "'name' is required." }, { status: 400 });
   }
 
-  const existing = await prisma.certificate.findUnique({ where: { name } });
+  const existing = await prisma.category.findUnique({ where: { name } });
   if (existing) {
     return NextResponse.json(
-      { error: `A certificate named '${name}' already exists.` },
+      { error: `A category named '${name}' already exists.` },
       { status: 409 }
     );
   }
 
-  const last = await prisma.certificate.findFirst({ orderBy: { order: "desc" } });
-  const certificate = await prisma.certificate.create({
+  const last = await prisma.category.findFirst({ orderBy: { order: "desc" } });
+  const category = await prisma.category.create({
     data: { name, order: (last?.order ?? -1) + 1 },
     include: { _count: { select: { decks: true } } },
   });
 
   return NextResponse.json(
-    { certificate: serializeCertificate(certificate) },
+    { category: serializeCategory(category) },
     { status: 201 }
   );
 }

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/authz";
-import { ensureDefaultCertificates } from "@/lib/certificates-server";
+import { ensureDefaultCategories } from "@/lib/categories-server";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
@@ -15,16 +15,16 @@ export default async function AdminDeckPage({
   params: Promise<{ slug: string }>;
 }) {
   await requireAdmin();
-  await ensureDefaultCertificates();
+  await ensureDefaultCategories();
   const locale = await getLocale();
   const { slug } = await params;
 
-  const [deck, certificates] = await Promise.all([
+  const [deck, categories] = await Promise.all([
     prisma.deck.findUnique({
       where: { slug },
       include: { cards: { orderBy: { order: "asc" } } },
     }),
-    prisma.certificate.findMany({ orderBy: { order: "asc" } }),
+    prisma.category.findMany({ orderBy: { order: "asc" } }),
   ]);
   if (!deck) notFound();
 
@@ -56,9 +56,9 @@ export default async function AdminDeckPage({
           title={deck.title}
           description={deck.description}
           slug={deck.slug}
-          certificateId={deck.certificateId}
+          categoryId={deck.categoryId}
           language={deck.language}
-          certificates={certificates}
+          categories={categories}
           locale={locale}
         />
       </section>

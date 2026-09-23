@@ -8,7 +8,7 @@ async function findDeck(slug: string) {
   return prisma.deck.findUnique({
     where: { slug },
     include: {
-      certificate: true,
+      category: true,
       cards: { orderBy: { order: "asc" } },
       _count: { select: { cards: true } },
     },
@@ -55,7 +55,7 @@ export async function PATCH(
     description?: string;
     language?: string;
     slug?: string;
-    certificateId?: string | null;
+    categoryId?: string | null;
   } = {};
 
   if (body.title !== undefined) {
@@ -81,28 +81,28 @@ export async function PATCH(
     data.language = language;
   }
 
-  if (body.certificate !== undefined) {
-    const certificateName = String(body.certificate).trim();
-    if (!certificateName) {
-      data.certificateId = null;
+  if (body.category !== undefined) {
+    const categoryName = String(body.category).trim();
+    if (!categoryName) {
+      data.categoryId = null;
     } else {
-      const certificate = await prisma.certificate.findUnique({
-        where: { name: certificateName },
+      const category = await prisma.category.findUnique({
+        where: { name: categoryName },
       });
-      if (!certificate) {
-        const available = await prisma.certificate.findMany({
+      if (!category) {
+        const available = await prisma.category.findMany({
           select: { name: true },
           orderBy: { order: "asc" },
         });
         return NextResponse.json(
           {
-            error: `Certificate '${certificateName}' not found.`,
-            availableCertificates: available.map((c) => c.name),
+            error: `Category '${categoryName}' not found.`,
+            availableCategories: available.map((c) => c.name),
           },
           { status: 400 }
         );
       }
-      data.certificateId = certificate.id;
+      data.categoryId = category.id;
     }
   }
 
@@ -130,7 +130,7 @@ export async function PATCH(
     where: { id: deck.id },
     data,
     include: {
-      certificate: true,
+      category: true,
       cards: { orderBy: { order: "asc" } },
       _count: { select: { cards: true } },
     },

@@ -1,29 +1,29 @@
 "use client";
 
 import { useActionState } from "react";
-import { LANGUAGE_VALUES } from "@/lib/certificates";
+import { LANGUAGE_VALUES } from "@/lib/categories";
 import { t, type Locale } from "@/lib/i18n";
 import { updateDeckMeta } from "./actions";
 
-type Certificate = { id: string; name: string };
+type Category = { id: string; name: string };
 
 export function DeckMetaForm({
   deckId,
   title,
   description,
   slug,
-  certificateId,
+  categoryId,
   language,
-  certificates,
+  categories,
   locale,
 }: {
   deckId: string;
   title: string;
   description: string;
   slug: string;
-  certificateId: string | null;
+  categoryId: string | null;
   language: string;
-  certificates: Certificate[];
+  categories: Category[];
   locale: Locale;
 }) {
   const action = updateDeckMeta.bind(null, deckId);
@@ -62,21 +62,21 @@ export function DeckMetaForm({
         <div className="flex-1">
           <label
             className="block text-sm font-medium text-evergreen"
-            htmlFor="certificateId"
+            htmlFor="categoryId"
           >
-            {t(locale, "common.certificateLabel")}
+            {t(locale, "common.categoryLabel")}
           </label>
           <select
-            id="certificateId"
-            name="certificateId"
+            id="categoryId"
+            name="categoryId"
             required
-            defaultValue={certificateId ?? ""}
+            defaultValue={categoryId ?? ""}
             className={fieldClass}
           >
             <option value="" disabled>
               {t(locale, "common.selectPlaceholder")}
             </option>
-            {certificates.map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>

@@ -17,9 +17,9 @@ export default async function SignupPage({
   const tracks = await prisma.track.findMany({
     orderBy: { order: "asc" },
     include: {
-      certificates: {
-        include: { certificate: true },
-        orderBy: { certificate: { order: "asc" } },
+      categories: {
+        include: { category: true },
+        orderBy: { category: { order: "asc" } },
       },
     },
   });
@@ -36,8 +36,8 @@ export default async function SignupPage({
           tracks={tracks.map((track) => ({
             id: track.id,
             name: track.name,
-            certificateNames: track.certificates.map(
-              (item) => item.certificate.name
+            categoryNames: track.categories.map(
+              (item) => item.category.name
             ),
           }))}
         />

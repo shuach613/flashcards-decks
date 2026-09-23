@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 
 export type FormState = { error?: string } | undefined;
 
-export async function createCertificate(
+export async function createCategory(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
@@ -18,20 +18,20 @@ export async function createCertificate(
   const trackIds = [
     ...new Set(formData.getAll("trackIds").map(String).filter(Boolean)),
   ];
-  if (!name) return { error: t(locale, "cert.nameRequired") };
+  if (!name) return { error: t(locale, "category.nameRequired") };
 
-  const existing = await prisma.certificate.findUnique({ where: { name } });
-  if (existing) return { error: t(locale, "cert.nameExists") };
+  const existing = await prisma.category.findUnique({ where: { name } });
+  if (existing) return { error: t(locale, "category.nameExists") };
 
   const validTrackCount = await prisma.track.count({
     where: { id: { in: trackIds } },
   });
   if (validTrackCount !== trackIds.length) {
-    return { error: t(locale, "cert.invalidTracks") };
+    return { error: t(locale, "category.invalidTracks") };
   }
 
-  const last = await prisma.certificate.findFirst({ orderBy: { order: "desc" } });
-  await prisma.certificate.create({
+  const last = await prisma.category.findFirst({ orderBy: { order: "desc" } });
+  await prisma.category.create({
     data: {
       name,
       order: (last?.order ?? -1) + 1,
@@ -41,7 +41,7 @@ export async function createCertificate(
     },
   });
 
-  revalidatePath("/admin/certificates");
+  revalidatePath("/admin/categories");
   revalidatePath("/admin");
   revalidatePath("/admin/track-settings");
 }
