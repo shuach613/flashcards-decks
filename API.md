@@ -5,6 +5,19 @@ decks, add or edit cards, and manage certificates.
 
 **Base URL:** `<APP_URL>/api/v1`
 
+## Health check
+
+The unauthenticated health endpoint checks that the application can reach its
+database:
+
+```bash
+curl -i <APP_URL>/api/health
+```
+
+It returns `200` with `{"status":"ok","database":"ok"}` when healthy and
+`503` when the database is unavailable. It does not expose credentials or
+database contents.
+
 ## Auth
 
 Every request requires an `Authorization` header with the admin API key:
