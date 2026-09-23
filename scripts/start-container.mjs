@@ -87,10 +87,36 @@ function bootstrapAdmin() {
 
     const passwordHash = bcrypt.hashSync(password, 10);
     db.prepare(
-      'INSERT INTO "User" ("id", "email", "passwordHash", "role", "createdAt") VALUES (?, ?, ?, \'ADMIN\', CURRENT_TIMESTAMP)'
+      'INSERT INTO "User" ("id", "email", "passwordHash", "role", "isPrimaryAdmin", "createdAt") VALUES (?, ?, ?, \'ADMIN\', 1, CURRENT_TIMESTAMP)'
     ).run(randomUUID(), email, passwordHash);
 
     console.log(`Created initial admin account ${email}.`);
+  } finally {
+    db.close();
+  }
+}
+
+function ensurePrimaryAdmin() {
+  const email = process.env.ADMIN_INITIAL_EMAIL?.trim().toLowerCase();
+  if (!email) return;
+
+  const db = new Database(databasePath(process.env.DATABASE_URL));
+
+  try {
+    const existingPrimaryAdmin = db
+      .prepare('SELECT "id" FROM "User" WHERE "isPrimaryAdmin" = 1 LIMIT 1')
+      .get();
+    if (existingPrimaryAdmin) return;
+
+    const configuredAdmin = db
+      .prepare('SELECT "id", "role" FROM "User" WHERE "email" = ?')
+      .get(email);
+    if (configuredAdmin?.role !== "ADMIN") return;
+
+    db.prepare('UPDATE "User" SET "isPrimaryAdmin" = 1 WHERE "id" = ?').run(
+      configuredAdmin.id
+    );
+    console.log(`Marked ${email} as the primary administrator.`);
   } finally {
     db.close();
   }
@@ -103,6 +129,7 @@ execFileSync("npx", ["--no-install", "prisma", "migrate", "deploy"], {
   stdio: "inherit",
 });
 bootstrapAdmin();
+ensurePrimaryAdmin();
 console.log("Starting Flashcard Decks...");
 execFileSync("npm", ["run", "start", "--", "-H", "0.0.0.0", "-p", "3000"], {
   stdio: "inherit",

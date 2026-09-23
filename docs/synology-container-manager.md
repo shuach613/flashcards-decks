@@ -108,9 +108,17 @@ On the first startup, the container:
 2. Creates `ADMIN_INITIAL_EMAIL` as an administrator only when the database has no users.
 3. Hashes `ADMIN_INITIAL_PASSWORD` with bcrypt.
 4. Leaves the account and password unchanged on later restarts and skips bootstrap once any user exists.
-5. Starts the application on port `3000`.
+5. Marks this account as the primary administrator.
+6. Starts the application on port `3000`.
 
 After successfully logging in, remove or blank both `ADMIN_INITIAL_EMAIL` and `ADMIN_INITIAL_PASSWORD` in `docker-compose.yml`, then recreate the project so the temporary password is no longer supplied to the container. The admin account remains in that local installation's persistent database.
+
+The primary administrator can open the student administration page to grant or
+revoke administrator access for other users. Other administrators cannot revoke
+administrator access. When upgrading an older installation to this version,
+leave `ADMIN_INITIAL_EMAIL` set to the existing initial administrator for the
+first startup so the account can be marked as primary; remove the initial-admin
+variables after verifying the upgrade.
 
 Do not change the SQLite data folder during this process.
 

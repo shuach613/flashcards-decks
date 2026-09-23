@@ -61,6 +61,8 @@ test("fresh installation creates the current schema", () => {
     assert.ok(tables.includes("TrackCategory"));
     assert.ok(!tables.includes("Certificate"));
     assert.ok(deckColumns.some((column) => column.name === "categoryId"));
+    const userColumns = db.prepare<{ name: string }>("PRAGMA table_info(User)").all();
+    assert.ok(userColumns.some((column) => column.name === "isPrimaryAdmin"));
   } finally {
     db.close();
     cleanup(databasePath);

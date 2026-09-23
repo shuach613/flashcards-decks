@@ -127,6 +127,13 @@ const en = {
     "Add and rename tracks, and choose which categories each track can access.",
   "admin.studentOverviewBody":
     "Search for a student by email to review their saved study activity.",
+  "admin.userManagement": "User administration",
+  "admin.userManagementBody":
+    "Only the initial administrator can grant or revoke administrator access.",
+  "admin.adminRole": "Administrator",
+  "admin.studentRole": "Student",
+  "admin.makeAdmin": "Make administrator",
+  "admin.revokeAdmin": "Revoke administrator",
   "admin.studentEmail": "Student email",
   "admin.searchStudent": "Search",
   "admin.studentNotFound": "No student was found with that email address.",
@@ -331,6 +338,13 @@ const de: Record<TranslationKey, string> = {
     "Füge Tracks hinzu, benenne sie um und wähle die Kategorien für jeden Track aus.",
   "admin.studentOverviewBody":
     "Suche einen Schüler per E-Mail, um seine gespeicherte Lernaktivität anzusehen.",
+  "admin.userManagement": "Benutzerverwaltung",
+  "admin.userManagementBody":
+    "Nur der ursprüngliche Administrator kann Administratorrechte vergeben oder entziehen.",
+  "admin.adminRole": "Administrator",
+  "admin.studentRole": "Schüler",
+  "admin.makeAdmin": "Zum Administrator machen",
+  "admin.revokeAdmin": "Administratorrechte entziehen",
   "admin.studentEmail": "E-Mail des Schülers",
   "admin.searchStudent": "Suchen",
   "admin.studentNotFound": "Unter dieser E-Mail-Adresse wurde kein Schüler gefunden.",

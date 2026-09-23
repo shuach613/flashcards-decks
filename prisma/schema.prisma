@@ -16,6 +16,7 @@ model User {
   email              String               @unique
   passwordHash       String
   role               String               @default("USER") // "ADMIN" | "USER"
+  isPrimaryAdmin     Boolean              @default(false)
   createdAt          DateTime             @default(now())
   studyProgress      StudyProgress[]
   cardProgress       CardProgress[]

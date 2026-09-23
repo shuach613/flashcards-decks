@@ -16,6 +16,7 @@ Container Manager.
 - Provides an admin REST API for managing categories, decks, and cards.
 - Supports password reset emails through a personal SMTP account such as Gmail.
 - Creates an initial local administrator on the first deployment of an empty database.
+- Lets the primary initial administrator grant or revoke administrator access for other users.
 - Runs database migrations automatically when the container starts.
 - Includes an unauthenticated application/database health endpoint at `/api/health`.
 
@@ -54,6 +55,8 @@ configured in Container Manager.
   SMTP access from the NAS.
 - The initial administrator variables are used only when the database contains
   no users. They do not reset an existing administrator password.
+- The primary administrator is stored in the database. Other administrators can
+  use the admin area but cannot revoke administrator access from another user.
 - Updates can apply database migrations. Back up the database before updating,
   and roll back the image together with its matching database backup if needed.
 - The Docker image is currently published for `linux/amd64` only.

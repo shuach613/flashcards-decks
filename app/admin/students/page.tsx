@@ -5,6 +5,7 @@ import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { getCardStudyStatus, summarizeProgress } from "@/lib/progress";
 import { AdminSubnav } from "../_components/admin-subnav";
+import { setUserAdmin } from "./role-actions";
 
 type SearchParams = Promise<{ email?: string | string[] }>;
 
@@ -13,8 +14,19 @@ export default async function StudentOverviewPage({
 }: {
   searchParams: SearchParams;
 }) {
-  await requireAdmin();
+  const currentUser = await requireAdmin();
   const locale = await getLocale();
+  const currentAdmin = await prisma.user.findUnique({
+    where: { id: currentUser.id },
+    select: { isPrimaryAdmin: true },
+  });
+  const manageableUsers = currentAdmin?.isPrimaryAdmin
+    ? await prisma.user.findMany({
+        where: { isPrimaryAdmin: false },
+        orderBy: { email: "asc" },
+        select: { id: true, email: true, role: true },
+      })
+    : [];
   const rawEmail = (await searchParams).email;
   const email = (Array.isArray(rawEmail) ? rawEmail[0] : rawEmail)
     ?.trim()
@@ -65,6 +77,44 @@ export default async function StudentOverviewPage({
         {t(locale, "admin.heading")}
       </h1>
       <AdminSubnav active="students" locale={locale} />
+
+      {currentAdmin?.isPrimaryAdmin && (
+        <section className="mb-10 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+          <h2 className="text-xl font-bold tracking-tight text-evergreen">
+            {t(locale, "admin.userManagement")}
+          </h2>
+          <p className="mt-1 text-dark-gray">
+            {t(locale, "admin.userManagementBody")}
+          </p>
+          <ul className="mt-4 flex flex-col gap-3">
+            {manageableUsers.map((user) => (
+              <li
+                key={user.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sand px-4 py-3"
+              >
+                <div>
+                  <p className="font-medium text-evergreen">{user.email}</p>
+                  <p className="text-sm text-dark-gray">
+                    {user.role === "ADMIN"
+                      ? t(locale, "admin.adminRole")
+                      : t(locale, "admin.studentRole")}
+                  </p>
+                </div>
+                <form action={setUserAdmin.bind(null, user.id, user.role !== "ADMIN")}>
+                  <button
+                    type="submit"
+                    className="rounded-full border border-evergreen px-4 py-2 text-sm font-semibold text-evergreen transition hover:bg-evergreen hover:text-white"
+                  >
+                    {user.role === "ADMIN"
+                      ? t(locale, "admin.revokeAdmin")
+                      : t(locale, "admin.makeAdmin")}
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section>
         <h2 className="text-xl font-bold tracking-tight text-evergreen">
