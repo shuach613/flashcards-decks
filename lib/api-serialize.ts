@@ -15,6 +15,7 @@ type Deck = {
   title: string;
   description: string;
   language: string;
+  difficulty: string;
   createdAt: Date;
   category: Category | null;
   cards?: Card[];
@@ -28,6 +29,7 @@ export function serializeDeck(deck: Deck, origin: string) {
     title: deck.title,
     description: deck.description,
     language: deck.language,
+    difficulty: deck.difficulty,
     category: deck.category
       ? { id: deck.category.id, name: deck.category.name }
       : null,

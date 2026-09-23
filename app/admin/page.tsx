@@ -5,6 +5,7 @@ import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { CopyLinkButton } from "./copy-link-button";
+import { DeckDifficultyIndicator } from "@/components/deck-difficulty";
 import { CreateDeckForm } from "./create-deck-form";
 import { deleteDeck } from "./actions";
 import { AdminSubnav } from "./_components/admin-subnav";
@@ -54,7 +55,10 @@ export default async function AdminPage() {
             className="flex items-center justify-between gap-4 rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
           >
             <div>
-              <p className="font-semibold text-evergreen">{deck.title}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-evergreen">{deck.title}</p>
+                <DeckDifficultyIndicator difficulty={deck.difficulty} locale={locale} />
+              </div>
               <p className="text-sm text-dark-gray">
                 /decks/{deck.slug} · {tc(locale, "deck.cardCount", deck._count.cards)} ·{" "}
                 {deck.category?.name ?? t(locale, "common.uncategorized")} ·{" "}

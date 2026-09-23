@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireApiKey } from "@/lib/api-auth";
 import { serializeDeck } from "@/lib/api-serialize";
 import { prisma } from "@/lib/db";
+import { isDeckDifficulty } from "@/lib/difficulty";
 import { slugify } from "@/lib/tsv";
 
 export async function GET(request: Request) {
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
   const language = String(body.language ?? "").trim();
   const description = String(body.description ?? "").trim();
   const slugInput = String(body.slug ?? "").trim();
+  const difficulty = String(body.difficulty ?? "INTERMEDIATE").trim();
 
   if (!title) {
     return NextResponse.json({ error: "'title' is required." }, { status: 400 });
@@ -40,6 +42,12 @@ export async function POST(request: Request) {
   if (language !== "EN" && language !== "DE") {
     return NextResponse.json(
       { error: "'language' must be 'EN' or 'DE'." },
+      { status: 400 }
+    );
+  }
+  if (!isDeckDifficulty(difficulty)) {
+    return NextResponse.json(
+      { error: "'difficulty' must be 'EASY', 'INTERMEDIATE', or 'HARD'." },
       { status: 400 }
     );
   }
@@ -84,7 +92,7 @@ export async function POST(request: Request) {
   }
 
   const deck = await prisma.deck.create({
-    data: { title, description, slug, categoryId, language },
+    data: { title, description, slug, categoryId, language, difficulty },
     include: { category: true, _count: { select: { cards: true } } },
   });
 

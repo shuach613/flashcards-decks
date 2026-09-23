@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/authz";
 import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
+import { isDeckDifficulty } from "@/lib/difficulty";
 import { parseTsv, slugify } from "@/lib/tsv";
 
 export type FormState = { error?: string; success?: string } | undefined;
@@ -22,11 +23,15 @@ export async function updateDeckMeta(
   const slugInput = String(formData.get("slug") ?? "").trim();
   const categoryId = String(formData.get("categoryId") ?? "").trim();
   const language = String(formData.get("language") ?? "").trim();
+  const difficulty = String(formData.get("difficulty") ?? "").trim();
 
   if (!title) return { error: t(locale, "admin.titleRequired") };
   if (!categoryId) return { error: t(locale, "admin.categoryRequired") };
   if (language !== "EN" && language !== "DE") {
     return { error: t(locale, "admin.languageRequired") };
+  }
+  if (!isDeckDifficulty(difficulty)) {
+    return { error: t(locale, "admin.difficultyRequired") };
   }
 
   const newSlug = slugify(slugInput || title);
@@ -39,7 +44,14 @@ export async function updateDeckMeta(
 
   const deck = await prisma.deck.update({
     where: { id: deckId },
-    data: { title, description, slug: newSlug, categoryId, language },
+    data: {
+      title,
+      description,
+      slug: newSlug,
+      categoryId,
+      language,
+      difficulty,
+    },
   });
   redirect(`/admin/decks/${deck.slug}`);
 }

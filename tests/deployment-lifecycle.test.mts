@@ -61,8 +61,27 @@ test("fresh installation creates the current schema", () => {
     assert.ok(tables.includes("TrackCategory"));
     assert.ok(!tables.includes("Certificate"));
     assert.ok(deckColumns.some((column) => column.name === "categoryId"));
+    assert.ok(deckColumns.some((column) => column.name === "difficulty"));
     const userColumns = db.prepare<{ name: string }>("PRAGMA table_info(User)").all();
     assert.ok(userColumns.some((column) => column.name === "isPrimaryAdmin"));
+  } finally {
+    db.close();
+    cleanup(databasePath);
+  }
+});
+
+test("existing decks receive the intermediate difficulty default", () => {
+  const { databasePath, db } = createDatabase();
+
+  try {
+    applyMigrations(db);
+    db.exec(
+      'INSERT INTO "Deck" ("id", "slug", "title") VALUES (\'deck-1\', \'deck-1\', \'Existing deck\')'
+    );
+    assert.deepEqual(
+      db.prepare<{ difficulty: string }>('SELECT "difficulty" FROM "Deck"').get(),
+      { difficulty: "INTERMEDIATE" }
+    );
   } finally {
     db.close();
     cleanup(databasePath);

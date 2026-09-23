@@ -58,6 +58,7 @@ export default async function AdminDeckPage({
           slug={deck.slug}
           categoryId={deck.categoryId}
           language={deck.language}
+          difficulty={deck.difficulty}
           categories={categories}
           locale={locale}
         />

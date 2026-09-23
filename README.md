@@ -9,6 +9,7 @@ Container Manager.
 
 - Provides email-and-password accounts with separate user and administrator roles.
 - Lets administrators create, edit, import, and delete flashcard decks and cards.
+- Lets administrators classify decks as easy, intermediate, or hard, shown with a three-bar difficulty indicator.
 - Organises decks into generic categories and learning tracks.
 - Lets users choose a track and study the decks available to that track.
 - Records study progress, good/again card outcomes, and deck completion status.

@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/authz";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
+import { isDeckDifficulty } from "@/lib/difficulty";
 import { slugify } from "@/lib/tsv";
 
 export type FormState = { error?: string } | undefined;
@@ -18,11 +19,15 @@ export async function createDeck(
   const title = String(formData.get("title") ?? "").trim();
   const categoryId = String(formData.get("categoryId") ?? "").trim();
   const language = String(formData.get("language") ?? "").trim();
+  const difficulty = String(formData.get("difficulty") ?? "INTERMEDIATE").trim();
 
   if (!title) return { error: t(locale, "admin.titleRequired") };
   if (!categoryId) return { error: t(locale, "admin.categoryRequired") };
   if (language !== "EN" && language !== "DE") {
     return { error: t(locale, "admin.languageRequired") };
+  }
+  if (!isDeckDifficulty(difficulty)) {
+    return { error: t(locale, "admin.difficultyRequired") };
   }
 
   let slug = slugify(title);
@@ -34,7 +39,7 @@ export async function createDeck(
   }
 
   const deck = await prisma.deck.create({
-    data: { title, slug, categoryId, language },
+    data: { title, slug, categoryId, language, difficulty },
   });
   redirect(`/admin/decks/${deck.slug}`);
 }

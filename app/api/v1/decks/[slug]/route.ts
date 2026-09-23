@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireApiKey } from "@/lib/api-auth";
 import { serializeDeck } from "@/lib/api-serialize";
 import { prisma } from "@/lib/db";
+import { isDeckDifficulty } from "@/lib/difficulty";
 import { slugify } from "@/lib/tsv";
 
 async function findDeck(slug: string) {
@@ -56,6 +57,7 @@ export async function PATCH(
     language?: string;
     slug?: string;
     categoryId?: string | null;
+    difficulty?: string;
   } = {};
 
   if (body.title !== undefined) {
@@ -79,6 +81,17 @@ export async function PATCH(
       );
     }
     data.language = language;
+  }
+
+  if (body.difficulty !== undefined) {
+    const difficulty = String(body.difficulty).trim();
+    if (!isDeckDifficulty(difficulty)) {
+      return NextResponse.json(
+        { error: "'difficulty' must be 'EASY', 'INTERMEDIATE', or 'HARD'." },
+        { status: 400 }
+      );
+    }
+    data.difficulty = difficulty;
   }
 
   if (body.category !== undefined) {

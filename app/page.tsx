@@ -6,6 +6,7 @@ import { getLocale } from "@/lib/i18n-server";
 import { summarizeProgress } from "@/lib/progress";
 import { prisma } from "@/lib/db";
 import { DeckProgress } from "@/components/deck-progress";
+import { DeckDifficultyIndicator } from "@/components/deck-difficulty";
 import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
 import {
   deckAccessWhere,
@@ -83,7 +84,10 @@ export default async function HomePage() {
                 <div className="flex items-end justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-evergreen">{p.deck.title}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-evergreen">{p.deck.title}</p>
+                        <DeckDifficultyIndicator difficulty={p.deck.difficulty} locale={locale} />
+                      </div>
                       <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium text-dark-gray">
                         {p.deck.category?.name ??
                           t(locale, "common.uncategorized")}

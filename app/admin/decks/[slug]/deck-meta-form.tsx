@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { LANGUAGE_VALUES } from "@/lib/categories";
+import { DECK_DIFFICULTIES } from "@/lib/difficulty";
 import { t, type Locale } from "@/lib/i18n";
 import { updateDeckMeta } from "./actions";
 
@@ -14,6 +15,7 @@ export function DeckMetaForm({
   slug,
   categoryId,
   language,
+  difficulty,
   categories,
   locale,
 }: {
@@ -23,6 +25,7 @@ export function DeckMetaForm({
   slug: string;
   categoryId: string | null;
   language: string;
+  difficulty: string;
   categories: Category[];
   locale: Locale;
 }) {
@@ -97,6 +100,24 @@ export function DeckMetaForm({
             {LANGUAGE_VALUES.map((value) => (
               <option key={value} value={value}>
                 {t(locale, `language.${value}` as "language.EN" | "language.DE")}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex-1">
+          <label className="block text-sm font-medium text-evergreen" htmlFor="difficulty">
+            {t(locale, "common.difficultyLabel")}
+          </label>
+          <select
+            id="difficulty"
+            name="difficulty"
+            required
+            defaultValue={difficulty}
+            className={fieldClass}
+          >
+            {DECK_DIFFICULTIES.map((value) => (
+              <option key={value} value={value}>
+                {t(locale, `deck.difficulty.${value}` as const)}
               </option>
             ))}
           </select>

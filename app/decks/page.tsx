@@ -4,6 +4,7 @@ import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { DeckProgress } from "@/components/deck-progress";
+import { DeckDifficultyIndicator } from "@/components/deck-difficulty";
 import { getDeckStudyState, summarizeProgress } from "@/lib/progress";
 import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
 import { requireTrackedUser } from "@/lib/authz";
@@ -13,6 +14,7 @@ type DeckRow = {
   slug: string;
   title: string;
   language: string;
+  difficulty: string;
   studyProgress: { id: string }[];
   cards: { id: string; progress: { isGood: boolean }[] }[];
 };
@@ -135,12 +137,18 @@ export default async function AllDecksPage() {
                             key={deck.id}
                             className="rounded-2xl border border-sand bg-white px-4 py-3 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
                           >
-                            <Link
-                              href={`/decks/${deck.slug}`}
-                              className="font-semibold text-evergreen hover:underline"
-                            >
-                              {deck.title}
-                            </Link>
+                            <div className="flex items-center gap-2">
+                              <Link
+                                href={`/decks/${deck.slug}`}
+                                className="font-semibold text-evergreen hover:underline"
+                              >
+                                {deck.title}
+                              </Link>
+                              <DeckDifficultyIndicator
+                                difficulty={deck.difficulty}
+                                locale={locale}
+                              />
+                            </div>
                             <DeckProgress
                               goodCount={progress.goodCount}
                               totalCount={progress.totalCount}

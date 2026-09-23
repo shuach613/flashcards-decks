@@ -37,10 +37,13 @@ Requests without a valid key get `401 Unauthorized`.
 | Action | Request |
 |---|---|
 | List decks | `GET /decks` |
-| Create deck | `POST /decks` — `{"title", "category"?, "language": "EN"\|"DE", "description"?, "slug"?}` |
+| Create deck | `POST /decks` — `{"title", "category"?, "language": "EN"\|"DE", "difficulty": "EASY"\|"INTERMEDIATE"\|"HARD", "description"?, "slug"?}` |
 | Get one deck (incl. cards) | `GET /decks/:slug` |
 | Rename/edit deck | `PATCH /decks/:slug` — `{"title"?, "description"?, "category"?, "language"?, "slug"?}` |
 | Delete deck | `DELETE /decks/:slug` |
+
+Every deck response includes a `difficulty` field. Existing decks created before
+this field was introduced use `INTERMEDIATE`.
 
 Decks are identified by `slug` (also the shareable-link identifier). Every
 deck response includes a `shareUrl` field — there's no separate endpoint to

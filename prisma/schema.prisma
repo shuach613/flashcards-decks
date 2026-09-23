@@ -84,6 +84,7 @@ model Deck {
   categoryId String?
   category   Category?    @relation(fields: [categoryId], references: [id])
   language      String          @default("EN") // "EN" | "DE"
+  difficulty    String          @default("INTERMEDIATE") // "EASY" | "INTERMEDIATE" | "HARD"
   createdAt     DateTime        @default(now())
   cards         Card[]
   studyProgress StudyProgress[]
