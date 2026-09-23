@@ -44,6 +44,8 @@ The image build needs outbound internet access to download:
 
 The NAS does not need Node.js or npm installed on DSM. They are included inside the image.
 
+The repository also includes `docker-compose.dev.yml` for local development. Do not use that file for Synology deployment; it mounts the source tree and runs the development server.
+
 ## 3. Configure the Compose YAML
 
 No `.env` file is required. Open `docker-compose.yml` and replace the placeholder values in its `environment` section:

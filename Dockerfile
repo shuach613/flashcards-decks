@@ -18,6 +18,16 @@ COPY package.json package-lock.json ./
 # nodemailer directly for SMTP, so install the audited patched release.
 RUN npm ci --legacy-peer-deps
 
+FROM deps AS development
+
+ENV NODE_ENV=development
+ENV DATABASE_URL=file:/app/data/dev.db
+
+COPY . .
+RUN mkdir -p /app/data
+
+CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
+
 FROM base AS builder
 
 COPY --from=deps /app/node_modules ./node_modules

@@ -13,6 +13,14 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+For containerized local development with hot reload, use the separate development Compose file:
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+The production Compose file is intentionally kept separate from this workflow. It builds and starts the production container; the development file mounts the source tree and runs `next dev`.
+
 ## Database
 
 The application uses SQLite through Prisma. Set `DATABASE_URL` to the database file location, then apply migrations:
