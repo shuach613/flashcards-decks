@@ -59,6 +59,7 @@ test("fresh installation creates the current schema", () => {
 
     assert.ok(tables.includes("Category"));
     assert.ok(tables.includes("TrackCategory"));
+    assert.ok(tables.includes("AppSetting"));
     assert.ok(!tables.includes("Certificate"));
     assert.ok(deckColumns.some((column) => column.name === "categoryId"));
     assert.ok(deckColumns.some((column) => column.name === "difficulty"));

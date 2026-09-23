@@ -50,6 +50,8 @@ configured in Container Manager.
   concurrency, or high availability.
 - SQLite data must remain on persistent storage. Deleting or replacing the data
   directory removes the local users, decks, and progress.
+- Deck difficulty, category deletion state, and track deletion state are stored
+  in the persistent database and survive image replacement.
 - The application does not provide built-in LDAP, SSO, OAuth, or multi-server
   user management. Authentication is local to the installation.
 - Password reset depends on a working SMTP account, app password, and outbound
@@ -152,6 +154,11 @@ For a Compose deployment that uses a prebuilt GHCR image:
 3. Pull the new image and recreate the project without deleting `/volume1/flashcards/data/`.
 4. Wait for the container to become healthy. Pending database migrations run automatically before the application starts.
 5. Verify `https://your-app.example.com/api/health` returns HTTP `200`.
+
+Image updates replace the application files but keep the database in the mapped
+`/app/data` volume. The startup script applies pending migrations before the
+application starts, so deck difficulty values, deleted categories and tracks,
+users, decks, cards, and progress remain available after an update.
 
 Do not use `--build` for a prebuilt image deployment, and do not remove the persistent data folder. If migrations fail, the container remains stopped and the pre-migration backup is retained under `/volume1/flashcards/data/.migration-backups/`.
 

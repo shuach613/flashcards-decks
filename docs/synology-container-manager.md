@@ -161,6 +161,12 @@ For the prebuilt-image Compose deployment:
 
 Never delete `/volume1/flashcards/data/` during an update. If the migration fails, leave the container stopped and keep the `.migration-backups` folder for the rollback procedure.
 
+The image is replaceable; `/volume1/flashcards/data/` is the persistent source of
+truth. It contains the SQLite database with users, decks, cards, progress,
+difficulty values, and the markers that prevent deliberately deleted default
+categories or tracks from being recreated. The image's startup migrations add
+new columns or tables without replacing this data.
+
 ## 9. Rollback
 
 Restore the image and database as a matching pair:
