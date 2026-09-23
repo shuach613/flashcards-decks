@@ -6,28 +6,28 @@ const certificatesByTrack = new Map(
   DEFAULT_TRACKS.map((track) => [track.key, [...track.certificateNames]])
 );
 
-test("IT Support exposes only its three certificate categories", () => {
+test("the foundations track exposes its three certificate categories", () => {
   assert.deepEqual(certificatesByTrack.get("IT_SUPPORT"), [
-    "A+ Core 1",
-    "A+ Core 2",
-    "Network+",
+    "General Basics 1",
+    "General Basics 2",
+    "Connections Basics",
   ]);
 });
 
-test("Cybersecurity exposes Security+ but not Network+", () => {
+test("the core knowledge track exposes safety basics", () => {
   assert.deepEqual(certificatesByTrack.get("CYBERSECURITY"), [
-    "A+ Core 1",
-    "A+ Core 2",
-    "Security+",
+    "General Basics 1",
+    "General Basics 2",
+    "Safety Basics",
   ]);
 });
 
-test("AI Cybersecurity adds SecAI+ to the cybersecurity categories", () => {
+test("the applied knowledge track adds applied concepts", () => {
   assert.deepEqual(certificatesByTrack.get("AI_CYBERSECURITY"), [
-    "A+ Core 1",
-    "A+ Core 2",
-    "Security+",
-    "SecAI+",
+    "General Basics 1",
+    "General Basics 2",
+    "Safety Basics",
+    "Applied Concepts",
   ]);
 });
 

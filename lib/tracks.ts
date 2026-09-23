@@ -1,21 +1,26 @@
 export const DEFAULT_TRACKS = [
   {
     key: "IT_SUPPORT",
-    name: "IT Support",
+    name: "Foundations Track",
     order: 0,
-    certificateNames: ["A+ Core 1", "A+ Core 2", "Network+"],
+    certificateNames: ["General Basics 1", "General Basics 2", "Connections Basics"],
   },
   {
     key: "CYBERSECURITY",
-    name: "Cybersecurity",
+    name: "Core Knowledge Track",
     order: 1,
-    certificateNames: ["A+ Core 1", "A+ Core 2", "Security+"],
+    certificateNames: ["General Basics 1", "General Basics 2", "Safety Basics"],
   },
   {
     key: "AI_CYBERSECURITY",
-    name: "AI Cybersecurity",
+    name: "Applied Knowledge Track",
     order: 2,
-    certificateNames: ["A+ Core 1", "A+ Core 2", "Security+", "SecAI+"],
+    certificateNames: [
+      "General Basics 1",
+      "General Basics 2",
+      "Safety Basics",
+      "Applied Concepts",
+    ],
   },
 ] as const;
 

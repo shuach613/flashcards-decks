@@ -46,7 +46,7 @@ Decks are identified by `slug` (also the shareable-link identifier). Every
 deck response includes a `shareUrl` field — there's no separate endpoint to
 fetch the link.
 
-`certificate` is a certificate **name** (e.g. `"Network+"`), not an ID. It's
+`certificate` is a certificate **name** (e.g. `"Connections Basics"`), not an ID. It's
 optional on create — omitting it leaves the deck "Uncategorized". Passing an
 unknown name returns `400` with the list of valid certificate names.
 
@@ -75,5 +75,5 @@ New certificates are appended to the end of the display order used on the
 curl -X POST http://nas-host:3000/api/v1/decks \
   -H "Authorization: Bearer $ADMIN_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"title":"My Deck","certificate":"Network+","language":"EN"}'
+  -d '{"title":"My Deck","certificate":"Connections Basics","language":"EN"}'
 ```
