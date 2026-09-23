@@ -69,10 +69,10 @@ configured in Container Manager.
 
 Install dependencies and start the development server:
 
-`bash
+```bash
 npm install
 npm run dev
-`
+```
 
 Open [http://localhost:3000](http://localhost:3000).
 
@@ -88,9 +88,9 @@ The production Compose file is intentionally kept separate from this workflow. I
 
 The application uses SQLite through Prisma. Set `DATABASE_URL` to the database file location, then apply migrations:
 
-`bash
+```bash
 npx prisma migrate deploy
-`
+```
 
 For production, keep the SQLite file on persistent storage.
 
@@ -100,10 +100,10 @@ Set a stable, long random `AUTH_SECRET`.
 
 The Synology deployment creates one local initial administrator on an empty database using:
 
-`text
+```text
 ADMIN_INITIAL_EMAIL
 ADMIN_INITIAL_PASSWORD
-`
+```
 
 After the first administrator is created, later signups are regular users. The bootstrap variables should be removed after the first login.
 
@@ -111,7 +111,7 @@ After the first administrator is created, later signups are regular users. The b
 
 Password reset emails use any SMTP-compatible personal email account. Configure:
 
-`text
+```text
 APP_URL=https://your-app.example.com
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
@@ -119,7 +119,7 @@ SMTP_SECURE=false
 SMTP_USER=your-email@example.com
 SMTP_PASSWORD=your-smtp-password-or-app-password
 SMTP_FROM=ShuachCloud <your-email@example.com>
-`
+```
 
 The reset-token link expires after one hour.
 
@@ -170,7 +170,7 @@ Restore the database backup together with the previous image. Do not run an olde
 
 Run the production build and server with:
 
-`bash
+```bash
 npm run build
 npm run start
-`
+```

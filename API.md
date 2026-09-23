@@ -1,7 +1,7 @@
 # Admin API
 
-A REST API mirroring everything the admin UI can do: create/list/get/update/delete
-decks, add or edit cards, and manage categories.
+A REST API for managing categories, decks, and cards: create/list/get/update/delete
+decks, add or edit cards, and create/list categories.
 
 **Base URL:** `<APP_URL>/api/v1`
 
