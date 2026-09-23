@@ -90,6 +90,18 @@ For a Compose deployment that uses a prebuilt GHCR image:
 
 Do not use `--build` for a prebuilt image deployment, and do not remove the persistent data folder. If migrations fail, the container remains stopped and the pre-migration backup is retained under `/volume1/flashcards/data/.migration-backups/`.
 
+## Rolling back an update
+
+If an update fails, stop the project and restore the image tag and database backup from the same update point:
+
+1. Stop the Flashcard Decks project in Container Manager.
+2. Select the previous working image tag.
+3. Copy the matching backup from `/volume1/flashcards/data/.migration-backups/` back to `/volume1/flashcards/data/flashcards.db`.
+4. Recreate the project without rebuilding or deleting the data folder.
+5. Check the logs and verify `/api/health` returns HTTP `200`.
+
+Restore the database backup together with the previous image. Do not run an older image against a database that has already been migrated by a newer image.
+
 ## Production
 
 Run the production build and server with:

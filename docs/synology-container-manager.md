@@ -143,7 +143,20 @@ For the prebuilt-image Compose deployment:
 
 Never delete `/volume1/flashcards/data/` during an update. If the migration fails, leave the container stopped and keep the `.migration-backups` folder for the rollback procedure.
 
-## 9. Troubleshooting
+## 9. Rollback
+
+Restore the image and database as a matching pair:
+
+1. Stop the project in Container Manager.
+2. Select the previous known-good image tag.
+3. In `/volume1/flashcards/data/.migration-backups/`, identify the backup created immediately before the failed update.
+4. Copy that backup to `/volume1/flashcards/data/flashcards.db`, preserving the filename and ownership.
+5. Recreate the project without building and without changing the volume mapping.
+6. Check the logs and open `/api/health`; it should return HTTP `200`.
+
+Before replacing the current database, make a separate copy of it if you need to investigate the failed update. Never run an older image against a database that was already migrated by a newer image; restore the matching pre-migration database first.
+
+## 10. Troubleshooting
 
 - **Container exits immediately:** check the project logs. Missing ` AUTH_SECRET`, incomplete initial-admin variables, or an invalid `DATABASE_URL` are common causes.
 - **Users or decks disappeared:** confirm that `./data` is still mounted to `/app/data`.
