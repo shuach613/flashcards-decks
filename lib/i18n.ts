@@ -134,6 +134,12 @@ const en = {
   "admin.studentRole": "Student",
   "admin.makeAdmin": "Make administrator",
   "admin.revokeAdmin": "Revoke administrator",
+  "admin.transferPrimary": "Transfer primary rights",
+  "admin.deleteUser": "Delete user",
+  "admin.transferPrimaryConfirmation":
+    "Transfer primary administrator rights to {email}? You will give up the ability to manage users and transfer these rights.",
+  "admin.deleteUserConfirmation":
+    "Delete {email}? This permanently removes the account, study progress, track assignments, and password-reset tokens.",
   "admin.studentEmail": "Student email",
   "admin.searchStudent": "Search",
   "admin.studentNotFound": "No student was found with that email address.",
@@ -345,6 +351,12 @@ const de: Record<TranslationKey, string> = {
   "admin.studentRole": "Schüler",
   "admin.makeAdmin": "Zum Administrator machen",
   "admin.revokeAdmin": "Administratorrechte entziehen",
+  "admin.transferPrimary": "Ursprüngliche Rechte übertragen",
+  "admin.deleteUser": "Benutzer löschen",
+  "admin.transferPrimaryConfirmation":
+    "Ursprüngliche Administratorrechte an {email} übertragen? Du gibst damit die Möglichkeit auf, Benutzer zu verwalten und diese Rechte zu übertragen.",
+  "admin.deleteUserConfirmation":
+    "{email} löschen? Das Konto, der Lernfortschritt, die Track-Zuweisungen und die Passwort-Reset-Tokens werden dauerhaft entfernt.",
   "admin.studentEmail": "E-Mail des Schülers",
   "admin.searchStudent": "Suchen",
   "admin.studentNotFound": "Unter dieser E-Mail-Adresse wurde kein Schüler gefunden.",

@@ -5,7 +5,7 @@ import { t, tc } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { getCardStudyStatus, summarizeProgress } from "@/lib/progress";
 import { AdminSubnav } from "../_components/admin-subnav";
-import { setUserAdmin } from "./role-actions";
+import { UserManagementActions } from "./user-management-actions";
 
 type SearchParams = Promise<{ email?: string | string[] }>;
 
@@ -100,16 +100,26 @@ export default async function StudentOverviewPage({
                       : t(locale, "admin.studentRole")}
                   </p>
                 </div>
-                <form action={setUserAdmin.bind(null, user.id, user.role !== "ADMIN")}>
-                  <button
-                    type="submit"
-                    className="rounded-full border border-evergreen px-4 py-2 text-sm font-semibold text-evergreen transition hover:bg-evergreen hover:text-white"
-                  >
-                    {user.role === "ADMIN"
-                      ? t(locale, "admin.revokeAdmin")
-                      : t(locale, "admin.makeAdmin")}
-                  </button>
-                </form>
+                <UserManagementActions
+                  userId={user.id}
+                  role={user.role}
+                  labels={{
+                    makeAdmin: t(locale, "admin.makeAdmin"),
+                    revokeAdmin: t(locale, "admin.revokeAdmin"),
+                    transferPrimary: t(locale, "admin.transferPrimary"),
+                    deleteUser: t(locale, "admin.deleteUser"),
+                    transferConfirmation: t(
+                      locale,
+                      "admin.transferPrimaryConfirmation",
+                      { email: user.email }
+                    ),
+                    deleteConfirmation: t(
+                      locale,
+                      "admin.deleteUserConfirmation",
+                      { email: user.email }
+                    ),
+                  }}
+                />
               </li>
             ))}
           </ul>
