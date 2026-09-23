@@ -76,6 +76,8 @@ Pull requests and `codex/*` pushes automatically run the tests and validate a Li
 
 For a release tag such as `v1.2.3`, the workflow publishes `1.2.3`, `1.2`, `1`, and a commit-SHA tag. Pushes to `main` additionally update `latest`.
 
+The `codex/docker-v2` branch temporarily publishes `test-docker-v2` for pre-main testing. It does not update `latest` or release tags.
+
 ## Production
 
 Run the production build and server with:
