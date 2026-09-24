@@ -18,6 +18,9 @@ Container Manager.
 - Supports password reset emails through a personal SMTP account such as Gmail.
 - Creates an initial local administrator on the first deployment of an empty database.
 - Lets the primary initial administrator grant or revoke administrator access for other users.
+- Gives every signed-in user a Settings page to change their email, reset personal deck progress, or permanently delete their account.
+- Requires the current password and explicit confirmation for email changes and account deletion; progress resets also require confirmation.
+- Uses a browser-session cookie, so closing the browser requires a new login unless the browser itself restores session cookies.
 - Runs database migrations automatically when the container starts.
 - Includes an unauthenticated application/database health endpoint at `/api/health`.
 
@@ -54,6 +57,8 @@ configured in Container Manager.
   in the persistent database and survive image replacement.
 - The application does not provide built-in LDAP, SSO, OAuth, or multi-server
   user management. Authentication is local to the installation.
+- Closing the browser normally ends the login session. Browser settings that
+  restore session cookies or reopen previous sessions can keep a session alive.
 - Password reset depends on a working SMTP account, app password, and outbound
   SMTP access from the NAS.
 - The initial administrator variables are used only when the database contains
@@ -125,6 +130,19 @@ SMTP_FROM=ShuachCloud <your-email@example.com>
 ```
 
 The reset-token link expires after one hour.
+
+## User settings
+
+Every signed-in user can open `Settings` from the navigation bar. The page
+allows users to:
+
+- change their login and password-reset email address after entering the current password and confirming the change;
+- reset a selected deck's personal progress, leaving the shared deck and cards unchanged;
+- permanently delete their account after entering the current password and confirming the deletion.
+
+Deleting an account removes its study progress, track assignments, and password
+reset tokens through the database relations. Shared decks, cards, categories,
+and tracks are not deleted.
 
 ## Synology deployment
 

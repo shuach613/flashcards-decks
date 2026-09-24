@@ -86,6 +86,12 @@ export async function NavBar() {
             >
               {t(locale, "nav.allDecks")}
             </Link>
+            <Link
+              href="/settings"
+              className="font-medium text-evergreen underline-offset-4 hover:underline"
+            >
+              {t(locale, "nav.settings")}
+            </Link>
             {user.role === "ADMIN" && (
               <Link
                 href="/admin"
