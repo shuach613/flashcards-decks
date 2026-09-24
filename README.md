@@ -1,85 +1,78 @@
-# Flashcard Decks
+# ☁️ ShuachCloud Flashcard Decks
 
-A self-hosted flashcard learning application for organising small knowledge
-bases into categories, tracks, decks, and cards. It is designed for a personal
-server or small private installation, including a Synology NAS running DSM
-Container Manager.
+Your own private place to turn knowledge into progress. Create decks, invite
+learners, and study at your own pace — hosted on your own server or NAS.
 
-## What it does
+Perfect for small study groups, classrooms, families, and private teams.
 
-- Provides email-and-password accounts with separate user and administrator roles.
-- Lets administrators create, edit, import, and delete flashcard decks and cards.
-- Lets administrators classify decks as easy, intermediate, or hard, shown with a three-bar difficulty indicator.
-- Organises decks into generic categories and learning tracks.
-- Lets users choose a track and study the decks available to that track.
-- Records study progress, good/again card outcomes, and deck completion status.
-- Supports English and German interface text.
-- Provides an admin REST API for managing categories, decks, and cards.
-- Supports password reset emails through a personal SMTP account such as Gmail.
-- Sends new users a verification email before allowing study access; links are valid for 48 hours.
-- Creates an initial local administrator on the first deployment of an empty database.
-- Lets the primary initial administrator grant or revoke administrator access for other users.
-- Gives every signed-in user a Settings page to change their email, reset personal deck progress, or permanently delete their account.
-- Requires the current password and explicit confirmation for email changes and account deletion; progress resets also require confirmation.
-- Uses a browser-session cookie, so closing the browser requires a new login unless the browser itself restores session cookies.
-- Runs database migrations automatically when the container starts.
-- Includes an unauthenticated application/database health endpoint at `/api/health`.
+## ✨ What can it do?
 
-The application is a general-purpose flashcard tool. The default tracks and
-categories are generic placeholders that can be renamed and extended by an
-administrator.
+- 📚 Create decks, cards, categories, and learning tracks
+- 🎯 Assign learners the content they need
+- 🧠 Study with "Good" and "Again" ratings
+- 📈 Track personal progress and completion
+- 🟢🟡🔴 Show deck difficulty at a glance
+- 🛠️ Manage users, tracks, categories, decks, and cards as an admin
+- ⚙️ Give every user personal account and progress settings
+- 🔐 Protect new accounts with email verification
+- 📧 Send verification and password-reset emails through Gmail or another SMTP provider
+- 🌍 Use the interface in English or German
+- ❤️ Keep everything in your own SQLite database
 
-## Hardware and deployment requirements
+The included tracks and categories are neutral placeholders. Rename them and
+make the app your own.
 
-For the Docker deployment, use:
+## 🐳 Quick deployment
 
-- A 64-bit `linux/amd64` host. ARM images are not currently published.
-- Docker or Synology Container Manager with Compose support.
-- Persistent storage for the SQLite database and migration backups.
-- Enough memory for a Node.js/Next.js application; a small installation should
-  use at least 2 GB of available system memory.
-- Outbound network access when pulling the image and when sending password-reset
-  emails through the configured SMTP provider.
-- An optional public hostname and HTTPS reverse proxy. On Synology, use DSM's
-  built-in reverse proxy; this repository does not deploy one.
+The easiest production setup uses the prebuilt image:
 
-For the Synology setup described below, keep persistent data at
-`/volume1/flashcards/data/` and expose the application through the NAS port
-configured in Container Manager.
+```text
+ghcr.io/shuach613/flashcards-decks:latest
+```
 
-## Limitations and operational considerations
+On a Synology NAS:
 
-- The application uses SQLite, so it is intended for a single container and a
-  small number of users. It is not designed for horizontal scaling, high write
-  concurrency, or high availability.
-- SQLite data must remain on persistent storage. Deleting or replacing the data
-  directory removes the local users, decks, and progress.
-- Deck difficulty, category deletion state, and track deletion state are stored
-  in the persistent database and survive image replacement.
-- The application does not provide built-in LDAP, SSO, OAuth, or multi-server
-  user management. Authentication is local to the installation.
-- Closing the browser normally ends the login session. Browser settings that
-  restore session cookies or reopen previous sessions can keep a session alive.
-- Password reset depends on a working SMTP account, app password, and outbound
-  SMTP access from the NAS.
-- The initial administrator variables are used only when the database contains
-  no users. They do not reset an existing administrator password.
-- Existing users are marked verified during the email-verification migration,
-  so an update does not interrupt their access. New normal signups must verify
-  their email before studying.
-- The primary administrator is stored in the database. Other administrators can
-  use the admin area but cannot revoke administrator access from another user.
-- Updates can apply database migrations. Back up the database before updating,
-  and roll back the image together with its matching database backup if needed.
-- The Docker image is currently published for `linux/amd64` only.
-- DSM reverse-proxy rules, HTTPS certificates, DNS, and firewall policies are
-  managed outside this repository.
-- The admin API key grants administrative API access and must be treated like a
-  password.
+1. Open **Container Manager → Projects**.
+2. Paste the Compose YAML.
+3. Add your URL, `AUTH_SECRET`, initial admin details, and SMTP app password.
+4. Keep the persistent data mapped to:
 
-## Development
+   ```text
+   /volume1/flashcards/data:/app/data
+   ```
 
-Install dependencies and start the development server:
+5. Start the project and check `/api/health`.
+
+Use DSM's built-in reverse proxy for HTTPS. No separate proxy container is
+needed, and no `.env` file is required when using the supplied YAML.
+
+🔄 Updates replace the app image but keep your users, decks, cards, and progress
+as long as `/volume1/flashcards/data` is not deleted. Back up `flashcards.db`
+before updating.
+
+## 💻 What does it need?
+
+- 64-bit `linux/amd64` hardware
+- Docker or Synology DSM Container Manager
+- Around 2 GB of available memory for a small installation
+- Persistent disk space for the database and backups
+- Internet access for image downloads and SMTP email
+
+A Synology DS925+ is suitable for this kind of private deployment.
+
+## ⚠️ Good to know
+
+- SQLite is intentionally simple: one container and a small number of users.
+- It is not designed for high traffic, clustering, or high availability.
+- Login is local; LDAP, SSO, and OAuth are not included.
+- New users must verify their email before studying. Links last 48 hours.
+- The initial administrator is available immediately so the installation can be
+  configured before SMTP is tested.
+- HTTPS, DNS, firewall rules, backups, and reverse-proxy settings remain under
+  the operator's control.
+- The published image currently supports `linux/amd64`, not ARM.
+
+## 🧑‍💻 Development
 
 ```bash
 npm install
@@ -88,133 +81,14 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-For containerized local development with hot reload, use the separate development Compose file:
+Before contributing, run:
 
 ```bash
-docker compose -f docker-compose.dev.yml up --build
-```
-
-The production Compose file is intentionally kept separate from this workflow. It builds and starts the production container; the development file mounts the source tree and runs `next dev`.
-
-## Database
-
-The application uses SQLite through Prisma. Set `DATABASE_URL` to the database file location, then apply migrations:
-
-```bash
-npx prisma migrate deploy
-```
-
-For production, keep the SQLite file on persistent storage.
-
-## Authentication
-
-Set a stable, long random `AUTH_SECRET`.
-
-The Synology deployment creates one local initial administrator on an empty database using:
-
-```text
-ADMIN_INITIAL_EMAIL
-ADMIN_INITIAL_PASSWORD
-```
-
-After the first administrator is created, later signups are regular users. The bootstrap variables should be removed after the first login.
-
-## Password reset emails
-
-Password reset emails use any SMTP-compatible personal email account. Configure:
-
-```text
-APP_URL=https://your-app.example.com
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your-email@example.com
-SMTP_PASSWORD=your-smtp-password-or-app-password
-SMTP_FROM=ShuachCloud <your-email@example.com>
-```
-
-The reset-token link expires after one hour.
-
-## User settings
-
-Every signed-in user can open `Settings` from the navigation bar. The page
-allows users to:
-
-- change their login and password-reset email address after entering the current password and confirming the change;
-- reset a selected deck's personal progress, leaving the shared deck and cards unchanged;
-- permanently delete their account after entering the current password and confirming the deletion.
-
-Deleting an account removes its study progress, track assignments, and password
-reset tokens through the database relations. Shared decks, cards, categories,
-and tracks are not deleted.
-
-## Email verification
-
-New normal signups receive a verification email with a link valid for 48 hours.
-Until the link is used, the account can only open the restricted activation
-Settings screen and cannot view or study decks. The initial administrator is
-exempt so the first deployment can be configured even before SMTP delivery is
-tested.
-
-The activation screen can send one replacement verification email. The
-replacement is the final attempt and is valid for another 48 hours. If that
-final attempt expires, the unverified account is deleted when it is next
-accessed or when its expired link is opened. Existing users are treated as
-verified by the migration.
-
-## Synology deployment
-
-The repository includes a Dockerfile and a Compose project for Synology Container Manager:
-
-- `Dockerfile`
-- `docker-compose.yml`
-- `scripts/start-container.mjs`
-
-See `docs/synology-container-manager.md` for the complete DS925+/DSM deployment guide.
-See `docs/backup-recovery.md` for routine backups, rollback recovery, and rebuilding the installation on a new NAS.
-
-The Synology Compose project is self-contained: edit the values in `docker-compose.yml` directly. No `.env` file is required for Container Manager. Set `APP_URL` to the HTTPS address configured in DSM's internal reverse proxy; the repository does not contain or require reverse-proxy rules.
-
-Pull requests and `codex/*` pushes automatically run the tests and validate a Linux/amd64 Docker image build. Successful pushes to `main` and version tags publish the image to GitHub Container Registry as `ghcr.io/shuach613/flashcards-decks`; feature branches never publish images.
-
-For a release tag such as `v1.2.3`, the workflow publishes `1.2.3`, `1.2`, `1`, and a commit-SHA tag. Pushes to `main` additionally update `latest`.
-
-The `codex/docker-v2` branch temporarily publishes `test-docker-v2` for pre-main testing. It does not update `latest` or release tags.
-
-## Updating a deployed container
-
-For a Compose deployment that uses a prebuilt GHCR image:
-
-1. Back up `/volume1/flashcards/data/` before changing the image.
-2. Change the image tag in Container Manager, or use the new release tag supplied with the update.
-3. Pull the new image and recreate the project without deleting `/volume1/flashcards/data/`.
-4. Wait for the container to become healthy. Pending database migrations run automatically before the application starts.
-5. Verify `https://your-app.example.com/api/health` returns HTTP `200`.
-
-Image updates replace the application files but keep the database in the mapped
-`/app/data` volume. The startup script applies pending migrations before the
-application starts, so deck difficulty values, deleted categories and tracks,
-users, decks, cards, and progress remain available after an update.
-
-Do not use `--build` for a prebuilt image deployment, and do not remove the persistent data folder. If migrations fail, the container remains stopped and the pre-migration backup is retained under `/volume1/flashcards/data/.migration-backups/`.
-
-## Rolling back an update
-
-If an update fails, stop the project and restore the image tag and database backup from the same update point:
-
-1. Stop the Flashcard Decks project in Container Manager.
-2. Select the previous working image tag.
-3. Copy the matching backup from `/volume1/flashcards/data/.migration-backups/` back to `/volume1/flashcards/data/flashcards.db`.
-4. Recreate the project without rebuilding or deleting the data folder.
-5. Check the logs and verify `/api/health` returns HTTP `200`.
-
-Restore the database backup together with the previous image. Do not run an older image against a database that has already been migrated by a newer image.
-
-## Production
-
-Run the production build and server with:
-
-```bash
+npm run lint
+npm test
 npm run build
-npm run start
 ```
+
+📖 Detailed Synology instructions: [`docs/synology-container-manager.md`](docs/synology-container-manager.md)
+
+🛟 Backup and recovery: [`docs/backup-recovery.md`](docs/backup-recovery.md)
