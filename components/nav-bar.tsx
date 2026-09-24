@@ -4,11 +4,22 @@ import { auth, signOut } from "@/auth";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { LanguageToggle } from "@/components/language-toggle";
+import { prisma } from "@/lib/db";
 
 export async function NavBar() {
   const session = await auth();
   const user = session?.user;
   const locale = await getLocale();
+  const databaseUser = user
+    ? await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { role: true, isPrimaryAdmin: true, emailVerifiedAt: true },
+      })
+    : null;
+  const canUseApp = Boolean(
+    databaseUser?.emailVerifiedAt ||
+      (databaseUser?.role === "ADMIN" && databaseUser.isPrimaryAdmin)
+  );
 
   return (
     <header className="border-b border-sand bg-white/95 backdrop-blur">
@@ -74,25 +85,29 @@ export async function NavBar() {
         </div>
         {user && (
           <nav className="flex items-center gap-5 border-t border-sand py-2.5 text-sm">
-            <Link
-              href="/"
-              className="font-medium text-evergreen underline-offset-4 hover:underline"
-            >
-              {t(locale, "nav.myDecks")}
-            </Link>
-            <Link
-              href="/decks"
-              className="font-medium text-evergreen underline-offset-4 hover:underline"
-            >
-              {t(locale, "nav.allDecks")}
-            </Link>
+            {canUseApp && (
+              <>
+                <Link
+                  href="/"
+                  className="font-medium text-evergreen underline-offset-4 hover:underline"
+                >
+                  {t(locale, "nav.myDecks")}
+                </Link>
+                <Link
+                  href="/decks"
+                  className="font-medium text-evergreen underline-offset-4 hover:underline"
+                >
+                  {t(locale, "nav.allDecks")}
+                </Link>
+              </>
+            )}
             <Link
               href="/settings"
               className="font-medium text-evergreen underline-offset-4 hover:underline"
             >
               {t(locale, "nav.settings")}
             </Link>
-            {user.role === "ADMIN" && (
+            {canUseApp && user.role === "ADMIN" && (
               <Link
                 href="/admin"
                 className="font-medium text-evergreen underline-offset-4 hover:underline"

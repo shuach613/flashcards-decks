@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { deckAccessWhere } from "@/lib/tracks-server";
 import { ChangeEmailForm, DeleteAccountForm, ResetProgressList } from "./settings-forms";
 import { SettingsSubnav, type SettingsTab } from "./settings-subnav";
+import { ResendVerificationForm } from "./settings-forms";
 
 function getTab(value: string | undefined): SettingsTab {
   return value === "learning" || value === "removal" ? value : "account";
@@ -13,26 +14,51 @@ function getTab(value: string | undefined): SettingsTab {
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; verification?: string }>;
 }) {
   const user = await requireUser();
   const locale = await getLocale();
   const { tab: requestedTab } = await searchParams;
   const tab = getTab(requestedTab);
+  const databaseUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { id: true, role: true, isPrimaryAdmin: true, emailVerifiedAt: true },
+  });
+  if (!databaseUser) return null;
+  const isVerified = Boolean(
+    databaseUser.emailVerifiedAt ||
+      (databaseUser.role === "ADMIN" && databaseUser.isPrimaryAdmin)
+  );
+
+  if (!isVerified) {
+    return (
+      <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
+        <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+          {t(locale, "settings.title")}
+        </h1>
+        <section className="rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+          <h2 className="text-lg font-bold text-evergreen">
+            {t(locale, "settings.activationRequired")}
+          </h2>
+          <p className="mt-2 text-sm text-dark-gray">
+            {t(locale, "settings.activationBody")}
+          </p>
+          <p className="mt-3 text-sm text-dark-gray">
+            {t(locale, "settings.activationInstructions")}
+          </p>
+          <ResendVerificationForm locale={locale} />
+        </section>
+      </div>
+    );
+  }
+
   const decks =
     tab === "learning"
-      ? await (async () => {
-          const databaseUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { id: true, role: true },
-          });
-          if (!databaseUser) return [];
-          return prisma.deck.findMany({
-            where: deckAccessWhere(databaseUser),
-            orderBy: { title: "asc" },
-            select: { id: true, title: true, difficulty: true },
-          });
-        })()
+      ? await prisma.deck.findMany({
+          where: deckAccessWhere(databaseUser),
+          orderBy: { title: "asc" },
+          select: { id: true, title: true, difficulty: true },
+        })
       : [];
 
   return (

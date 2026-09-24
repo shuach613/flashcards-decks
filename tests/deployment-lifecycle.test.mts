@@ -15,6 +15,7 @@ const require = createRequire(import.meta.url);
 const Database = require("better-sqlite3") as new (path: string) => SqliteDatabase;
 const migrationsDirectory = join(process.cwd(), "prisma", "migrations");
 const categoryRenameMigration = "20260923110000_rename_certificates_to_categories";
+const emailVerificationMigration = "20260924120000_add_email_verification";
 
 function migrationNames() {
   return readdirSync(migrationsDirectory)
@@ -65,6 +66,41 @@ test("fresh installation creates the current schema", () => {
     assert.ok(deckColumns.some((column) => column.name === "difficulty"));
     const userColumns = db.prepare<{ name: string }>("PRAGMA table_info(User)").all();
     assert.ok(userColumns.some((column) => column.name === "isPrimaryAdmin"));
+    assert.ok(userColumns.some((column) => column.name === "emailVerifiedAt"));
+    assert.ok(userColumns.some((column) => column.name === "verificationAttempts"));
+    assert.ok(tables.includes("VerificationToken"));
+  } finally {
+    db.close();
+    cleanup(databasePath);
+  }
+});
+
+test("email verification migration keeps existing users active", () => {
+  const { databasePath, db } = createDatabase();
+
+  try {
+    applyMigrations(db, { before: emailVerificationMigration });
+    db.exec(
+      'INSERT INTO "User" ("id", "email", "passwordHash", "role") VALUES (\'user-1\', \'existing@example.com\', \'hash\', \'USER\')'
+    );
+    db.exec(
+      readFileSync(
+        join(migrationsDirectory, emailVerificationMigration, "migration.sql"),
+        "utf8"
+      )
+    );
+
+    assert.ok(
+      db.prepare<{ emailVerifiedAt: string | null }>(
+        'SELECT "emailVerifiedAt" FROM "User" WHERE "id" = \'user-1\''
+      ).get()?.emailVerifiedAt
+    );
+    assert.equal(
+      db.prepare<{ attempts: number }>(
+        'SELECT "verificationAttempts" AS attempts FROM "User" WHERE "id" = \'user-1\''
+      ).get()?.attempts,
+      0
+    );
   } finally {
     db.close();
     cleanup(databasePath);

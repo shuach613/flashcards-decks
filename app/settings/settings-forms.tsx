@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { DeckDifficultyIndicator } from "@/components/deck-difficulty";
 import { t, type Locale } from "@/lib/i18n";
 import { changeEmail, deleteAccount, resetDeckProgress, type SettingsState } from "./actions";
+import { requestVerificationEmail, type VerificationState } from "./verification-actions";
 
 type Deck = { id: string; title: string; difficulty: string };
 
@@ -49,6 +50,29 @@ export function ChangeEmailForm({ locale }: { locale: Locale }) {
         className="self-start rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
         {pending ? t(locale, "common.savePending") : t(locale, "common.save")}
+      </button>
+    </form>
+  );
+}
+
+export function ResendVerificationForm({ locale }: { locale: Locale }) {
+  const [state, formAction, pending] = useActionState<VerificationState, FormData>(
+    requestVerificationEmail,
+    undefined
+  );
+
+  return (
+    <form action={formAction} className="mt-5 flex flex-col gap-3">
+      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
+      {state?.message && <p className="text-sm text-grass-green">{state.message}</p>}
+      <button
+        type="submit"
+        disabled={pending}
+        className="self-start rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+      >
+        {pending
+          ? t(locale, "settings.resendVerificationPending")
+          : t(locale, "settings.resendVerification")}
       </button>
     </form>
   );

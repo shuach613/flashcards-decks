@@ -12,6 +12,7 @@ import {
   deckAccessWhere,
   userHasTracks,
 } from "@/lib/tracks-server";
+import { requireVerifiedUser } from "@/lib/authz";
 
 export default async function HomePage() {
   const session = await auth();
@@ -28,17 +29,15 @@ export default async function HomePage() {
     );
   }
 
-  if (
-    session.user.role !== "ADMIN" &&
-    !(await userHasTracks(session.user.id))
-  ) {
+  const user = await requireVerifiedUser();
+  if (user.role !== "ADMIN" && !(await userHasTracks(user.id))) {
     redirect("/choose-track");
   }
 
   const progress = await prisma.studyProgress.findMany({
     where: {
-      userId: session.user.id,
-      deck: deckAccessWhere(session.user),
+      userId: user.id,
+      deck: deckAccessWhere(user),
     },
     include: {
       deck: {
@@ -48,7 +47,7 @@ export default async function HomePage() {
             select: {
               id: true,
               progress: {
-                where: { userId: session.user.id },
+                where: { userId: user.id },
                 select: { isGood: true },
               },
             },

@@ -130,6 +130,14 @@ Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`,
 
 If the SMTP settings are missing or invalid, the application will not be able to deliver reset emails.
 
+New user signup also uses these SMTP settings for email verification. A new
+user must open the verification link within 48 hours before the account can
+study. The activation Settings screen allows one replacement email; that final
+link is valid for another 48 hours. Existing users are marked verified by the
+migration and remain active during an image update. The initial administrator
+is exempt from verification so the first deployment can be configured if SMTP
+has not yet been tested.
+
 ## 7. Backups
 
 Back up this folder:
