@@ -3,24 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { t, tc, type Locale } from "@/lib/i18n";
+import { buildStudyQueue, type StudyQueueCard } from "@/lib/study-queue";
+import { StudyReviewToggle } from "@/components/study-review-toggle";
 import { rateCard, restartDeck, type Rating } from "./actions";
 
-type Card = {
+type Card = StudyQueueCard & {
   id: string;
   front: string;
   back: string;
   isGood: boolean;
   previouslyGood: boolean;
 };
-
-function shuffle<T>(items: T[]): T[] {
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
 
 export function StudySession({
   deckSlug,
@@ -34,9 +27,9 @@ export function StudySession({
   locale: Locale;
 }) {
   const total = cards.length;
-  const [queue, setQueue] = useState<Card[]>(() =>
-    shuffle(cards.filter((card) => !card.isGood))
-  );
+  const [cardStates, setCardStates] = useState<Card[]>(cards);
+  const [includeGood, setIncludeGood] = useState(false);
+  const [queue, setQueue] = useState<Card[]>(() => buildStudyQueue(cards, false));
   const [goodCount, setGoodCount] = useState(
     () => cards.filter((card) => card.isGood).length
   );
@@ -71,6 +64,13 @@ export function StudySession({
 
       setGoodCount(result.goodCount);
       setReviewed((count) => count + 1);
+      setCardStates((previous) =>
+        previous.map((card) =>
+          card.id === current.id
+            ? { ...card, isGood: rating === "GOOD" }
+            : card
+        )
+      );
       setQueue((currentQueue) => {
         const [first, ...rest] = currentQueue;
         if (rating === "GOOD") return rest;
@@ -107,15 +107,13 @@ export function StudySession({
         setError(result.error);
         return;
       }
-      setQueue(
-        shuffle(
-          cards.map((card) => ({
-            ...card,
-            isGood: false,
-            previouslyGood: knownGoodIds.has(card.id),
-          }))
-        )
-      );
+      const resetCards = cards.map((card) => ({
+        ...card,
+        isGood: false,
+        previouslyGood: knownGoodIds.has(card.id),
+      }));
+      setCardStates(resetCards);
+      setQueue(buildStudyQueue(resetCards, includeGood));
       setGoodCount(0);
       setReviewed(0);
       setAgainIds(new Set());
@@ -196,6 +194,16 @@ export function StudySession({
           />
         </div>
       </div>
+      <StudyReviewToggle
+        checked={includeGood}
+        disabled={pending}
+        locale={locale}
+        onChange={(nextValue) => {
+          setIncludeGood(nextValue);
+          setQueue(buildStudyQueue(cardStates, nextValue));
+          setRevealed(false);
+        }}
+      />
       <button
         type="button"
         onClick={() => setRevealed((value) => !value)}

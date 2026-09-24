@@ -10,6 +10,8 @@ Perfect for small study groups, classrooms, families, and private teams.
 - 📚 Create decks, cards, categories, and learning tracks
 - 🎯 Assign learners the content they need
 - 🧠 Study with "Good" and "Again" ratings
+- 🔁 Optionally mix previously good cards into a session for light review
+- 🎯 After completing a deck, select only the cards you want to practise again
 - 📈 Track personal progress and completion
 - 🟢🟡🔴 Show deck difficulty at a glance
 - 🛠️ Manage users, tracks, categories, decks, and cards as an admin
@@ -59,6 +61,11 @@ before updating.
 - Internet access for image downloads and SMTP email
 
 A Synology DS925+ is suitable for this kind of private deployment.
+
+Each study session keeps the saved completion rule simple: a deck is complete
+only when every card is marked good. Optional review cards and focused
+selection sessions never create a second progress system, so updates preserve
+the same user progress and database structure.
 
 ## ⚠️ Good to know
 

@@ -109,10 +109,13 @@ export default async function AllDecksPage() {
       ) : (
         <div className="flex flex-col gap-8">
           {sections.map((section) => (
-            <section key={section.name}>
-              <h2 className="mb-3 text-lg font-bold text-evergreen">
-                {section.name}
-              </h2>
+            <details key={section.name} open className="group">
+              <summary className="mb-3 flex cursor-pointer list-none items-center justify-between rounded-xl border border-sand bg-white px-4 py-3 text-lg font-bold text-evergreen shadow-[0_2px_8px_rgba(25,51,37,0.06)] [&::-webkit-details-marker]:hidden">
+                <span>{section.name}</span>
+                <span className="text-base transition-transform group-open:rotate-180" aria-hidden="true">
+                 ⌄
+                </span>
+              </summary>
               <div className="flex flex-col gap-4">
                 {section.groups.map((group) => (
                   <div key={group.language}>
@@ -199,7 +202,7 @@ export default async function AllDecksPage() {
                   </div>
                 ))}
               </div>
-            </section>
+            </details>
           ))}
         </div>
       )}

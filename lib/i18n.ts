@@ -108,6 +108,13 @@ const en = {
   "study.studyAgain": "Study again",
   "study.restarting": "Restarting…",
   "study.previouslyGood": "Previously marked good",
+  "study.includeGoodCards": "Include good cards for review",
+  "study.includeGoodCardsHint":
+    "Good cards are mixed in less often and do not affect completion.",
+  "study.chooseCards": "Choose cards to review",
+  "study.chooseCardsHint":
+    "Select one or more cards for a focused study session. Your progress is still saved normally.",
+  "study.studySelected": "Study selected cards",
 
   "admin.title": "Admin · Decks",
   "admin.heading": "Admin",
@@ -383,6 +390,13 @@ const de: Record<TranslationKey, string> = {
   "study.studyAgain": "Erneut lernen",
   "study.restarting": "Startet neu…",
   "study.previouslyGood": "Früher als gut markiert",
+  "study.includeGoodCards": "Gute Karten zur Wiederholung einbeziehen",
+  "study.includeGoodCardsHint":
+    "Gute Karten werden seltener eingestreut und ändern den Abschluss nicht.",
+  "study.chooseCards": "Karten zur Wiederholung auswählen",
+  "study.chooseCardsHint":
+    "Wähle eine oder mehrere Karten für eine gezielte Sitzung. Dein Fortschritt wird weiterhin normal gespeichert.",
+  "study.studySelected": "Ausgewählte Karten lernen",
 
   "admin.title": "Admin · Decks",
   "admin.heading": "Admin",
