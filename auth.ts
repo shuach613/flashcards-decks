@@ -31,6 +31,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   session: { strategy: "jwt" },
+  // Do not set a persistent maxAge: the session cookie should disappear when
+  // the browser closes, while an open browser session can remain active.
+  cookies: {
+    sessionToken: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   pages: { signIn: "/login" },
   callbacks: {
     jwt({ token, user }) {
