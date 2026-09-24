@@ -4,28 +4,45 @@ import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { deckAccessWhere } from "@/lib/tracks-server";
 import { ChangeEmailForm, DeleteAccountForm, ResetProgressList } from "./settings-forms";
+import { SettingsSubnav, type SettingsTab } from "./settings-subnav";
 
-export default async function SettingsPage() {
+function getTab(value: string | undefined): SettingsTab {
+  return value === "learning" || value === "removal" ? value : "account";
+}
+
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const user = await requireUser();
   const locale = await getLocale();
-  const databaseUser = await prisma.user.findUnique({
-    where: { id: user.id },
-    select: { id: true, role: true },
-  });
-  if (!databaseUser) return null;
-  const decks = await prisma.deck.findMany({
-    where: deckAccessWhere(databaseUser),
-    orderBy: { title: "asc" },
-    select: { id: true, title: true },
-  });
+  const { tab: requestedTab } = await searchParams;
+  const tab = getTab(requestedTab);
+  const decks =
+    tab === "learning"
+      ? await (async () => {
+          const databaseUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { id: true, role: true },
+          });
+          if (!databaseUser) return [];
+          return prisma.deck.findMany({
+            where: deckAccessWhere(databaseUser),
+            orderBy: { title: "asc" },
+            select: { id: true, title: true, difficulty: true },
+          });
+        })()
+      : [];
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
         {t(locale, "settings.title")}
       </h1>
+      <SettingsSubnav active={tab} locale={locale} />
 
-      <div className="flex flex-col gap-6">
+      {tab === "account" && (
         <section className="rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
           <h2 className="text-lg font-bold text-evergreen">
             {t(locale, "settings.account")}
@@ -51,7 +68,9 @@ export default async function SettingsPage() {
           <p className="mt-3 text-sm text-dark-gray">{t(locale, "settings.changeEmailBody")}</p>
           <ChangeEmailForm locale={locale} />
         </section>
+      )}
 
+      {tab === "learning" && (
         <section className="rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
           <h2 className="text-lg font-bold text-evergreen">
             {t(locale, "settings.learning")}
@@ -62,7 +81,9 @@ export default async function SettingsPage() {
           <p className="mt-4 text-sm text-dark-gray">{t(locale, "settings.resetProgressBody")}</p>
           <ResetProgressList decks={decks} locale={locale} />
         </section>
+      )}
 
+      {tab === "removal" && (
         <section className="rounded-2xl border border-sunset-orange/30 bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
           <h2 className="text-lg font-bold text-sunset-orange">
             {t(locale, "settings.accountRemoval")}
@@ -72,7 +93,7 @@ export default async function SettingsPage() {
           </p>
           <DeleteAccountForm locale={locale} />
         </section>
-      </div>
+      )}
     </div>
   );
 }

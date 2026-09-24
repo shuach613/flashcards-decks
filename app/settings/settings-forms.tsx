@@ -1,10 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
+import { DeckDifficultyIndicator } from "@/components/deck-difficulty";
 import { t, type Locale } from "@/lib/i18n";
 import { changeEmail, deleteAccount, resetDeckProgress, type SettingsState } from "./actions";
 
-type Deck = { id: string; title: string };
+type Deck = { id: string; title: string; difficulty: string };
 
 export function ChangeEmailForm({ locale }: { locale: Locale }) {
   const [state, formAction, pending] = useActionState<SettingsState, FormData>(
@@ -60,7 +61,10 @@ export function ResetProgressList({ decks, locale }: { decks: Deck[]; locale: Lo
     <ul className="mt-4 flex flex-col gap-2">
       {decks.map((deck) => (
         <li key={deck.id} className="flex items-center justify-between gap-4 rounded-xl bg-cream px-4 py-3">
-          <span className="font-medium text-evergreen">{deck.title}</span>
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="truncate font-medium text-evergreen">{deck.title}</span>
+            <DeckDifficultyIndicator difficulty={deck.difficulty} locale={locale} />
+          </div>
           <form
             action={resetDeckProgress.bind(null, deck.id)}
             onSubmit={(event) => {
