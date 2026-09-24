@@ -6,6 +6,8 @@ import { prisma } from "@/lib/db";
 import { DeckProgress } from "@/components/deck-progress";
 import { DeckDifficultyIndicator } from "@/components/deck-difficulty";
 import { CategorySection } from "@/components/category-section";
+import { LanguageIndicator } from "@/components/language-indicator";
+import { DeckFilters } from "@/components/deck-filters";
 import { getDeckStudyState, summarizeProgress } from "@/lib/progress";
 import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
 import { requireTrackedUser } from "@/lib/authz";
@@ -27,9 +29,20 @@ function groupByLanguage(decks: DeckRow[]) {
   })).filter((group) => group.decks.length > 0);
 }
 
-export default async function AllDecksPage() {
+export default async function AllDecksPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ language?: string; category?: string }>;
+}) {
   const user = await requireTrackedUser("/decks");
   const locale = await getLocale();
+  const query = searchParams ? await searchParams : undefined;
+  const languageFilter = LANGUAGE_VALUES.includes(
+    query?.language as (typeof LANGUAGE_VALUES)[number]
+  )
+    ? query?.language
+    : undefined;
+  const categoryFilter = query?.category?.trim() || undefined;
 
   const categoryAccess =
     user.role === "ADMIN"
@@ -88,25 +101,67 @@ export default async function AllDecksPage() {
       : Promise.resolve([]),
   ]);
 
+  const categoryOptions = categories
+    .filter((category) => category.decks.length > 0)
+    .map((category) => ({ id: category.id, name: category.name }));
+  if (uncategorized.length > 0) {
+    categoryOptions.push({
+      id: "uncategorized",
+      name: t(locale, "common.uncategorized"),
+    });
+  }
+
   const sections = [
     ...categories
-      .filter((category) => category.decks.length > 0)
+      .filter(
+        (category) =>
+          category.decks.length > 0 &&
+          categoryFilter !== "uncategorized" &&
+          (!categoryFilter || category.id === categoryFilter)
+      )
       .map((category) => ({
+        id: category.id,
         name: category.name,
-        groups: groupByLanguage(category.decks),
+        groups: groupByLanguage(
+          category.decks.filter(
+            (deck) => !languageFilter || deck.language === languageFilter
+          )
+        ),
       })),
-    ...(uncategorized.length > 0
-      ? [{ name: t(locale, "common.uncategorized"), groups: groupByLanguage(uncategorized) }]
+    ...(uncategorized.length > 0 &&
+    (!categoryFilter || categoryFilter === "uncategorized")
+      ? [
+          {
+            id: "uncategorized",
+            name: t(locale, "common.uncategorized"),
+            groups: groupByLanguage(
+              uncategorized.filter(
+                (deck) => !languageFilter || deck.language === languageFilter
+              )
+            ),
+          },
+        ]
       : []),
-  ];
+  ].filter((section) => section.groups.length > 0);
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
         {t(locale, "allDecks.title")}
       </h1>
+      <DeckFilters
+        action="/decks"
+        categories={categoryOptions}
+        category={categoryFilter}
+        language={languageFilter}
+        locale={locale}
+      />
       {sections.length === 0 ? (
-        <p className="text-dark-gray">{t(locale, "allDecks.empty")}</p>
+        <p className="text-dark-gray">
+          {languageFilter || categoryFilter
+            ? t(locale, "deckFilters.noMatches")
+            : t(locale, "allDecks.empty")}
+        </p>
       ) : (
         <div className="flex flex-col gap-8">
           {sections.map((section) => (
@@ -142,6 +197,7 @@ export default async function AllDecksPage() {
                               >
                                 {deck.title}
                               </Link>
+                              <LanguageIndicator language={deck.language} locale={locale} />
                               <DeckDifficultyIndicator
                                 difficulty={deck.difficulty}
                                 locale={locale}

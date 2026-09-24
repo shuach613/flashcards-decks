@@ -22,6 +22,14 @@ const en = {
   "home.progress": "{good} of {total} cards good",
   "home.done": "Done",
 
+  "deckFilters.language": "Language",
+  "deckFilters.category": "Category",
+  "deckFilters.allLanguages": "All languages",
+  "deckFilters.allCategories": "All categories",
+  "deckFilters.apply": "Filter",
+  "deckFilters.clear": "Clear filters",
+  "deckFilters.noMatches": "No decks match these filters.",
+
   "common.uncategorized": "Uncategorized",
   "common.titleLabel": "Title",
   "common.descriptionLabel": "Description",
@@ -300,6 +308,14 @@ const de: Record<TranslationKey, string> = {
   "home.restart": "Neu starten",
   "home.progress": "{good} von {total} Karten gut",
   "home.done": "Erledigt",
+
+  "deckFilters.language": "Sprache",
+  "deckFilters.category": "Kategorie",
+  "deckFilters.allLanguages": "Alle Sprachen",
+  "deckFilters.allCategories": "Alle Kategorien",
+  "deckFilters.apply": "Filtern",
+  "deckFilters.clear": "Filter löschen",
+  "deckFilters.noMatches": "Keine Decks entsprechen diesen Filtern.",
 
   "common.uncategorized": "Unkategorisiert",
   "common.titleLabel": "Titel",

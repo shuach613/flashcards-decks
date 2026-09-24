@@ -8,6 +8,9 @@ import { prisma } from "@/lib/db";
 import { DeckProgress } from "@/components/deck-progress";
 import { DeckDifficultyIndicator } from "@/components/deck-difficulty";
 import { CategorySection } from "@/components/category-section";
+import { LanguageIndicator } from "@/components/language-indicator";
+import { DeckFilters } from "@/components/deck-filters";
+import { LANGUAGE_VALUES } from "@/lib/categories";
 import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
 import {
   deckAccessWhere,
@@ -15,9 +18,20 @@ import {
 } from "@/lib/tracks-server";
 import { requireVerifiedUser } from "@/lib/authz";
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ language?: string; category?: string }>;
+}) {
   const session = await auth();
   const locale = await getLocale();
+  const query = searchParams ? await searchParams : undefined;
+  const languageFilter = LANGUAGE_VALUES.includes(
+    query?.language as (typeof LANGUAGE_VALUES)[number]
+  )
+    ? query?.language
+    : undefined;
+  const categoryFilter = query?.category?.trim() || undefined;
 
   if (!session?.user) {
     return (
@@ -59,8 +73,23 @@ export default async function HomePage() {
     orderBy: { lastStudiedAt: "desc" },
   });
 
-  const sections: { name: string; decks: typeof progress }[] = [];
+  const categoryOptions: { id: string; name: string }[] = [];
   for (const entry of progress) {
+    const id = entry.deck.category?.id ?? "uncategorized";
+    const name = entry.deck.category?.name ?? t(locale, "common.uncategorized");
+    if (!categoryOptions.some((option) => option.id === id)) {
+      categoryOptions.push({ id, name });
+    }
+  }
+
+  const filteredProgress = progress.filter(
+    (entry) =>
+      (!languageFilter || entry.deck.language === languageFilter) &&
+      (!categoryFilter ||
+        (entry.deck.category?.id ?? "uncategorized") === categoryFilter)
+  );
+  const sections: { name: string; decks: typeof progress }[] = [];
+  for (const entry of filteredProgress) {
     const name = entry.deck.category?.name ?? t(locale, "common.uncategorized");
     const section = sections.find((candidate) => candidate.name === name);
     if (section) {
@@ -75,8 +104,19 @@ export default async function HomePage() {
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
         {t(locale, "home.yourDecks")}
       </h1>
-      {progress.length === 0 ? (
-        <p className="text-dark-gray">{t(locale, "home.empty")}</p>
+      <DeckFilters
+        action="/"
+        categories={categoryOptions}
+        category={categoryFilter}
+        language={languageFilter}
+        locale={locale}
+      />
+      {filteredProgress.length === 0 ? (
+        <p className="text-dark-gray">
+          {languageFilter || categoryFilter
+            ? t(locale, "deckFilters.noMatches")
+            : t(locale, "home.empty")}
+        </p>
       ) : (
         <div className="flex flex-col gap-5">
           {sections.map((section) => (
@@ -100,6 +140,7 @@ export default async function HomePage() {
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-evergreen">{p.deck.title}</p>
+                        <LanguageIndicator language={p.deck.language} locale={locale} />
                         <DeckDifficultyIndicator difficulty={p.deck.difficulty} locale={locale} />
                       </div>
                       <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium text-dark-gray">
