@@ -5,6 +5,7 @@ import { getLocale } from "@/lib/i18n-server";
 import { getDeckStudyState, summarizeProgress } from "@/lib/progress";
 import { prisma } from "@/lib/db";
 import { DeckProgress } from "@/components/deck-progress";
+import { CardSelectionForm } from "@/components/card-selection-form";
 import { restartDeckAndStudy } from "./study/actions";
 import { requireTrackedUser } from "@/lib/authz";
 import { deckAccessWhere } from "@/lib/tracks-server";
@@ -25,6 +26,8 @@ export default async function DeckPage({
         orderBy: { order: "asc" },
         select: {
           id: true,
+          front: true,
+          back: true,
           progress: {
             where: { userId: user.id },
             select: { isGood: true },
@@ -100,6 +103,17 @@ export default async function DeckPage({
                 : t(locale, "deck.startStudying")}
             </Link>
           )
+        )}
+        {progress.isComplete && (
+          <CardSelectionForm
+            deckSlug={deck.slug}
+            locale={locale}
+            cards={deck.cards.map((card) => ({
+              id: card.id,
+              front: card.front,
+              back: card.back,
+            }))}
+          />
         )}
       </div>
     </div>
