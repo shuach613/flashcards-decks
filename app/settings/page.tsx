@@ -3,9 +3,13 @@ import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { deckAccessWhere } from "@/lib/tracks-server";
-import { ChangeEmailForm, DeleteAccountForm, ResetProgressList } from "./settings-forms";
+import {
+  ChangeEmailForm,
+  DeleteAccountForm,
+  ResetProgressList,
+  ResendVerificationForm,
+} from "./settings-forms";
 import { SettingsSubnav, type SettingsTab } from "./settings-subnav";
-import { ResendVerificationForm } from "./settings-forms";
 
 function getTab(value: string | undefined): SettingsTab {
   return value === "learning" || value === "removal" ? value : "account";
