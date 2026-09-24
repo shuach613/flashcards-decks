@@ -25,7 +25,6 @@ docker/
 └── flashcards-decks/
     ├── Dockerfile
     ├── docker-compose.yml
-    ├── docker-compose.yml
     ├── data/
     └── application source
 `
