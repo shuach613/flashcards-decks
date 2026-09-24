@@ -58,6 +58,17 @@ export default async function HomePage() {
     orderBy: { lastStudiedAt: "desc" },
   });
 
+  const sections: { name: string; decks: typeof progress }[] = [];
+  for (const entry of progress) {
+    const name = entry.deck.category?.name ?? t(locale, "common.uncategorized");
+    const section = sections.find((candidate) => candidate.name === name);
+    if (section) {
+      section.decks.push(entry);
+    } else {
+      sections.push({ name, decks: [entry] });
+    }
+  }
+
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
@@ -66,8 +77,17 @@ export default async function HomePage() {
       {progress.length === 0 ? (
         <p className="text-dark-gray">{t(locale, "home.empty")}</p>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {progress.map((p) => {
+        <div className="flex flex-col gap-5">
+          {sections.map((section) => (
+            <details key={section.name} open className="group">
+              <summary className="mb-3 flex cursor-pointer list-none items-center justify-between rounded-xl border border-sand bg-white px-4 py-3 text-lg font-bold text-evergreen shadow-[0_2px_8px_rgba(25,51,37,0.06)] [&::-webkit-details-marker]:hidden">
+                <span>{section.name}</span>
+                <span className="text-base transition-transform group-open:rotate-180" aria-hidden="true">
+                 ⌄
+                </span>
+              </summary>
+              <ul className="flex flex-col gap-3">
+          {section.decks.map((p) => {
             const summary = summarizeProgress(
               p.deck.cards.map((card) => ({
                 id: card.id,
@@ -133,7 +153,10 @@ export default async function HomePage() {
               </li>
             );
           })}
-        </ul>
+              </ul>
+            </details>
+          ))}
+        </div>
       )}
     </div>
   );
