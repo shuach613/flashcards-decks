@@ -224,6 +224,7 @@ const en = {
   "tracks.expandSettings": "Settings",
 
   "settings.title": "Settings",
+  "settings.navigation": "Settings pages",
   "settings.account": "Account",
   "settings.accountBody": "Manage the email address and access details for your account.",
   "settings.currentEmail": "Current email",
@@ -485,6 +486,7 @@ const de: Record<TranslationKey, string> = {
   "tracks.expandSettings": "Einstellungen",
 
   "settings.title": "Einstellungen",
+  "settings.navigation": "Einstellungsseiten",
   "settings.account": "Konto",
   "settings.accountBody": "Verwalte die E-Mail-Adresse und Zugangsdaten deines Kontos.",
   "settings.currentEmail": "Aktuelle E-Mail",
