@@ -16,6 +16,7 @@ Container Manager.
 - Supports English and German interface text.
 - Provides an admin REST API for managing categories, decks, and cards.
 - Supports password reset emails through a personal SMTP account such as Gmail.
+- Sends new users a verification email before allowing study access; links are valid for 48 hours.
 - Creates an initial local administrator on the first deployment of an empty database.
 - Lets the primary initial administrator grant or revoke administrator access for other users.
 - Gives every signed-in user a Settings page to change their email, reset personal deck progress, or permanently delete their account.
@@ -63,6 +64,9 @@ configured in Container Manager.
   SMTP access from the NAS.
 - The initial administrator variables are used only when the database contains
   no users. They do not reset an existing administrator password.
+- Existing users are marked verified during the email-verification migration,
+  so an update does not interrupt their access. New normal signups must verify
+  their email before studying.
 - The primary administrator is stored in the database. Other administrators can
   use the admin area but cannot revoke administrator access from another user.
 - Updates can apply database migrations. Back up the database before updating,
@@ -143,6 +147,20 @@ allows users to:
 Deleting an account removes its study progress, track assignments, and password
 reset tokens through the database relations. Shared decks, cards, categories,
 and tracks are not deleted.
+
+## Email verification
+
+New normal signups receive a verification email with a link valid for 48 hours.
+Until the link is used, the account can only open the restricted activation
+Settings screen and cannot view or study decks. The initial administrator is
+exempt so the first deployment can be configured even before SMTP delivery is
+tested.
+
+The activation screen can send one replacement verification email. The
+replacement is the final attempt and is valid for another 48 hours. If that
+final attempt expires, the unverified account is deleted when it is next
+accessed or when its expired link is opened. Existing users are treated as
+verified by the migration.
 
 ## Synology deployment
 

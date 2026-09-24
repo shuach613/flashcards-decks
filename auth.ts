@@ -26,7 +26,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return null;
 
-        return { id: user.id, email: user.email, role: user.role };
+        if (!user.emailVerifiedAt && !(user.role === "ADMIN" && user.isPrimaryAdmin)) {
+          const token = await prisma.verificationToken.findFirst({
+            where: { userId: user.id },
+            orderBy: { createdAt: "desc" },
+            select: { expiresAt: true },
+          });
+          if (user.verificationAttempts >= 2 && (!token || token.expiresAt <= new Date())) {
+            await prisma.user.delete({ where: { id: user.id } });
+            return null;
+          }
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null,
+          isPrimaryAdmin: user.isPrimaryAdmin,
+        };
       },
     }),
   ],
@@ -49,6 +67,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = (user as { role: string }).role;
+        token.emailVerifiedAt = (user as { emailVerifiedAt: string | null }).emailVerifiedAt;
+        token.isPrimaryAdmin = (user as { isPrimaryAdmin: boolean }).isPrimaryAdmin;
       }
       return token;
     },
@@ -56,6 +76,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.emailVerifiedAt = (token.emailVerifiedAt as string | null) ?? null;
+        session.user.isPrimaryAdmin = token.isPrimaryAdmin as boolean;
       }
       return session;
     },

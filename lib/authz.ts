@@ -9,14 +9,26 @@ export async function requireUser() {
   return session.user;
 }
 
-export async function requireAdmin() {
+export async function requireVerifiedUser() {
   const user = await requireUser();
   const databaseUser = await prisma.user.findUnique({
     where: { id: user.id },
-    select: { role: true },
+    select: { role: true, isPrimaryAdmin: true, emailVerifiedAt: true },
   });
-  if (databaseUser?.role !== "ADMIN") redirect("/");
-  return { ...user, role: databaseUser.role };
+
+  if (!databaseUser) redirect("/login");
+  const isExempt = databaseUser.role === "ADMIN" && databaseUser.isPrimaryAdmin;
+  if (!databaseUser.emailVerifiedAt && !isExempt) {
+    redirect("/settings?verification=pending");
+  }
+
+  return { ...user, ...databaseUser };
+}
+
+export async function requireAdmin() {
+  const user = await requireVerifiedUser();
+  if (user.role !== "ADMIN") redirect("/");
+  return user;
 }
 
 export async function requirePrimaryAdmin() {
@@ -34,13 +46,9 @@ export async function requirePrimaryAdmin() {
 }
 
 export async function requireTrackedUser(callbackUrl = "/") {
-  const user = await requireUser();
-  const databaseUser = await prisma.user.findUnique({
-    where: { id: user.id },
-    select: { role: true },
-  });
-  if (databaseUser?.role !== "ADMIN" && !(await userHasTracks(user.id))) {
+  const user = await requireVerifiedUser();
+  if (user.role !== "ADMIN" && !(await userHasTracks(user.id))) {
     redirect(`/choose-track?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
-  return { ...user, role: databaseUser?.role ?? "USER" };
+  return user;
 }

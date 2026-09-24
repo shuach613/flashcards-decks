@@ -8,6 +8,7 @@ import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { ensureDefaultTracks } from "@/lib/tracks-server";
 import { rateLimit } from "@/lib/rate-limit";
+import { issueVerificationToken, sendVerificationEmail } from "@/lib/email-verification";
 
 export type FormState = { error?: string } | undefined;
 
@@ -51,13 +52,30 @@ export async function signup(
   });
   if (!track) return { error: t(locale, "auth.trackRequired") };
 
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email,
       passwordHash,
+      emailVerifiedAt: null,
+      verificationAttempts: 0,
       tracks: { create: { trackId: track.id } },
     },
   });
+
+  const { token, tokenHash } = await issueVerificationToken(user.id, 1);
+  try {
+    await sendVerificationEmail(user.email, token, locale);
+  } catch (error) {
+    await prisma.$transaction([
+      prisma.verificationToken.deleteMany({ where: { tokenHash } }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: { verificationAttempts: 0 },
+      }),
+    ]);
+    console.error("Verification email could not be sent.", error);
+    return { error: t(locale, "auth.verificationEmailFailed") };
+  }
 
   try {
     await signIn("credentials", { email, password, redirectTo: callbackUrl });

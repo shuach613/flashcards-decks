@@ -22,11 +22,14 @@ model User {
   passwordHash       String
   role               String               @default("USER") // "ADMIN" | "USER"
   isPrimaryAdmin     Boolean              @default(false)
+  emailVerifiedAt    DateTime?
+  verificationAttempts Int                @default(0)
   createdAt          DateTime             @default(now())
   studyProgress      StudyProgress[]
   cardProgress       CardProgress[]
   tracks             UserTrack[]
   passwordResetTokens PasswordResetToken[]
+  verificationTokens VerificationToken[]
 }
 
 model PasswordResetToken {
@@ -34,6 +37,19 @@ model PasswordResetToken {
   tokenHash String   @unique
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attempt   Int      @default(1)
   expiresAt DateTime
   createdAt DateTime @default(now())
 
