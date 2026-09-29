@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Keep native SQLite and its Prisma adapter in Node.js rather than asking
+  // webpack to statically analyse their dynamic native-binding loader.
+  serverExternalPackages: ["better-sqlite3", "@prisma/adapter-better-sqlite3"],
   async headers() {
     return [
       {
