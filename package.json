@@ -11,15 +11,15 @@
     "test": "node --test --experimental-strip-types tests/*.test.mts"
   },
   "dependencies": {
-    "@prisma/adapter-better-sqlite3": "^6.19.3",
-    "@prisma/client": "^6.19.3",
+    "@prisma/adapter-better-sqlite3": "7.10.0",
+    "@prisma/client": "7.10.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.3",
     "dotenv": "^16.6.1",
     "next": "^16.3.6",
     "next-auth": "^5.0.0-beta.32",
     "nodemailer": "^10.0.10",
-    "prisma": "^6.19.3",
+    "prisma": "7.10.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "server-only": "^0.0.1"
@@ -38,6 +38,7 @@
   },
   "overrides": {
     "deepmerge-ts": "^8.0.0",
-    "js-yaml": "^4.3.2"
+    "js-yaml": "^4.3.2",
+    "mysql2": "3.24.4"
   }
 }

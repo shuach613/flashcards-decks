@@ -174,6 +174,26 @@ difficulty values, and the markers that prevent deliberately deleted default
 categories or tracks from being recreated. The image's startup migrations add
 new columns or tables without replacing this data.
 
+### Prisma 7 upgrade note
+
+The Prisma 7 image on this branch uses Prisma 7.10.0 with the
+`better-sqlite3` adapter. Prisma is part of the application and is also used
+during startup to apply migrations;
+Node.js and npm do not need to be installed on DSM itself.
+
+Before upgrading an older installation to this image:
+
+1. Stop the project and make a separate copy of `flashcards.db`.
+2. Keep the current image tag available for rollback.
+3. Pull and recreate the new image without changing the `/app/data` mapping.
+4. Wait for the logs to show that all migrations completed successfully.
+5. Verify `/api/health` before allowing normal use.
+
+The Prisma 7 upgrade was tested with a fresh database, an existing migrated
+schema, a temporary deck and card, a fresh administrator, and a rollback to the
+previous Prisma 6 image. Do not manually edit the migration history or delete
+the database when upgrading.
+
 ## 9. Rollback
 
 Restore the image and database as a matching pair:

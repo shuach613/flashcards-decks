@@ -4,6 +4,10 @@ This application stores its persistent state in SQLite. The container image is
 replaceable; the data and deployment configuration are the items that must be
 protected.
 
+The Prisma 7 image applies pending migrations automatically when it starts.
+Keep the database backup and image tag together so a rollback can restore a
+compatible pair.
+
 ## What to back up
 
 Back up these items from the Synology NAS:
@@ -25,6 +29,10 @@ Use Hyper Backup or another backup tool that can copy SQLite files safely.
 Before manually copying `flashcards.db`, stop the project in Container Manager
 so no write is in progress. Keep multiple dated backup versions and test that
 at least one version can be restored.
+
+For a Prisma upgrade, first restore the backup into a disposable test project
+and confirm that migrations, login, administrator access, decks, cards, and
+study progress work before upgrading the live project.
 
 Back up the Compose YAML whenever configuration changes. Keep the SMTP app
 password, `AUTH_SECRET`, and `ADMIN_API_KEY` protected; do not commit the
