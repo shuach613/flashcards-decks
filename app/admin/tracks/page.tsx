@@ -50,7 +50,7 @@ export default async function StudentTrackAssignmentsPage({
   const assignedIds = new Set(student?.tracks.map((item) => item.trackId));
 
   return (
-    <div className="mx-auto mt-12 max-w-3xl px-6 pb-16">
+    <div className="mx-auto mt-12 max-w-4xl px-6 pb-16">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
         {t(locale, "admin.heading")}
       </h1>
