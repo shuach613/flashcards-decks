@@ -127,7 +127,7 @@ export function StudySession({
 
   if (finished) {
     return (
-      <div className="rounded-2xl border border-neutral-muted bg-white p-10 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+      <div className="rounded-2xl border border-neutral-muted bg-white p-5 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)] sm:p-10">
         <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-brand-highlight text-2xl text-brand-primary">
           ✓
         </div>
@@ -140,24 +140,24 @@ export function StudySession({
             : t(locale, "study.alreadyComplete", { title: deckTitle })}
         </p>
         {error && <p className="mt-3 text-sm text-status-danger">{error}</p>}
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
           <button
             type="button"
             onClick={restart}
             disabled={pending}
-            className="rounded-full border border-brand-primary/20 px-5 py-2.5 font-semibold text-brand-primary transition hover:bg-brand-primary/5 disabled:opacity-50"
+            className="min-h-11 w-full rounded-full border border-brand-primary/20 px-5 py-2.5 font-semibold text-brand-primary transition hover:bg-brand-primary/5 disabled:opacity-50 sm:w-auto sm:min-h-0"
           >
             {pending ? t(locale, "study.restarting") : t(locale, "study.studyAgain")}
           </button>
           <Link
             href={`/decks/${deckSlug}`}
-            className="rounded-full border border-brand-primary/20 px-5 py-2.5 font-semibold text-brand-primary transition hover:bg-brand-primary/5"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-brand-primary/20 px-5 py-2.5 font-semibold text-brand-primary transition hover:bg-brand-primary/5 sm:w-auto sm:min-h-0"
           >
             {t(locale, "study.backToDeck")}
           </Link>
           <Link
             href="/"
-            className="rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110 sm:w-auto sm:min-h-0"
           >
             {t(locale, "study.myDecks")}
           </Link>
@@ -208,7 +208,7 @@ export function StudySession({
         type="button"
         onClick={() => setRevealed((value) => !value)}
         disabled={pending}
-        className={`flex min-h-56 w-full flex-col items-center justify-center rounded-2xl border p-8 text-center text-lg shadow-[0_2px_8px_rgba(25,51,37,0.08)] transition disabled:opacity-70 ${
+        className={`flex min-h-48 w-full flex-col items-center justify-center rounded-2xl border p-5 text-center text-lg shadow-[0_2px_8px_rgba(25,51,37,0.08)] transition disabled:opacity-70 sm:min-h-56 sm:p-8 ${
           revealed
             ? "border-transparent bg-surface-accent"
             : current.previouslyGood
@@ -235,12 +235,12 @@ export function StudySession({
       </button>
       {error && <p className="mt-3 text-center text-sm text-status-danger">{error}</p>}
       {revealed && (
-        <div className="mt-6 flex justify-center gap-3">
+        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <button
             type="button"
             onClick={() => rate("AGAIN")}
             disabled={pending}
-            className="rounded-full border border-status-danger/30 px-5 py-2.5 font-semibold text-status-danger transition hover:bg-status-danger/5 disabled:opacity-50"
+            className="min-h-11 w-full rounded-full border border-status-danger/30 px-5 py-2.5 font-semibold text-status-danger transition hover:bg-status-danger/5 disabled:opacity-50 sm:w-auto sm:min-h-0"
           >
             {pending ? t(locale, "study.saving") : t(locale, "study.again")}
           </button>
@@ -248,7 +248,7 @@ export function StudySession({
             type="button"
             onClick={() => rate("GOOD")}
             disabled={pending}
-            className="rounded-full bg-brand-highlight px-5 py-2.5 font-semibold text-brand-primary transition hover:brightness-110 disabled:opacity-50"
+            className="min-h-11 w-full rounded-full bg-brand-highlight px-5 py-2.5 font-semibold text-brand-primary transition hover:brightness-110 disabled:opacity-50 sm:w-auto sm:min-h-0"
           >
             {pending ? t(locale, "study.saving") : t(locale, "study.good")}
           </button>

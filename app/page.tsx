@@ -100,7 +100,7 @@ export default async function HomePage({
   }
 
   return (
-    <div className="mx-auto mt-12 max-w-2xl px-6">
+    <div className="mx-auto mt-8 max-w-2xl px-4 pb-10 sm:mt-12 sm:px-6 sm:pb-0">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
         {t(locale, "home.yourDecks")}
       </h1>
@@ -135,15 +135,15 @@ export default async function HomePage({
                 key={p.id}
                 className="rounded-2xl border border-neutral-muted bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
               >
-                <div className="flex items-end justify-between gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-brand-primary">{p.deck.title}</p>
+                    <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+                      <div className="flex min-w-0 flex-wrap items-center gap-2">
+                        <p className="min-w-0 break-words font-semibold text-brand-primary">{p.deck.title}</p>
                         <LanguageIndicator language={p.deck.language} locale={locale} />
                         <DeckDifficultyIndicator difficulty={p.deck.difficulty} locale={locale} />
                       </div>
-                      <span className="rounded-full bg-surface-muted px-2 py-0.5 text-xs font-medium text-text-muted">
+                      <span className="rounded-full bg-surface-muted px-2 py-0.5 text-xs font-medium text-text-muted sm:max-w-full">
                         {p.deck.category?.name ??
                           t(locale, "common.uncategorized")}
                       </span>
@@ -172,7 +172,7 @@ export default async function HomePage({
                     <form action={restartDeckAndStudy.bind(null, p.deck.slug)}>
                       <button
                         type="submit"
-                        className="shrink-0 rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                        className="min-h-11 w-full rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 sm:w-auto sm:min-h-0"
                       >
                         {t(locale, "home.restart")}
                       </button>
@@ -180,7 +180,7 @@ export default async function HomePage({
                   ) : (
                     <Link
                       href={`/decks/${p.deck.slug}/study`}
-                      className="shrink-0 rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 sm:w-auto sm:min-h-0"
                     >
                       {t(locale, "home.continue")}
                     </Link>

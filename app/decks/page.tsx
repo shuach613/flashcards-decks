@@ -145,7 +145,7 @@ export default async function AllDecksPage({
   ].filter((section) => section.groups.length > 0);
 
   return (
-    <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
+    <div className="mx-auto mt-8 max-w-2xl px-4 pb-10 sm:mt-12 sm:px-6 sm:pb-16">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
         {t(locale, "allDecks.title")}
       </h1>
@@ -190,10 +190,10 @@ export default async function AllDecksPage({
                             key={deck.id}
                             className="rounded-2xl border border-neutral-muted bg-white px-4 py-3 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
                               <Link
                                 href={`/decks/${deck.slug}`}
-                                className="font-semibold text-brand-primary hover:underline"
+                                className="min-w-0 break-words font-semibold text-brand-primary hover:underline"
                               >
                                 {deck.title}
                               </Link>
@@ -230,7 +230,7 @@ export default async function AllDecksPage({
                                   >
                                     <button
                                       type="submit"
-                                      className="rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                                      className="min-h-11 w-full rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 sm:w-auto sm:min-h-0"
                                     >
                                       {t(locale, "deck.restart")}
                                     </button>
@@ -238,7 +238,7 @@ export default async function AllDecksPage({
                                 ) : (
                                   <Link
                                     href={`/decks/${deck.slug}/study`}
-                                    className="rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                                    className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 sm:w-auto sm:min-h-0"
                                   >
                                     {state === "in-progress"
                                       ? t(locale, "home.continue")

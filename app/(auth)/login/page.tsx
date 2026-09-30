@@ -13,8 +13,8 @@ export default async function LoginPage({
   const locale = await getLocale();
 
   return (
-    <div className="mx-auto mt-16 max-w-sm px-6">
-      <div className="rounded-2xl border border-neutral-muted bg-white p-8 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+    <div className="mx-auto mt-8 max-w-sm px-4 sm:mt-16 sm:px-6">
+      <div className="rounded-2xl border border-neutral-muted bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)] sm:p-8">
         <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "auth.loginTitle")}
         </h1>

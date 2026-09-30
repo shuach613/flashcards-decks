@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { t, type Locale } from "@/lib/i18n";
+import { MfaCopyButton } from "./mfa-copy-button";
 import {
   confirmMfaSetup,
   disableMfa,
@@ -63,8 +64,18 @@ export function MfaSettings({ enabled, locale }: { enabled: boolean; locale: Loc
           <div className="mt-4 inline-flex rounded-xl bg-white p-4" aria-label="MFA setup QR code">
             <QRCodeSVG value={setup} size={220} level="M" includeMargin />
           </div>
-          <p className="mt-2 break-all rounded-lg bg-white p-3 font-mono text-xs text-brand-primary">{setupState.otpauthUri}</p>
-          <p className="mt-2 text-xs text-text-muted">{t(locale, "settings.mfaManualSecret")} <span className="font-mono">{setupState.secret}</span></p>
+          <details className="mt-4 rounded-xl border border-neutral-muted bg-white p-3">
+            <summary className="min-h-11 cursor-pointer list-none py-2 text-sm font-semibold text-brand-primary sm:min-h-0 [&::-webkit-details-marker]:hidden">
+              {t(locale, "settings.mfaManualSetup")}
+            </summary>
+            <p className="mt-2 break-all font-mono text-xs text-brand-primary">{setup}</p>
+            <MfaCopyButton
+              value={setup}
+              label={t(locale, "settings.mfaCopyUri")}
+              copiedLabel={t(locale, "settings.mfaCopied")}
+            />
+            <p className="mt-3 text-xs text-text-muted">{t(locale, "settings.mfaManualSecret")} <span className="break-all font-mono">{setupState.secret}</span></p>
+          </details>
           <form action={confirmAction} className="mt-4 flex flex-col gap-3">
             <input name="code" inputMode="numeric" required placeholder={t(locale, "settings.mfaCodePlaceholder")} className="rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-sm" />
             {confirmState?.error && <p className="text-sm text-status-danger">{confirmState.error}</p>}

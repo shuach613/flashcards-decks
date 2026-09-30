@@ -37,7 +37,7 @@ export default async function SettingsPage({
 
   if (!isVerified) {
     return (
-      <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
+      <div className="mx-auto mt-8 max-w-2xl px-4 pb-10 sm:mt-12 sm:px-6 sm:pb-16">
         <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "settings.title")}
         </h1>
@@ -67,7 +67,7 @@ export default async function SettingsPage({
       : [];
 
   return (
-    <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
+    <div className="mx-auto mt-8 max-w-2xl px-4 pb-10 sm:mt-12 sm:px-6 sm:pb-16">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
         {t(locale, "settings.title")}
       </h1>

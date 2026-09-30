@@ -30,7 +30,7 @@ export function SettingsSubnav({
           key={link.id}
           href={link.href}
           aria-current={active === link.id ? "page" : undefined}
-          className={`rounded-xl px-4 py-2.5 text-center text-sm font-semibold transition ${
+          className={`flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-center text-sm font-semibold transition sm:min-h-0 ${
             active === link.id
               ? "bg-brand-primary text-white"
               : "text-brand-primary hover:bg-brand-primary/5"

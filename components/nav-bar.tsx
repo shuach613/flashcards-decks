@@ -26,7 +26,7 @@ export async function NavBar() {
   return (
     <header className="border-b border-neutral-muted bg-white/95 backdrop-blur">
       <div className="mx-auto max-w-3xl px-6">
-        <div className="flex items-center justify-between gap-4 py-3.5">
+        <div className="relative flex items-center justify-between gap-3 py-3 sm:gap-4 sm:py-3.5">
           <Link
             href="/"
             className="flex shrink-0 items-center gap-3"
@@ -48,7 +48,7 @@ export async function NavBar() {
               {t(locale, "home.title")}
             </span>
           </Link>
-          <div className="flex items-center gap-3 text-sm">
+          <div className="hidden items-center gap-3 text-sm md:flex">
             {user ? (
               <>
                 <span className="hidden text-text-muted sm:inline">{user.email}</span>
@@ -85,9 +85,64 @@ export async function NavBar() {
             <LanguageToggle current={locale} />
             <ThemeToggle />
           </div>
+          <details className="relative md:hidden">
+            <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-full border border-brand-primary/20 text-xl font-bold text-brand-primary [&::-webkit-details-marker]:hidden">
+              <span aria-hidden="true">☰</span>
+              <span className="sr-only">Open navigation</span>
+            </summary>
+            <div className="absolute right-0 top-14 z-20 w-64 rounded-2xl border border-neutral-muted bg-white p-3 shadow-[0_6px_20px_rgba(25,51,37,0.14)]">
+              <div className="flex flex-col gap-1 text-sm">
+                {user ? (
+                  <>
+                    {canUseApp && (
+                      <>
+                        <Link href="/" className="rounded-xl px-3 py-3 font-medium text-brand-primary hover:bg-brand-primary/5">
+                          {t(locale, "nav.myDecks")}
+                        </Link>
+                        <Link href="/decks" className="rounded-xl px-3 py-3 font-medium text-brand-primary hover:bg-brand-primary/5">
+                          {t(locale, "nav.allDecks")}
+                        </Link>
+                      </>
+                    )}
+                    <Link href="/settings" className="rounded-xl px-3 py-3 font-medium text-brand-primary hover:bg-brand-primary/5">
+                      {t(locale, "nav.settings")}
+                    </Link>
+                    {canUseApp && user.role === "ADMIN" && (
+                      <Link href="/admin" className="rounded-xl px-3 py-3 font-medium text-brand-primary hover:bg-brand-primary/5">
+                        {t(locale, "nav.admin")}
+                      </Link>
+                    )}
+                    <form
+                      action={async () => {
+                        "use server";
+                        await signOut({ redirectTo: "/login" });
+                      }}
+                    >
+                      <button type="submit" className="w-full rounded-xl px-3 py-3 text-left font-medium text-brand-primary hover:bg-brand-primary/5">
+                        {t(locale, "nav.logOut")}
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/login" className="rounded-xl px-3 py-3 font-medium text-brand-primary hover:bg-brand-primary/5">
+                      {t(locale, "nav.logIn")}
+                    </Link>
+                    <Link href="/signup" className="rounded-xl bg-brand-primary px-3 py-3 font-medium text-white">
+                      {t(locale, "nav.signUp")}
+                    </Link>
+                  </>
+                )}
+              </div>
+              <div className="mt-2 flex items-center justify-between border-t border-neutral-muted px-2 pt-3">
+                <LanguageToggle current={locale} />
+                <ThemeToggle />
+              </div>
+            </div>
+          </details>
         </div>
         {user && (
-          <nav className="flex items-center gap-5 border-t border-neutral-muted py-2.5 text-sm">
+          <nav className="hidden items-center gap-5 border-t border-neutral-muted py-2.5 text-sm md:flex">
             {canUseApp && (
               <>
                 <Link

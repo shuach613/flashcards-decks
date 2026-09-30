@@ -56,7 +56,7 @@ export default async function StudentOverviewPage({ searchParams }: { searchPara
   const dateLocale = locale === "de" ? "de-CH" : "en-US";
 
   return (
-    <div className="mx-auto mt-12 max-w-4xl px-6 pb-16">
+    <div className="mx-auto mt-8 max-w-4xl px-4 pb-10 sm:mt-12 sm:px-6 sm:pb-16">
       <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">{t(locale, "admin.heading")}</h1>
       <AdminSubnav active="students" locale={locale} />
 
@@ -115,7 +115,37 @@ export default async function StudentOverviewPage({ searchParams }: { searchPara
                                 <div className="border-t border-neutral-muted px-4 pb-4 pt-3">
                                   <DeckProgress goodCount={summary.goodCount} totalCount={summary.totalCount} label={t(locale, "deck.progress", { good: summary.goodCount, total: summary.totalCount })} progressLabel={t(locale, "study.progressLabel")} />
                                   {deck.study && <p className="mt-2 text-sm text-text-muted">{t(locale, "admin.lastStudied", { date: deck.study.lastStudiedAt.toLocaleDateString(dateLocale) })} · {tc(locale, "admin.completedSessions", deck.study.timesStudied)}</p>}
-                                  <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[640px] text-left text-sm"><thead className="text-xs tracking-wide text-text-muted uppercase"><tr><th className="pb-2 pr-4 font-semibold">{t(locale, "admin.card")}</th><th className="px-3 pb-2 font-semibold">{t(locale, "admin.status")}</th><th className="px-3 pb-2 text-center font-semibold">{t(locale, "admin.timesGood")}</th><th className="px-3 pb-2 text-center font-semibold">{t(locale, "admin.timesAgain")}</th><th className="pb-2 pl-3 font-semibold">{t(locale, "admin.lastActivity")}</th></tr></thead><tbody>
+                                  <div className="mt-4 flex flex-col gap-2 sm:hidden">
+                                    {deck.cards.map((card) => {
+                                      const status = getCardStudyStatus(card.progress);
+                                      const statusLabel = status === "good" ? t(locale, "admin.cardGood") : status === "needs-study" ? t(locale, "admin.cardNeedsStudy") : t(locale, "admin.cardNotReviewed");
+                                      const statusClass = status === "good" ? "bg-surface-accent text-brand-primary" : status === "needs-study" ? "bg-red-100 text-red-700" : "bg-surface-muted text-text-muted";
+                                      return (
+                                        <article key={card.id} className="rounded-xl bg-surface-muted/40 p-3 text-sm">
+                                          <p className="font-semibold text-brand-primary">{card.front}</p>
+                                          <div className="mt-3 grid grid-cols-2 gap-3">
+                                            <div>
+                                              <p className="text-xs text-text-muted">{t(locale, "admin.status")}</p>
+                                              <span className={`mt-1 inline-flex rounded-full px-2 py-1 text-xs font-semibold ${statusClass}`}>{statusLabel}</span>
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-text-muted">{t(locale, "admin.lastActivity")}</p>
+                                              <p className="mt-1 text-text-strong">{card.progress ? card.progress.updatedAt.toLocaleDateString(dateLocale) : t(locale, "admin.noActivity")}</p>
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-text-muted">{t(locale, "admin.timesGood")}</p>
+                                              <p className="mt-1 text-text-strong">{card.progress?.timesGood ?? 0}</p>
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-text-muted">{t(locale, "admin.timesAgain")}</p>
+                                              <p className="mt-1 text-text-strong">{card.progress?.timesAgain ?? 0}</p>
+                                            </div>
+                                          </div>
+                                        </article>
+                                      );
+                                    })}
+                                  </div>
+                                  <div className="mt-4 hidden overflow-x-auto sm:block"><table className="w-full min-w-[640px] text-left text-sm"><thead className="text-xs tracking-wide text-text-muted uppercase"><tr><th className="pb-2 pr-4 font-semibold">{t(locale, "admin.card")}</th><th className="px-3 pb-2 font-semibold">{t(locale, "admin.status")}</th><th className="px-3 pb-2 text-center font-semibold">{t(locale, "admin.timesGood")}</th><th className="px-3 pb-2 text-center font-semibold">{t(locale, "admin.timesAgain")}</th><th className="pb-2 pl-3 font-semibold">{t(locale, "admin.lastActivity")}</th></tr></thead><tbody>
                                     {deck.cards.map((card) => { const status = getCardStudyStatus(card.progress); const statusLabel = status === "good" ? t(locale, "admin.cardGood") : status === "needs-study" ? t(locale, "admin.cardNeedsStudy") : t(locale, "admin.cardNotReviewed"); const statusClass = status === "good" ? "bg-surface-accent text-brand-primary" : status === "needs-study" ? "bg-red-100 text-red-700" : "bg-surface-muted text-text-muted"; return <tr key={card.id} className="border-t border-neutral-muted"><td className="py-3 pr-4 text-brand-primary">{card.front}</td><td className="px-3 py-3"><span className={`rounded-full px-2 py-1 text-xs font-semibold ${statusClass}`}>{statusLabel}</span></td><td className="px-3 py-3 text-center text-text-muted">{card.progress?.timesGood ?? 0}</td><td className="px-3 py-3 text-center text-text-muted">{card.progress?.timesAgain ?? 0}</td><td className="py-3 pl-3 text-text-muted">{card.progress ? card.progress.updatedAt.toLocaleDateString(dateLocale) : t(locale, "admin.noActivity")}</td></tr>; })}
                                   </tbody></table></div>
                                 </div>

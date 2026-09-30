@@ -21,7 +21,7 @@ export function DeckFilters({
     <form
       method="get"
       action={action}
-      className="mb-6 flex flex-wrap items-end gap-3 rounded-2xl border border-neutral-muted bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.06)]"
+      className="mb-6 flex flex-col items-stretch gap-3 rounded-2xl border border-neutral-muted bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.06)] sm:flex-row sm:flex-wrap sm:items-end"
     >
       <label className="flex min-w-36 flex-1 flex-col gap-1 text-sm font-semibold text-brand-primary">
         {t(locale, "deckFilters.language")}
@@ -55,14 +55,14 @@ export function DeckFilters({
       </label>
       <button
         type="submit"
-        className="rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
+        className="min-h-11 w-full rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110 sm:w-auto sm:min-h-0"
       >
         {t(locale, "deckFilters.apply")}
       </button>
       {hasFilters && (
         <Link
           href={action}
-          className="rounded-full border border-brand-primary/20 px-5 py-2.5 font-semibold text-brand-primary transition hover:bg-brand-primary/5"
+        className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-brand-primary/20 px-5 py-2.5 font-semibold text-brand-primary transition hover:bg-brand-primary/5 sm:w-auto sm:min-h-0"
         >
           {t(locale, "deckFilters.clear")}
         </Link>

@@ -22,7 +22,7 @@ export function LanguageToggle({ current }: { current: Locale }) {
           type="button"
           onClick={() => switchTo(locale)}
           disabled={isPending}
-          className={`rounded-full px-2.5 py-1 uppercase transition ${
+          className={`min-h-10 rounded-full px-2.5 py-1 uppercase transition sm:min-h-0 ${
             current === locale
               ? "bg-brand-primary text-white"
               : "text-brand-primary hover:bg-brand-primary/5"
