@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/authz";
 import { prisma } from "@/lib/db";
+import { writeAuditLog } from "@/lib/audit-log";
 
 function selectedCategoryIds(formData: FormData) {
   return [...new Set(formData.getAll("categoryIds").map(String).filter(Boolean))];
@@ -18,7 +19,7 @@ async function categoryIdsAreValid(categoryIds: string[]) {
 }
 
 export async function createTrack(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const name = String(formData.get("name") ?? "").trim();
   const categoryIds = selectedCategoryIds(formData);
 
@@ -47,13 +48,20 @@ export async function createTrack(formData: FormData) {
         })),
       });
     }
+
+    await writeAuditLog(admin, {
+      action: "TRACK_CREATED",
+      targetType: "TRACK",
+      targetId: track.id,
+      metadata: { name: track.name, categoryIds },
+    }, tx);
   });
 
   redirect("/admin/track-settings?created=1");
 }
 
 export async function updateTrack(trackId: string, formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const name = String(formData.get("name") ?? "").trim();
   const categoryIds = selectedCategoryIds(formData);
   const query = new URLSearchParams({ track: trackId });
@@ -91,6 +99,12 @@ export async function updateTrack(trackId: string, formData: FormData) {
         })),
       });
     }
+    await writeAuditLog(admin, {
+      action: "TRACK_UPDATED",
+      targetType: "TRACK",
+      targetId: trackId,
+      metadata: { name, categoryIds },
+    }, tx);
   });
 
   query.set("saved", "1");
@@ -98,8 +112,16 @@ export async function updateTrack(trackId: string, formData: FormData) {
 }
 
 export async function deleteTrack(trackId: string) {
-  await requireAdmin();
-  await prisma.track.delete({ where: { id: trackId } });
+  const admin = await requireAdmin();
+  const track = await prisma.track.findUnique({ where: { id: trackId }, select: { id: true, name: true } });
+  if (!track) return;
+  await writeAuditLog(admin, {
+    action: "TRACK_DELETED",
+    targetType: "TRACK",
+    targetId: track.id,
+    metadata: { name: track.name },
+  });
+  await prisma.track.delete({ where: { id: track.id } });
 
   redirect("/admin/track-settings");
 }

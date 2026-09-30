@@ -3,6 +3,8 @@ import { requireApiKey } from "@/lib/api-auth";
 import { serializeCard } from "@/lib/api-serialize";
 import { prisma } from "@/lib/db";
 import { parseTsv } from "@/lib/tsv";
+import { MAX_CARD_TEXT_LENGTH, MAX_IMPORT_BYTES, MAX_IMPORT_CARDS } from "@/lib/input-limits";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export async function GET(
   request: Request,
@@ -29,6 +31,9 @@ export async function POST(
 ) {
   const authError = requireApiKey(request);
   if (authError) return authError;
+  if (Number(request.headers.get("content-length") ?? 0) > MAX_IMPORT_BYTES) {
+    return NextResponse.json({ error: "Request body is too large." }, { status: 413 });
+  }
 
   const { slug } = await params;
   const deck = await prisma.deck.findUnique({ where: { slug } });
@@ -65,6 +70,9 @@ export async function POST(
       { status: 400 }
     );
   }
+  if (cards.length > MAX_IMPORT_CARDS || cards.some((card) => card.front.length > MAX_CARD_TEXT_LENGTH || card.back.length > MAX_CARD_TEXT_LENGTH)) {
+    return NextResponse.json({ error: "Import is too large or a card is too long." }, { status: 400 });
+  }
 
   const existingCount = await prisma.card.count({ where: { deckId: deck.id } });
   await prisma.card.createMany({
@@ -74,6 +82,12 @@ export async function POST(
       back: card.back,
       order: existingCount + i,
     })),
+  });
+  await writeAuditLog({ email: "Admin API" }, {
+    action: "CARDS_IMPORTED",
+    targetType: "DECK",
+    targetId: deck.id,
+    metadata: { slug, count: cards.length, via: "api" },
   });
 
   const created = await prisma.card.findMany({

@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/authz";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export type FormState = { error?: string } | undefined;
 
@@ -12,7 +13,7 @@ export async function createCategory(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const locale = await getLocale();
   const name = String(formData.get("name") ?? "").trim();
   const trackIds = [
@@ -31,7 +32,7 @@ export async function createCategory(
   }
 
   const last = await prisma.category.findFirst({ orderBy: { order: "desc" } });
-  await prisma.category.create({
+  const category = await prisma.category.create({
     data: {
       name,
       order: (last?.order ?? -1) + 1,
@@ -41,13 +42,29 @@ export async function createCategory(
     },
   });
 
+  await writeAuditLog(admin, {
+    action: "CATEGORY_CREATED",
+    targetType: "CATEGORY",
+    targetId: category.id,
+    metadata: { name: category.name },
+  });
+
   revalidatePath("/admin/categories");
   revalidatePath("/admin");
   revalidatePath("/admin/track-settings");
 }
 
 export async function deleteCategory(categoryId: string) {
-  await requireAdmin();
+  const admin = await requireAdmin();
+  const category = await prisma.category.findUnique({ where: { id: categoryId }, select: { id: true, name: true } });
+  if (!category) return;
+
+  await writeAuditLog(admin, {
+    action: "CATEGORY_DELETED",
+    targetType: "CATEGORY",
+    targetId: category.id,
+    metadata: { name: category.name },
+  });
 
   await prisma.$transaction(async (tx) => {
     await tx.deck.updateMany({

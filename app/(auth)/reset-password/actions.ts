@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { MAX_PASSWORD_LENGTH } from "@/lib/input-limits";
 
 export type FormState = { error?: string } | undefined;
 
@@ -16,7 +17,7 @@ export async function resetPassword(
   const confirmation = String(formData.get("confirmation") ?? "");
 
   if (!token) return { error: "This reset link is invalid or has expired." };
-  if (password.length < 8) {
+  if (password.length < 8 || password.length > MAX_PASSWORD_LENGTH) {
     return { error: "Your password must be at least 8 characters long." };
   }
   if (password !== confirmation) {
@@ -37,7 +38,7 @@ export async function resetPassword(
   await prisma.$transaction([
     prisma.user.update({
       where: { id: resetToken.userId },
-      data: { passwordHash },
+      data: { passwordHash, sessionVersion: { increment: 1 } },
     }),
     prisma.passwordResetToken.deleteMany({
       where: { userId: resetToken.userId },

@@ -3,6 +3,8 @@ import { requireApiKey } from "@/lib/api-auth";
 import { ensureDefaultCategories } from "@/lib/categories-server";
 import { serializeCategory } from "@/lib/api-serialize";
 import { prisma } from "@/lib/db";
+import { MAX_TITLE_LENGTH } from "@/lib/input-limits";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export async function GET(request: Request) {
   const authError = requireApiKey(request);
@@ -32,6 +34,9 @@ export async function POST(request: Request) {
   if (!name) {
     return NextResponse.json({ error: "'name' is required." }, { status: 400 });
   }
+  if (name.length > MAX_TITLE_LENGTH) {
+    return NextResponse.json({ error: "Category name is too long." }, { status: 400 });
+  }
 
   const existing = await prisma.category.findUnique({ where: { name } });
   if (existing) {
@@ -45,6 +50,12 @@ export async function POST(request: Request) {
   const category = await prisma.category.create({
     data: { name, order: (last?.order ?? -1) + 1 },
     include: { _count: { select: { decks: true } } },
+  });
+  await writeAuditLog({ email: "Admin API" }, {
+    action: "CATEGORY_CREATED",
+    targetType: "CATEGORY",
+    targetId: category.id,
+    metadata: { name: category.name, via: "api" },
   });
 
   return NextResponse.json(

@@ -15,13 +15,16 @@ function databasePath(databaseUrl) {
 
 function validateSecurityConfig() {
   const authSecret = process.env.AUTH_SECRET;
-  if (!authSecret || authSecret.length < 32) {
+  if (!authSecret || authSecret.length < 32 || /replace-with|example\.com|your-/i.test(authSecret)) {
     throw new Error("AUTH_SECRET must be configured with at least 32 characters.");
   }
 
   const adminApiKey = process.env.ADMIN_API_KEY;
-  if (adminApiKey && adminApiKey.length < 32) {
+  if (adminApiKey && (adminApiKey.length < 32 || /replace-with|example\.com|your-/i.test(adminApiKey))) {
     throw new Error("ADMIN_API_KEY must be at least 32 characters when configured.");
+  }
+  if (adminApiKey && adminApiKey === authSecret) {
+    throw new Error("AUTH_SECRET and ADMIN_API_KEY must be different values.");
   }
 }
 
@@ -75,6 +78,9 @@ function bootstrapAdmin() {
   if (password.length < 8) {
     throw new Error("ADMIN_INITIAL_PASSWORD must be at least 8 characters long.");
   }
+  if (/replace-with|temporary-password|password/i.test(password)) {
+    throw new Error("ADMIN_INITIAL_PASSWORD must not be a placeholder value.");
+  }
 
   const db = new Database(databasePath(process.env.DATABASE_URL));
 
@@ -86,9 +92,13 @@ function bootstrapAdmin() {
     }
 
     const passwordHash = bcrypt.hashSync(password, 10);
+    const userId = randomUUID();
     db.prepare(
       'INSERT INTO "User" ("id", "email", "passwordHash", "role", "isPrimaryAdmin", "createdAt") VALUES (?, ?, ?, \'ADMIN\', 1, CURRENT_TIMESTAMP)'
-    ).run(randomUUID(), email, passwordHash);
+    ).run(userId, email, passwordHash);
+    db.prepare(
+      'INSERT INTO "AuditLog" ("id", "actorUserId", "actorEmail", "action", "targetType", "targetId", "metadata") VALUES (?, ?, ?, \'INITIAL_ADMIN_CREATED\', \'USER\', ?, ?)'
+    ).run(randomUUID(), userId, email, userId, JSON.stringify({ email }));
 
     console.log(`Created initial admin account ${email}.`);
   } finally {

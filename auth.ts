@@ -44,6 +44,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           role: user.role,
           emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null,
           isPrimaryAdmin: user.isPrimaryAdmin,
+          sessionVersion: user.sessionVersion,
         };
       },
     }),
@@ -69,6 +70,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = (user as { role: string }).role;
         token.emailVerifiedAt = (user as { emailVerifiedAt: string | null }).emailVerifiedAt;
         token.isPrimaryAdmin = (user as { isPrimaryAdmin: boolean }).isPrimaryAdmin;
+        token.sessionVersion = (user as { sessionVersion: number }).sessionVersion;
       }
       return token;
     },
@@ -78,6 +80,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.role = token.role as string;
         session.user.emailVerifiedAt = (token.emailVerifiedAt as string | null) ?? null;
         session.user.isPrimaryAdmin = token.isPrimaryAdmin as boolean;
+        session.user.sessionVersion = token.sessionVersion as number;
       }
       return session;
     },

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { requireApiKey } from "@/lib/api-auth";
 import { serializeCard } from "@/lib/api-serialize";
 import { prisma } from "@/lib/db";
+import { MAX_CARD_TEXT_LENGTH } from "@/lib/input-limits";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export async function PATCH(
   request: Request,
@@ -27,6 +29,9 @@ export async function PATCH(
     if (!front) {
       return NextResponse.json({ error: "'front' cannot be empty." }, { status: 400 });
     }
+    if (front.length > MAX_CARD_TEXT_LENGTH) {
+      return NextResponse.json({ error: "'front' is too long." }, { status: 400 });
+    }
     data.front = front;
   }
   if (body.back !== undefined) {
@@ -34,10 +39,19 @@ export async function PATCH(
     if (!back) {
       return NextResponse.json({ error: "'back' cannot be empty." }, { status: 400 });
     }
+    if (back.length > MAX_CARD_TEXT_LENGTH) {
+      return NextResponse.json({ error: "'back' is too long." }, { status: 400 });
+    }
     data.back = back;
   }
 
   const updated = await prisma.card.update({ where: { id }, data });
+  await writeAuditLog({ email: "Admin API" }, {
+    action: "CARD_UPDATED",
+    targetType: "CARD",
+    targetId: updated.id,
+    metadata: { via: "api" },
+  });
   return NextResponse.json({ card: serializeCard(updated) });
 }
 
@@ -54,6 +68,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Card not found." }, { status: 404 });
   }
 
+  await writeAuditLog({ email: "Admin API" }, {
+    action: "CARD_DELETED",
+    targetType: "CARD",
+    targetId: card.id,
+    metadata: { via: "api" },
+  });
   await prisma.card.delete({ where: { id } });
   return NextResponse.json({ deleted: true, id });
 }

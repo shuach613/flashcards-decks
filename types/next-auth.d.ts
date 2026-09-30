@@ -5,6 +5,7 @@ declare module "next-auth" {
     role: string;
     emailVerifiedAt: string | null;
     isPrimaryAdmin: boolean;
+    sessionVersion: number;
   }
 
   interface Session {
@@ -13,6 +14,7 @@ declare module "next-auth" {
       role: string;
       emailVerifiedAt: string | null;
       isPrimaryAdmin: boolean;
+      sessionVersion: number;
     } & DefaultSession["user"];
   }
 }
@@ -23,5 +25,6 @@ declare module "next-auth/jwt" {
     role: string;
     emailVerifiedAt: string | null;
     isPrimaryAdmin: boolean;
+    sessionVersion: number;
   }
 }

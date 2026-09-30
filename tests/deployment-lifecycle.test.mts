@@ -68,7 +68,9 @@ test("fresh installation creates the current schema", () => {
     assert.ok(userColumns.some((column) => column.name === "isPrimaryAdmin"));
     assert.ok(userColumns.some((column) => column.name === "emailVerifiedAt"));
     assert.ok(userColumns.some((column) => column.name === "verificationAttempts"));
+    assert.ok(userColumns.some((column) => column.name === "sessionVersion"));
     assert.ok(tables.includes("VerificationToken"));
+    assert.ok(tables.includes("AuditLog"));
   } finally {
     db.close();
     cleanup(databasePath);

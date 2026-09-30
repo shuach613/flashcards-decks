@@ -3,13 +3,14 @@
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/authz";
 import { prisma } from "@/lib/db";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export async function updateStudentTracks(
   userId: string,
   email: string,
   formData: FormData
 ) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const requestedTrackIds = formData
     .getAll("trackIds")
     .map(String)
@@ -43,6 +44,13 @@ export async function updateStudentTracks(
       })),
     }),
   ]);
+
+  await writeAuditLog(admin, {
+    action: "STUDENT_TRACKS_UPDATED",
+    targetType: "USER",
+    targetId: student.id,
+    metadata: { trackIds: [...new Set(requestedTrackIds)] },
+  });
 
   query.set("saved", "1");
   redirect(`/admin/tracks?${query}`);

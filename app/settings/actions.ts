@@ -10,6 +10,9 @@ import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { deckAccessWhere } from "@/lib/tracks-server";
 import { isValidEmail, normalizeEmail } from "@/lib/settings";
+import { issueVerificationToken, sendVerificationEmail } from "@/lib/email-verification";
+import { writeAuditLog } from "@/lib/audit-log";
+import { MAX_EMAIL_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/input-limits";
 
 export type SettingsState = { error?: string; message?: string } | undefined;
 
@@ -22,9 +25,9 @@ export async function changeEmail(
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const password = String(formData.get("password") ?? "");
 
-  if (!email) return { error: t(locale, "settings.emailRequired") };
+  if (!email || email.length > MAX_EMAIL_LENGTH) return { error: t(locale, "settings.emailInvalid") };
   if (!isValidEmail(email)) return { error: t(locale, "settings.emailInvalid") };
-  if (!password) return { error: t(locale, "settings.passwordRequired") };
+  if (!password || password.length > MAX_PASSWORD_LENGTH) return { error: t(locale, "settings.passwordRequired") };
 
   const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
   if (!user) redirect("/login");
@@ -33,14 +36,54 @@ export async function changeEmail(
   }
   if (email === user.email) return { error: t(locale, "settings.emailSame") };
 
+  const previousVerification = user.emailVerifiedAt;
   try {
-    await prisma.user.update({ where: { id: user.id }, data: { email } });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        email,
+        emailVerifiedAt: null,
+        verificationAttempts: 0,
+        sessionVersion: { increment: 1 },
+      },
+    });
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       return { error: t(locale, "settings.emailExists") };
     }
     console.error("Email address could not be updated.", error);
     return { error: t(locale, "settings.updateFailed") };
+  }
+
+  const { token, tokenHash } = await issueVerificationToken(user.id, 1);
+  try {
+    await sendVerificationEmail(email, token, locale);
+  } catch (error) {
+    await prisma.$transaction([
+      prisma.verificationToken.deleteMany({ where: { tokenHash } }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          email: user.email,
+          emailVerifiedAt: previousVerification,
+          verificationAttempts: user.verificationAttempts,
+          sessionVersion: { increment: 1 },
+        },
+      }),
+    ]);
+    console.error("Verification email for changed address could not be sent.", error);
+    return { error: t(locale, "auth.verificationEmailFailed") };
+  }
+
+  try {
+    await writeAuditLog(sessionUser, {
+      action: "EMAIL_CHANGED",
+      targetType: "USER",
+      targetId: user.id,
+      metadata: { newEmail: email, verificationRequired: true },
+    });
+  } catch (error) {
+    console.error("Could not write email-change audit log.", error);
   }
 
   await signOut({ redirectTo: "/login?emailChanged=1" });
@@ -88,6 +131,17 @@ export async function deleteAccount(formData: FormData) {
 
   const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) return;
+
+  try {
+    await writeAuditLog(sessionUser, {
+      action: "ACCOUNT_DELETED",
+      targetType: "USER",
+      targetId: user.id,
+      metadata: { email: user.email },
+    });
+  } catch (error) {
+    console.error("Could not write account-deletion audit log.", error);
+  }
 
   await prisma.user.delete({ where: { id: user.id } });
   await signOut({ redirectTo: "/login?accountDeleted=1" });

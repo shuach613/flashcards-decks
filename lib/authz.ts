@@ -6,6 +6,13 @@ import { userHasTracks } from "@/lib/tracks-server";
 export async function requireUser() {
   const session = await auth();
   if (!session?.user) redirect("/login");
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { sessionVersion: true },
+  });
+  if (!currentUser || currentUser.sessionVersion !== session.user.sessionVersion) {
+    redirect("/login?sessionExpired=1");
+  }
   return session.user;
 }
 

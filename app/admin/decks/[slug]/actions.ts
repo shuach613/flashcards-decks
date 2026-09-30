@@ -8,6 +8,8 @@ import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { isDeckDifficulty } from "@/lib/difficulty";
 import { parseTsv, slugify } from "@/lib/tsv";
+import { writeAuditLog } from "@/lib/audit-log";
+import { MAX_CARD_TEXT_LENGTH, MAX_DESCRIPTION_LENGTH, MAX_IMPORT_BYTES, MAX_IMPORT_CARDS, MAX_TITLE_LENGTH } from "@/lib/input-limits";
 
 export type FormState = { error?: string; success?: string } | undefined;
 
@@ -16,7 +18,7 @@ export async function updateDeckMeta(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const locale = await getLocale();
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -26,6 +28,7 @@ export async function updateDeckMeta(
   const difficulty = String(formData.get("difficulty") ?? "").trim();
 
   if (!title) return { error: t(locale, "admin.titleRequired") };
+  if (title.length > MAX_TITLE_LENGTH || description.length > MAX_DESCRIPTION_LENGTH) return { error: t(locale, "admin.inputTooLong") };
   if (!categoryId) return { error: t(locale, "admin.categoryRequired") };
   if (language !== "EN" && language !== "DE") {
     return { error: t(locale, "admin.languageRequired") };
@@ -53,6 +56,12 @@ export async function updateDeckMeta(
       difficulty,
     },
   });
+  await writeAuditLog(admin, {
+    action: "DECK_UPDATED",
+    targetType: "DECK",
+    targetId: deck.id,
+    metadata: { title: deck.title, slug: deck.slug, difficulty: deck.difficulty },
+  });
   redirect(`/admin/decks/${deck.slug}`);
 }
 
@@ -62,12 +71,16 @@ export async function importCards(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const locale = await getLocale();
   const tsv = String(formData.get("tsv") ?? "");
+  if (tsv.length > MAX_IMPORT_BYTES) return { error: t(locale, "admin.importTooLarge") };
   const parsed = parseTsv(tsv);
   if (parsed.length === 0) {
     return { error: t(locale, "admin.importError") };
+  }
+  if (parsed.length > MAX_IMPORT_CARDS || parsed.some((card) => card.front.length > MAX_CARD_TEXT_LENGTH || card.back.length > MAX_CARD_TEXT_LENGTH)) {
+    return { error: t(locale, "admin.importTooLarge") };
   }
 
   const existingCount = await prisma.card.count({ where: { deckId } });
@@ -78,6 +91,13 @@ export async function importCards(
       back: card.back,
       order: existingCount + i,
     })),
+  });
+
+  await writeAuditLog(admin, {
+    action: "CARDS_IMPORTED",
+    targetType: "DECK",
+    targetId: deckId,
+    metadata: { deckSlug, count: parsed.length },
   });
 
   revalidatePath(`/admin/decks/${deckSlug}`);
@@ -91,22 +111,44 @@ export async function updateCard(
   deckSlug: string,
   formData: FormData
 ) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const front = String(formData.get("front") ?? "").trim();
   const back = String(formData.get("back") ?? "").trim();
-  if (!front || !back) return;
+  if (!front || !back || front.length > MAX_CARD_TEXT_LENGTH || back.length > MAX_CARD_TEXT_LENGTH) return;
   await prisma.card.update({ where: { id: cardId }, data: { front, back } });
+  await writeAuditLog(admin, {
+    action: "CARD_UPDATED",
+    targetType: "CARD",
+    targetId: cardId,
+    metadata: { deckSlug },
+  });
   revalidatePath(`/admin/decks/${deckSlug}`);
 }
 
 export async function deleteCard(cardId: string, deckSlug: string) {
-  await requireAdmin();
+  const admin = await requireAdmin();
+  const card = await prisma.card.findUnique({ where: { id: cardId }, select: { id: true, deckId: true } });
+  if (!card) return;
+  await writeAuditLog(admin, {
+    action: "CARD_DELETED",
+    targetType: "CARD",
+    targetId: card.id,
+    metadata: { deckSlug },
+  });
   await prisma.card.delete({ where: { id: cardId } });
   revalidatePath(`/admin/decks/${deckSlug}`);
 }
 
 export async function deleteDeck(deckId: string) {
-  await requireAdmin();
-  await prisma.deck.delete({ where: { id: deckId } });
+  const admin = await requireAdmin();
+  const deck = await prisma.deck.findUnique({ where: { id: deckId }, select: { id: true, title: true, slug: true } });
+  if (!deck) return;
+  await writeAuditLog(admin, {
+    action: "DECK_DELETED",
+    targetType: "DECK",
+    targetId: deck.id,
+    metadata: { title: deck.title, slug: deck.slug },
+  });
+  await prisma.deck.delete({ where: { id: deck.id } });
   redirect("/admin");
 }

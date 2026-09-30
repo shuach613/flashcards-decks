@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { requireApiKey } from "@/lib/api-auth";
-import { serializeDeck } from "@/lib/api-serialize";
+import { publicOrigin, serializeDeck } from "@/lib/api-serialize";
 import { prisma } from "@/lib/db";
 import { isDeckDifficulty } from "@/lib/difficulty";
 import { slugify } from "@/lib/tsv";
+import { MAX_DESCRIPTION_LENGTH, MAX_IMPORT_BYTES, MAX_TITLE_LENGTH } from "@/lib/input-limits";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export async function GET(request: Request) {
   const authError = requireApiKey(request);
@@ -14,7 +16,7 @@ export async function GET(request: Request) {
     include: { category: true, _count: { select: { cards: true } } },
   });
 
-  const origin = new URL(request.url).origin;
+  const origin = publicOrigin(request);
   return NextResponse.json({
     decks: decks.map((deck) => serializeDeck(deck, origin)),
   });
@@ -23,6 +25,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const authError = requireApiKey(request);
   if (authError) return authError;
+  if (Number(request.headers.get("content-length") ?? 0) > MAX_IMPORT_BYTES) {
+    return NextResponse.json({ error: "Request body is too large." }, { status: 413 });
+  }
 
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
@@ -38,6 +43,9 @@ export async function POST(request: Request) {
 
   if (!title) {
     return NextResponse.json({ error: "'title' is required." }, { status: 400 });
+  }
+  if (title.length > MAX_TITLE_LENGTH || description.length > MAX_DESCRIPTION_LENGTH) {
+    return NextResponse.json({ error: "Title or description is too long." }, { status: 400 });
   }
   if (language !== "EN" && language !== "DE") {
     return NextResponse.json(
@@ -95,7 +103,13 @@ export async function POST(request: Request) {
     data: { title, description, slug, categoryId, language, difficulty },
     include: { category: true, _count: { select: { cards: true } } },
   });
+  await writeAuditLog({ email: "Admin API" }, {
+    action: "DECK_CREATED",
+    targetType: "DECK",
+    targetId: deck.id,
+    metadata: { title: deck.title, slug: deck.slug, via: "api" },
+  });
 
-  const origin = new URL(request.url).origin;
+  const origin = publicOrigin(request);
   return NextResponse.json({ deck: serializeDeck(deck, origin) }, { status: 201 });
 }

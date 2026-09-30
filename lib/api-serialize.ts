@@ -22,6 +22,18 @@ type Deck = {
   _count?: { cards: number };
 };
 
+export function publicOrigin(request: Request) {
+  const configured = process.env.APP_URL?.trim().replace(/\/$/, "");
+  if (configured) {
+    try {
+      return new URL(configured).origin;
+    } catch {
+      // Fall back to the request origin if the deployment value is invalid.
+    }
+  }
+  return new URL(request.url).origin;
+}
+
 export function serializeDeck(deck: Deck, origin: string) {
   return {
     id: deck.id,
