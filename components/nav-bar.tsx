@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeLogo } from "@/components/theme-logo";
 import { prisma } from "@/lib/db";
 import { MfaPrompt } from "@/components/mfa-prompt";
 
@@ -32,14 +32,7 @@ export async function NavBar() {
             className="flex shrink-0 items-center gap-3"
             aria-label={`${t(locale, "home.title")} · ShuachCloud`}
           >
-            <Image
-              src="/shuachcloud-logo.png"
-              alt="ShuachCloud"
-              width={64}
-              height={64}
-              className="size-12 rounded-xl object-cover sm:size-14"
-              priority
-            />
+            <ThemeLogo />
             <span
               className="hidden h-6 w-px bg-surface-muted sm:block"
               aria-hidden="true"
