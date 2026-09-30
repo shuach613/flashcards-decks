@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import { t, type Locale } from "@/lib/i18n";
 import {
   confirmMfaSetup,
@@ -59,6 +60,9 @@ export function MfaSettings({ enabled, locale }: { enabled: boolean; locale: Loc
       {setup && !recoveryCodes && (
         <>
           <p className="mt-4 text-sm text-text-muted">{t(locale, "settings.mfaScanBody")}</p>
+          <div className="mt-4 inline-flex rounded-xl bg-white p-4" aria-label="MFA setup QR code">
+            <QRCodeSVG value={setup} size={220} level="M" includeMargin />
+          </div>
           <p className="mt-2 break-all rounded-lg bg-white p-3 font-mono text-xs text-brand-primary">{setupState.otpauthUri}</p>
           <p className="mt-2 text-xs text-text-muted">{t(locale, "settings.mfaManualSecret")} <span className="font-mono">{setupState.secret}</span></p>
           <form action={confirmAction} className="mt-4 flex flex-col gap-3">
