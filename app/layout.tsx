@@ -27,7 +27,15 @@ export default async function RootLayout({
     <html
       lang={locale}
       className={`${wixMadeforDisplay.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { const saved = localStorage.getItem("shuachcloud-theme"); const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches; document.documentElement.dataset.theme = saved === "dark" || saved === "light" ? saved : prefersDark ? "dark" : "light"; } catch {} })();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <NavBar />
         <main className="flex-1">{children}</main>

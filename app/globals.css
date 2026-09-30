@@ -20,14 +20,39 @@
   --color-soft-sand: #f5f5f0;
   --color-light-gray: #f9f9f9;
   --color-white: #ffffff;
+  --surface: var(--color-white);
 
   --background: var(--color-soft-sand);
   --foreground: var(--color-evergreen);
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-soft-black: #f2f7fc;
+  --color-evergreen: #a9d5ff;
+  --color-grass-green: #4aa7ff;
+  --color-bright-green: #1f527d;
+  --color-apple-green: #2b6687;
+  --color-lime-green: #173f56;
+  --color-peach: #6b3f38;
+  --color-almond: #4c3d32;
+  --color-lavender: #59658f;
+  --color-orchid-mist: #6573a5;
+  --color-soft-sky: #263e65;
+  --color-dark-gray: #b5c3d1;
+  --color-soft-gray: #526272;
+  --color-sand: #2e4052;
+  --color-soft-sand: #0b1522;
+  --color-light-gray: #142334;
+  --surface: #142334;
+  --background: var(--color-soft-sand);
+  --foreground: #e3f0fc;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
   --color-soft-black: var(--color-soft-black);
   --color-evergreen: var(--color-evergreen);
   --color-grass-green: var(--color-grass-green);
@@ -55,6 +80,36 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+/* Fixed white surfaces need an explicit dark-mode counterpart. Text that uses
+   text-white remains intentionally white for the blue action buttons. */
+[data-theme="dark"] .bg-white {
+  background-color: #142334;
+}
+
+[data-theme="dark"] .bg-white\/95 {
+  background-color: rgb(20 35 52 / 95%);
+}
+
+[data-theme="dark"] .bg-evergreen {
+  background-color: #0b4f91;
+}
+
+[data-theme="dark"] .text-evergreen {
+  color: #a9d5ff;
+}
+
+[data-theme="dark"] .border-evergreen {
+  border-color: #73baff;
+}
+
+[data-theme="dark"] .hover\:bg-evergreen:hover {
+  background-color: #1668b4;
+}
+
+[data-theme="dark"] .hover\:bg-evergreen\/5:hover {
+  background-color: rgb(115 186 255 / 12%);
 }
 
 ::selection {

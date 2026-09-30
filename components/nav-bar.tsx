@@ -4,6 +4,7 @@ import { auth, signOut } from "@/auth";
 import { t } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
 import { LanguageToggle } from "@/components/language-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { prisma } from "@/lib/db";
 
 export async function NavBar() {
@@ -81,6 +82,7 @@ export async function NavBar() {
               </>
             )}
             <LanguageToggle current={locale} />
+            <ThemeToggle />
           </div>
         </div>
         {user && (
