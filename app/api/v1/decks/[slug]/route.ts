@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { requireApiKey } from "@/lib/api-auth";
-import { serializeDeck } from "@/lib/api-serialize";
+import { publicOrigin, serializeDeck } from "@/lib/api-serialize";
 import { prisma } from "@/lib/db";
 import { isDeckDifficulty } from "@/lib/difficulty";
 import { slugify } from "@/lib/tsv";
+import { MAX_DESCRIPTION_LENGTH, MAX_TITLE_LENGTH } from "@/lib/input-limits";
+import { writeAuditLog } from "@/lib/audit-log";
 
 async function findDeck(slug: string) {
   return prisma.deck.findUnique({
@@ -29,7 +31,7 @@ export async function GET(
     return NextResponse.json({ error: "Deck not found." }, { status: 404 });
   }
 
-  const origin = new URL(request.url).origin;
+  const origin = publicOrigin(request);
   return NextResponse.json({ deck: serializeDeck(deck, origin) });
 }
 
@@ -66,10 +68,16 @@ export async function PATCH(
       return NextResponse.json({ error: "'title' cannot be empty." }, { status: 400 });
     }
     data.title = title;
+    if (title.length > MAX_TITLE_LENGTH) {
+      return NextResponse.json({ error: "Title is too long." }, { status: 400 });
+    }
   }
 
   if (body.description !== undefined) {
     data.description = String(body.description).trim();
+    if (data.description.length > MAX_DESCRIPTION_LENGTH) {
+      return NextResponse.json({ error: "Description is too long." }, { status: 400 });
+    }
   }
 
   if (body.language !== undefined) {
@@ -148,8 +156,14 @@ export async function PATCH(
       _count: { select: { cards: true } },
     },
   });
+  await writeAuditLog({ email: "Admin API" }, {
+    action: "DECK_UPDATED",
+    targetType: "DECK",
+    targetId: updated.id,
+    metadata: { title: updated.title, slug: updated.slug, via: "api" },
+  });
 
-  const origin = new URL(request.url).origin;
+  const origin = publicOrigin(request);
   return NextResponse.json({ deck: serializeDeck(updated, origin) });
 }
 
@@ -166,6 +180,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Deck not found." }, { status: 404 });
   }
 
+  await writeAuditLog({ email: "Admin API" }, {
+    action: "DECK_DELETED",
+    targetType: "DECK",
+    targetId: deck.id,
+    metadata: { title: deck.title, slug: deck.slug, via: "api" },
+  });
   await prisma.deck.delete({ where: { id: deck.id } });
   return NextResponse.json({ deleted: true, slug });
 }

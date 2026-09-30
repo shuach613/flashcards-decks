@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { ensureDefaultTracks } from "@/lib/tracks-server";
 import { rateLimit } from "@/lib/rate-limit";
 import { issueVerificationToken, sendVerificationEmail } from "@/lib/email-verification";
+import { MAX_EMAIL_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/input-limits";
 
 export type FormState = { error?: string } | undefined;
 
@@ -30,6 +31,9 @@ export async function signup(
 
   if (!email || !password) {
     return { error: t(locale, "auth.emailPasswordRequired") };
+  }
+  if (email.length > MAX_EMAIL_LENGTH || password.length > MAX_PASSWORD_LENGTH) {
+    return { error: t(locale, "auth.invalidCredentials") };
   }
   if (password.length < 8) {
     return { error: t(locale, "auth.passwordTooShort") };

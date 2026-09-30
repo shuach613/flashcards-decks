@@ -7,6 +7,8 @@ import { getLocale } from "@/lib/i18n-server";
 import { prisma } from "@/lib/db";
 import { isDeckDifficulty } from "@/lib/difficulty";
 import { slugify } from "@/lib/tsv";
+import { writeAuditLog } from "@/lib/audit-log";
+import { MAX_TITLE_LENGTH } from "@/lib/input-limits";
 
 export type FormState = { error?: string } | undefined;
 
@@ -14,7 +16,7 @@ export async function createDeck(
   _prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const locale = await getLocale();
   const title = String(formData.get("title") ?? "").trim();
   const categoryId = String(formData.get("categoryId") ?? "").trim();
@@ -22,6 +24,7 @@ export async function createDeck(
   const difficulty = String(formData.get("difficulty") ?? "INTERMEDIATE").trim();
 
   if (!title) return { error: t(locale, "admin.titleRequired") };
+  if (title.length > MAX_TITLE_LENGTH) return { error: t(locale, "admin.titleTooLong") };
   if (!categoryId) return { error: t(locale, "admin.categoryRequired") };
   if (language !== "EN" && language !== "DE") {
     return { error: t(locale, "admin.languageRequired") };
@@ -41,11 +44,25 @@ export async function createDeck(
   const deck = await prisma.deck.create({
     data: { title, slug, categoryId, language, difficulty },
   });
+  await writeAuditLog(admin, {
+    action: "DECK_CREATED",
+    targetType: "DECK",
+    targetId: deck.id,
+    metadata: { title: deck.title, slug: deck.slug },
+  });
   redirect(`/admin/decks/${deck.slug}`);
 }
 
 export async function deleteDeck(deckId: string) {
-  await requireAdmin();
-  await prisma.deck.delete({ where: { id: deckId } });
+  const admin = await requireAdmin();
+  const deck = await prisma.deck.findUnique({ where: { id: deckId }, select: { id: true, title: true, slug: true } });
+  if (!deck) return;
+  await writeAuditLog(admin, {
+    action: "DECK_DELETED",
+    targetType: "DECK",
+    targetId: deck.id,
+    metadata: { title: deck.title, slug: deck.slug },
+  });
+  await prisma.deck.delete({ where: { id: deck.id } });
   redirect("/admin");
 }

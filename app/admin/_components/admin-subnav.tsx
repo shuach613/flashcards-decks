@@ -5,7 +5,7 @@ export function AdminSubnav({
   active,
   locale,
 }: {
-  active: "decks" | "students" | "tracks" | "track-settings";
+  active: "decks" | "students" | "tracks" | "track-settings" | "audit";
   locale: Locale;
 }) {
   const links = [
@@ -25,11 +25,12 @@ export function AdminSubnav({
       label: t(locale, "admin.trackConfiguration"),
       id: "track-settings",
     },
+    { href: "/admin/audit-log", label: t(locale, "admin.auditLog"), id: "audit" },
   ] as const;
 
   return (
     <nav
-      className="mb-8 grid grid-cols-2 gap-2 rounded-2xl border border-neutral-muted bg-white p-1.5 shadow-[0_2px_8px_rgba(25,51,37,0.08)] sm:grid-cols-4"
+      className="mb-8 grid grid-cols-2 gap-2 rounded-2xl border border-neutral-muted bg-white p-1.5 shadow-[0_2px_8px_rgba(25,51,37,0.08)] sm:grid-cols-5"
       aria-label={t(locale, "admin.navigation")}
     >
       {links.map((link) => (
