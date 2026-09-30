@@ -4,7 +4,7 @@ This guide targets the Synology DS925+ with the newest DSM 7.x release available
 
 The application runs as one `linux/amd64` container with:
 
-- Next.js and Node.js 22
+- Next.js and Node.js 24
 - SQLite through Prisma
 - Persistent application data under `/app/data`
 - Automatic migrations on container startup
@@ -14,28 +14,26 @@ The application runs as one `linux/amd64` container with:
 
 1. Update the NAS to the newest DSM release available for the DS925+.
 2. Install or update Container Manager from Package Center.
-3. Create a shared folder for the project, for example:
-   `docker/flashcards-decks`
+3. Create the shared folder `/volume1/flashcards` for the project.
 4. Inside that folder, create a `data` subfolder.
 
 The final layout should look like:
 
-`text
-docker/
-└── flashcards-decks/
-    ├── Dockerfile
-    ├── docker-compose.yml
-    ├── data/
-    └── application source
-`
+```text
+/volume1/flashcards/
+├── docker-compose.yml
+└── data/
+```
 
 The `data` folder must remain on persistent storage. It contains the SQLite database.
 
 ## 2. Copy the project
 
-Copy the contents of this repository branch into the project folder. The Compose file builds the image locally and targets `linux/amd64`, which matches the DS925+ CPU architecture.
+Use the production Compose YAML from this repository in Container Manager. It
+pulls the published `linux/amd64` image, which matches the DS925+ CPU
+architecture; it does not build the application on the NAS.
 
-The image build needs outbound internet access to download:
+The initial image pull needs outbound internet access to download:
 
 - Node.js base-image layers
 - npm packages
@@ -59,7 +57,7 @@ published NAS port and set `APP_URL` to the resulting HTTPS URL.
 
 No `.env` file is required. Open `docker-compose.yml` and replace the placeholder values in its `environment` section:
 
-`text
+```yaml
 DATABASE_URL=file:/app/data/flashcards.db
 AUTH_SECRET=<at-least-32-character-random-secret>
 APP_URL=https://<DSM-reverse-proxy-hostname>
@@ -75,7 +73,7 @@ SMTP_SECURE=false
 SMTP_USER=<personal-email-address>
 SMTP_PASSWORD=<smtp-password-or-app-password>
 SMTP_FROM=ShuachCloud <personal-email-address>
-`
+```
 
 Set `AUTH_TRUST_HOST=true` because DSM's internal reverse proxy supplies the public HTTPS endpoint. Keep the edited Compose file private because it contains passwords and API keys. The placeholder values in the repository are not usable credentials.
 
@@ -141,15 +139,15 @@ has not yet been tested.
 
 Back up this folder:
 
-`text
-/docker/flashcards-decks/data/
-`
+```text
+/volume1/flashcards/data/
+```
 
 The important file is:
 
-`text
+```text
 flashcards.db
-`
+```
 
 Use Hyper Backup or another SQLite-safe backup process. Before manually copying the database file, stop the project to avoid copying it during a write.
 
@@ -209,8 +207,8 @@ Before replacing the current database, make a separate copy of it if you need to
 
 ## 10. Troubleshooting
 
-- **Container exits immediately:** check the project logs. Missing ` AUTH_SECRET`, incomplete initial-admin variables, or an invalid `DATABASE_URL` are common causes.
-- **Users or decks disappeared:** confirm that `./data` is still mounted to `/app/data`.
+- **Container exits immediately:** check the project logs. Missing `AUTH_SECRET`, incomplete initial-admin variables, or an invalid `DATABASE_URL` are common causes.
+- **Users or decks disappeared:** confirm that `/volume1/flashcards/data` is still mounted to `/app/data`.
 - **Password reset emails do not arrive:** verify the SMTP host, port, encryption mode, username, app password, sender address, and outbound SMTP access.
 - **Login fails behind a reverse proxy:** verify `APP_URL`, HTTPS forwarding, and `AUTH_TRUST_HOST=true`.
 - **Build is slow or fails on memory:** build the `linux/amd64` image on another machine and import it into Container Manager instead of building on the NAS.

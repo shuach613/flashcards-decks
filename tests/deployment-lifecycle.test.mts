@@ -16,6 +16,7 @@ const Database = require("better-sqlite3") as new (path: string) => SqliteDataba
 const migrationsDirectory = join(process.cwd(), "prisma", "migrations");
 const categoryRenameMigration = "20260923110000_rename_certificates_to_categories";
 const emailVerificationMigration = "20260924120000_add_email_verification";
+const trackKeyMigration = "20260930140000_normalize_default_track_keys";
 
 function migrationNames() {
   return readdirSync(migrationsDirectory)
@@ -123,6 +124,41 @@ test("existing decks receive the intermediate difficulty default", () => {
     assert.deepEqual(
       db.prepare<{ difficulty: string }>('SELECT "difficulty" FROM "Deck"').get(),
       { difficulty: "INTERMEDIATE" }
+    );
+  } finally {
+    db.close();
+    cleanup(databasePath);
+  }
+});
+
+test("default track key migration preserves assignments", () => {
+  const { databasePath, db } = createDatabase();
+
+  try {
+    applyMigrations(db, { before: trackKeyMigration });
+    db.exec(`
+      INSERT INTO "User" ("id", "email", "passwordHash", "role")
+        VALUES ('user-1', 'tracks@example.com', 'hash', 'USER');
+      INSERT INTO "Track" ("id", "key", "name", "order")
+        VALUES ('track-1', 'CYBERSECURITY', 'Core Knowledge Track', 1);
+      INSERT INTO "UserTrack" ("userId", "trackId")
+        VALUES ('user-1', 'track-1');
+    `);
+
+    db.exec(
+      readFileSync(
+        join(migrationsDirectory, trackKeyMigration, "migration.sql"),
+        "utf8"
+      )
+    );
+
+    assert.deepEqual(
+      db.prepare<{ key: string }>('SELECT "key" FROM "Track" WHERE "id" = \'track-1\'').get(),
+      { key: "CORE_KNOWLEDGE" }
+    );
+    assert.deepEqual(
+      db.prepare<{ userId: string; trackId: string }>('SELECT "userId", "trackId" FROM "UserTrack"').get(),
+      { userId: "user-1", trackId: "track-1" }
     );
   } finally {
     db.close();

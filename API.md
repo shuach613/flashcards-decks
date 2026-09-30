@@ -39,7 +39,7 @@ Requests without a valid key get `401 Unauthorized`.
 | List decks | `GET /decks` |
 | Create deck | `POST /decks` — `{"title", "category"?, "language": "EN"\|"DE", "difficulty": "EASY"\|"INTERMEDIATE"\|"HARD", "description"?, "slug"?}` |
 | Get one deck (incl. cards) | `GET /decks/:slug` |
-| Rename/edit deck | `PATCH /decks/:slug` — `{"title"?, "description"?, "category"?, "language"?, "slug"?}` |
+| Rename/edit deck | `PATCH /decks/:slug` — `{"title"?, "description"?, "category"?, "language"?, "difficulty"?, "slug"?}` |
 | Delete deck | `DELETE /decks/:slug` |
 
 Every deck response includes a `difficulty` field. Existing decks created before

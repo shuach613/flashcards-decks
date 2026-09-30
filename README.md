@@ -1,7 +1,7 @@
 # ☁️ ShuachCloud Flashcard Decks
 
-Your own private place to turn knowledge into progress. Create decks, invite
-learners, and study at your own pace — hosted on your own server or NAS.
+Your own private place to turn knowledge into progress. Create decks, manage
+learner access, and study at your own pace — hosted on your own server or NAS.
 
 Perfect for small study groups, classrooms, families, and private teams.
 
@@ -36,7 +36,7 @@ ghcr.io/shuach613/flashcards-decks:latest
 On a Synology NAS:
 
 1. Open **Container Manager → Projects**.
-2. Paste the Compose YAML.
+2. Paste the production Compose YAML from `docker-compose.yml`.
 3. Add your URL, `AUTH_SECRET`, initial admin details, and SMTP app password.
    `MFA_ENCRYPTION_KEY` is optional; if used, keep it stable for the lifetime of
    the installation. If left blank, MFA secrets use `AUTH_SECRET`.
@@ -102,3 +102,5 @@ npm run build
 📖 Detailed Synology instructions: [`docs/synology-container-manager.md`](docs/synology-container-manager.md)
 
 🛟 Backup and recovery: [`docs/backup-recovery.md`](docs/backup-recovery.md)
+
+🔌 API reference: [`API.md`](API.md)

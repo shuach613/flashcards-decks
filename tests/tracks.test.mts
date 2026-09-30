@@ -7,7 +7,7 @@ const categoriesByTrack = new Map(
 );
 
 test("the foundations track exposes its three categories", () => {
-  assert.deepEqual(categoriesByTrack.get("IT_SUPPORT"), [
+  assert.deepEqual(categoriesByTrack.get("FOUNDATIONS"), [
     "General Basics 1",
     "General Basics 2",
     "Connections Basics",
@@ -15,7 +15,7 @@ test("the foundations track exposes its three categories", () => {
 });
 
 test("the core knowledge track exposes safety basics", () => {
-  assert.deepEqual(categoriesByTrack.get("CYBERSECURITY"), [
+  assert.deepEqual(categoriesByTrack.get("CORE_KNOWLEDGE"), [
     "General Basics 1",
     "General Basics 2",
     "Safety Basics",
@@ -23,7 +23,7 @@ test("the core knowledge track exposes safety basics", () => {
 });
 
 test("the applied knowledge track adds applied concepts", () => {
-  assert.deepEqual(categoriesByTrack.get("AI_CYBERSECURITY"), [
+  assert.deepEqual(categoriesByTrack.get("APPLIED_KNOWLEDGE"), [
     "General Basics 1",
     "General Basics 2",
     "Safety Basics",
@@ -32,9 +32,12 @@ test("the applied knowledge track adds applied concepts", () => {
 });
 
 test("only the predefined track keys are accepted", () => {
-  assert.equal(isTrackKey("IT_SUPPORT"), true);
-  assert.equal(isTrackKey("CYBERSECURITY"), true);
-  assert.equal(isTrackKey("AI_CYBERSECURITY"), true);
+  assert.equal(isTrackKey("FOUNDATIONS"), true);
+  assert.equal(isTrackKey("CORE_KNOWLEDGE"), true);
+  assert.equal(isTrackKey("APPLIED_KNOWLEDGE"), true);
+  assert.equal(isTrackKey("IT_SUPPORT"), false);
+  assert.equal(isTrackKey("CYBERSECURITY"), false);
+  assert.equal(isTrackKey("AI_CYBERSECURITY"), false);
   assert.equal(isTrackKey("NETWORK_PLUS"), false);
   assert.equal(isTrackKey(""), false);
 });

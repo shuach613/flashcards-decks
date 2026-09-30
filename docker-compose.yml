@@ -1,16 +1,14 @@
 services:
   flashcards:
     platform: linux/amd64
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/shuach613/flashcards-decks:latest
     container_name: flashcards-decks
     restart: unless-stopped
     init: true
     ports:
       - "3000:3000"
     volumes:
-      - ./data:/app/data
+      - /volume1/flashcards/data:/app/data
     environment:
       DATABASE_URL: file:/app/data/flashcards.db
       # Replace every value below before the first deployment.

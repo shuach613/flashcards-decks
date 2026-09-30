@@ -1,6 +1,7 @@
 .git
 .github
 .next
+app/generated
 node_modules
 data
 .migration-backups
