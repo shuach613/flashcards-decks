@@ -17,6 +17,7 @@ Perfect for small study groups, classrooms, families, and private teams.
 - 🛠️ Manage users, tracks, categories, decks, and cards as an admin
 - ⚙️ Give every user personal account and progress settings
 - 🔐 Protect new accounts with email verification
+- 🛡️ Let users optionally protect logins with authenticator-app MFA and recovery codes
 - 📧 Send verification and password-reset emails through Gmail or another SMTP provider
 - 🌍 Use the interface in English or German
 - ❤️ Keep everything in your own SQLite database
@@ -37,6 +38,8 @@ On a Synology NAS:
 1. Open **Container Manager → Projects**.
 2. Paste the Compose YAML.
 3. Add your URL, `AUTH_SECRET`, initial admin details, and SMTP app password.
+   `MFA_ENCRYPTION_KEY` is optional; if used, keep it stable for the lifetime of
+   the installation. If left blank, MFA secrets use `AUTH_SECRET`.
 4. Keep the persistent data mapped to:
 
    ```text

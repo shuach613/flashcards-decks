@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { verifyMfaChallenge } from "@/lib/mfa";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,
@@ -10,21 +11,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        mfaChallenge: { label: "MFA challenge", type: "text" },
+        mfaCode: { label: "MFA code", type: "text" },
       },
       async authorize(credentials) {
         const email = credentials?.email;
         const password = credentials?.password;
-        if (typeof email !== "string" || typeof password !== "string") {
+        const mfaChallenge = credentials?.mfaChallenge;
+        const mfaCode = credentials?.mfaCode;
+        if (typeof email !== "string") {
           return null;
         }
 
         const user = await prisma.user.findUnique({
           where: { email: email.toLowerCase().trim() },
+          include: { mfaDevice: true },
         });
         if (!user) return null;
 
-        const valid = await bcrypt.compare(password, user.passwordHash);
-        if (!valid) return null;
+        if (typeof mfaChallenge === "string" && typeof mfaCode === "string") {
+          const challengedUser = await verifyMfaChallenge(mfaChallenge, mfaCode);
+          if (!challengedUser || challengedUser.id !== user.id) return null;
+        } else {
+          if (typeof password !== "string") return null;
+          const valid = await bcrypt.compare(password, user.passwordHash);
+          if (!valid || user.mfaDevice?.enabledAt) return null;
+        }
 
         if (!user.emailVerifiedAt && !(user.role === "ADMIN" && user.isPrimaryAdmin)) {
           const token = await prisma.verificationToken.findFirst({
@@ -45,6 +57,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null,
           isPrimaryAdmin: user.isPrimaryAdmin,
           sessionVersion: user.sessionVersion,
+          mfaEnabled: Boolean(user.mfaDevice?.enabledAt),
         };
       },
     }),
@@ -71,6 +84,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.emailVerifiedAt = (user as { emailVerifiedAt: string | null }).emailVerifiedAt;
         token.isPrimaryAdmin = (user as { isPrimaryAdmin: boolean }).isPrimaryAdmin;
         token.sessionVersion = (user as { sessionVersion: number }).sessionVersion;
+        token.mfaEnabled = (user as { mfaEnabled: boolean }).mfaEnabled;
       }
       return token;
     },
@@ -81,6 +95,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.emailVerifiedAt = (token.emailVerifiedAt as string | null) ?? null;
         session.user.isPrimaryAdmin = token.isPrimaryAdmin as boolean;
         session.user.sessionVersion = token.sessionVersion as number;
+        session.user.mfaEnabled = token.mfaEnabled as boolean;
       }
       return session;
     },

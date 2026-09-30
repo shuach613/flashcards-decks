@@ -70,6 +70,9 @@ test("fresh installation creates the current schema", () => {
     assert.ok(userColumns.some((column) => column.name === "verificationAttempts"));
     assert.ok(userColumns.some((column) => column.name === "sessionVersion"));
     assert.ok(tables.includes("VerificationToken"));
+    assert.ok(tables.includes("MfaDevice"));
+    assert.ok(tables.includes("MfaRecoveryCode"));
+    assert.ok(tables.includes("MfaChallenge"));
     assert.ok(tables.includes("AuditLog"));
   } finally {
     db.close();
