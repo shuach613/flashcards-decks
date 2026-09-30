@@ -17,11 +17,23 @@ import {
   userHasTracks,
 } from "@/lib/tracks-server";
 import { requireVerifiedUser } from "@/lib/authz";
+import {
+  compareDifficulty,
+  matchesDifficulty,
+  parseDifficulty,
+  parseDifficultyOrder,
+} from "@/lib/deck-filters";
 
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams?: Promise<{ language?: string; category?: string }>;
+  searchParams?: Promise<{
+    language?: string;
+    track?: string;
+    category?: string;
+    difficulty?: string;
+    difficultyOrder?: string;
+  }>;
 }) {
   const session = await auth();
   const locale = await getLocale();
@@ -32,6 +44,9 @@ export default async function HomePage({
     ? query?.language
     : undefined;
   const categoryFilter = query?.category?.trim() || undefined;
+  const trackFilter = query?.track?.trim() || undefined;
+  const difficultyFilter = parseDifficulty(query?.difficulty);
+  const difficultyOrder = parseDifficultyOrder(query?.difficultyOrder);
 
   if (!session?.user) {
     return (
@@ -49,29 +64,40 @@ export default async function HomePage({
     redirect("/choose-track");
   }
 
-  const progress = await prisma.studyProgress.findMany({
-    where: {
-      userId: user.id,
-      deck: deckAccessWhere(user),
-    },
-    include: {
-      deck: {
-        include: {
-          category: true,
-          cards: {
-            select: {
-              id: true,
-              progress: {
-                where: { userId: user.id },
-                select: { isGood: true },
+  const [progress, availableTracks] = await Promise.all([
+    prisma.studyProgress.findMany({
+      where: {
+        userId: user.id,
+        deck: deckAccessWhere(user),
+      },
+      include: {
+        deck: {
+          include: {
+            category: {
+              include: {
+                tracks: { select: { trackId: true } },
+              },
+            },
+            cards: {
+              select: {
+                id: true,
+                progress: {
+                  where: { userId: user.id },
+                  select: { isGood: true },
+                },
               },
             },
           },
         },
       },
-    },
-    orderBy: { lastStudiedAt: "desc" },
-  });
+      orderBy: { lastStudiedAt: "desc" },
+    }),
+    prisma.track.findMany({
+      where: user.role === "ADMIN" ? {} : { users: { some: { userId: user.id } } },
+      orderBy: { order: "asc" },
+      select: { id: true, name: true },
+    }),
+  ]);
 
   const categoryOptions: { id: string; name: string }[] = [];
   for (const entry of progress) {
@@ -86,7 +112,9 @@ export default async function HomePage({
     (entry) =>
       (!languageFilter || entry.deck.language === languageFilter) &&
       (!categoryFilter ||
-        (entry.deck.category?.id ?? "uncategorized") === categoryFilter)
+        (entry.deck.category?.id ?? "uncategorized") === categoryFilter) &&
+      (!trackFilter || entry.deck.category?.tracks.some(({ trackId }) => trackId === trackFilter)) &&
+      matchesDifficulty(entry.deck.difficulty, difficultyFilter)
   );
   const sections: { name: string; decks: typeof progress }[] = [];
   for (const entry of filteredProgress) {
@@ -98,6 +126,13 @@ export default async function HomePage({
       sections.push({ name, decks: [entry] });
     }
   }
+  if (difficultyOrder) {
+    for (const section of sections) {
+      section.decks.sort((left, right) =>
+        compareDifficulty(left.deck.difficulty, right.deck.difficulty, difficultyOrder)
+      );
+    }
+  }
 
   return (
     <div className="mx-auto mt-8 max-w-2xl px-4 pb-10 sm:mt-12 sm:px-6 sm:pb-0">
@@ -107,13 +142,17 @@ export default async function HomePage({
       <DeckFilters
         action="/"
         categories={categoryOptions}
+        tracks={availableTracks}
         category={categoryFilter}
         language={languageFilter}
+        track={trackFilter}
+        difficulty={difficultyFilter}
+        difficultyOrder={difficultyOrder}
         locale={locale}
       />
       {filteredProgress.length === 0 ? (
         <p className="text-text-muted">
-          {languageFilter || categoryFilter
+          {languageFilter || categoryFilter || trackFilter || difficultyFilter || difficultyOrder
             ? t(locale, "deckFilters.noMatches")
             : t(locale, "home.empty")}
         </p>

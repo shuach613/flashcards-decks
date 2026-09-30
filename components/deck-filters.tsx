@@ -1,21 +1,31 @@
 import Link from "next/link";
 import { LANGUAGE_VALUES } from "@/lib/categories";
 import { t, type Locale } from "@/lib/i18n";
+import { DECK_DIFFICULTIES } from "@/lib/difficulty";
+import type { DifficultyOrder } from "@/lib/deck-filters";
 
 export function DeckFilters({
   action,
   categories,
+  tracks,
   language,
   category,
+  track,
+  difficulty,
+  difficultyOrder,
   locale,
 }: {
   action: string;
   categories: { id: string; name: string }[];
+  tracks: { id: string; name: string }[];
   language?: string;
   category?: string;
+  track?: string;
+  difficulty?: string;
+  difficultyOrder?: DifficultyOrder;
   locale: Locale;
 }) {
-  const hasFilters = Boolean(language || category);
+  const hasFilters = Boolean(language || category || track || difficulty || difficultyOrder);
 
   return (
     <form
@@ -39,6 +49,21 @@ export function DeckFilters({
         </select>
       </label>
       <label className="flex min-w-44 flex-1 flex-col gap-1 text-sm font-semibold text-brand-primary">
+        {t(locale, "deckFilters.track")}
+        <select
+          name="track"
+          defaultValue={track ?? ""}
+          className="rounded-xl border border-neutral-muted bg-white px-3 py-2 font-normal text-text-muted"
+        >
+          <option value="">{t(locale, "deckFilters.allTracks")}</option>
+          {tracks.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex min-w-44 flex-1 flex-col gap-1 text-sm font-semibold text-brand-primary">
         {t(locale, "deckFilters.category")}
         <select
           name="category"
@@ -51,6 +76,33 @@ export function DeckFilters({
               {option.name}
             </option>
           ))}
+        </select>
+      </label>
+      <label className="flex min-w-40 flex-1 flex-col gap-1 text-sm font-semibold text-brand-primary">
+        {t(locale, "deckFilters.difficulty")}
+        <select
+          name="difficulty"
+          defaultValue={difficulty ?? ""}
+          className="rounded-xl border border-neutral-muted bg-white px-3 py-2 font-normal text-text-muted"
+        >
+          <option value="">{t(locale, "deckFilters.allDifficulties")}</option>
+          {DECK_DIFFICULTIES.map((value) => (
+            <option key={value} value={value}>
+              {t(locale, `deck.difficulty.${value}` as "deck.difficulty.EASY" | "deck.difficulty.INTERMEDIATE" | "deck.difficulty.HARD")}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex min-w-44 flex-1 flex-col gap-1 text-sm font-semibold text-brand-primary">
+        {t(locale, "deckFilters.difficultyOrder")}
+        <select
+          name="difficultyOrder"
+          defaultValue={difficultyOrder ?? ""}
+          className="rounded-xl border border-neutral-muted bg-white px-3 py-2 font-normal text-text-muted"
+        >
+          <option value="">{t(locale, "deckFilters.defaultOrder")}</option>
+          <option value="asc">{t(locale, "deckFilters.easyToHard")}</option>
+          <option value="desc">{t(locale, "deckFilters.hardToEasy")}</option>
         </select>
       </label>
       <button

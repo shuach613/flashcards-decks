@@ -11,6 +11,12 @@ import { DeckFilters } from "@/components/deck-filters";
 import { getDeckStudyState, summarizeProgress } from "@/lib/progress";
 import { restartDeckAndStudy } from "@/app/decks/[slug]/study/actions";
 import { requireTrackedUser } from "@/lib/authz";
+import {
+  compareDifficulty,
+  matchesDifficulty,
+  parseDifficulty,
+  parseDifficultyOrder,
+} from "@/lib/deck-filters";
 
 type DeckRow = {
   id: string;
@@ -32,7 +38,13 @@ function groupByLanguage(decks: DeckRow[]) {
 export default async function AllDecksPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ language?: string; category?: string }>;
+  searchParams?: Promise<{
+    language?: string;
+    track?: string;
+    category?: string;
+    difficulty?: string;
+    difficultyOrder?: string;
+  }>;
 }) {
   const user = await requireTrackedUser("/decks");
   const locale = await getLocale();
@@ -43,6 +55,9 @@ export default async function AllDecksPage({
     ? query?.language
     : undefined;
   const categoryFilter = query?.category?.trim() || undefined;
+  const trackFilter = query?.track?.trim() || undefined;
+  const difficultyFilter = parseDifficulty(query?.difficulty);
+  const difficultyOrder = parseDifficultyOrder(query?.difficultyOrder);
 
   const categoryAccess =
     user.role === "ADMIN"
@@ -53,11 +68,12 @@ export default async function AllDecksPage({
           },
         };
 
-  const [categories, uncategorized] = await Promise.all([
+  const [categories, uncategorized, availableTracks] = await Promise.all([
     prisma.category.findMany({
       where: categoryAccess,
       orderBy: { order: "asc" },
       include: {
+        tracks: { select: { trackId: true } },
         decks: {
           orderBy: [{ language: "asc" }, { title: "asc" }],
           include: {
@@ -99,6 +115,11 @@ export default async function AllDecksPage({
           },
         })
       : Promise.resolve([]),
+    prisma.track.findMany({
+      where: user.role === "ADMIN" ? {} : { users: { some: { userId: user.id } } },
+      orderBy: { order: "asc" },
+      select: { id: true, name: true },
+    }),
   ]);
 
   const categoryOptions = categories
@@ -124,7 +145,10 @@ export default async function AllDecksPage({
         name: category.name,
         groups: groupByLanguage(
           category.decks.filter(
-            (deck) => !languageFilter || deck.language === languageFilter
+            (deck) =>
+              (!languageFilter || deck.language === languageFilter) &&
+              (!trackFilter || category.tracks.some(({ trackId }) => trackId === trackFilter)) &&
+              matchesDifficulty(deck.difficulty, difficultyFilter)
           )
         ),
       })),
@@ -136,13 +160,25 @@ export default async function AllDecksPage({
             name: t(locale, "common.uncategorized"),
             groups: groupByLanguage(
               uncategorized.filter(
-                (deck) => !languageFilter || deck.language === languageFilter
+                (deck) =>
+                  (!languageFilter || deck.language === languageFilter) &&
+                  matchesDifficulty(deck.difficulty, difficultyFilter)
               )
             ),
           },
         ]
       : []),
   ].filter((section) => section.groups.length > 0);
+
+  if (difficultyOrder) {
+    for (const section of sections) {
+      for (const group of section.groups) {
+        group.decks.sort((left, right) =>
+          compareDifficulty(left.difficulty, right.difficulty, difficultyOrder)
+        );
+      }
+    }
+  }
 
   return (
     <div className="mx-auto mt-8 max-w-2xl px-4 pb-10 sm:mt-12 sm:px-6 sm:pb-16">
@@ -152,13 +188,17 @@ export default async function AllDecksPage({
       <DeckFilters
         action="/decks"
         categories={categoryOptions}
+        tracks={availableTracks}
         category={categoryFilter}
         language={languageFilter}
+        track={trackFilter}
+        difficulty={difficultyFilter}
+        difficultyOrder={difficultyOrder}
         locale={locale}
       />
       {sections.length === 0 ? (
         <p className="text-text-muted">
-          {languageFilter || categoryFilter
+          {languageFilter || categoryFilter || trackFilter || difficultyFilter || difficultyOrder
             ? t(locale, "deckFilters.noMatches")
             : t(locale, "allDecks.empty")}
         </p>
