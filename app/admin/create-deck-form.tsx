@@ -18,12 +18,12 @@ export function CreateDeckForm({
   const [state, formAction, pending] = useActionState(createDeck, undefined);
 
   const selectClass =
-    "mt-1 w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10";
+    "mt-1 w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10";
 
   return (
     <form action={formAction} className="flex flex-col gap-3">
       <div>
-        <label className="block text-sm font-medium text-evergreen" htmlFor="title">
+        <label className="block text-sm font-medium text-brand-primary" htmlFor="title">
           {t(locale, "common.titleLabel")}
         </label>
         <input
@@ -37,7 +37,7 @@ export function CreateDeckForm({
       <div className="flex gap-3">
         <div className="flex-1">
           <label
-            className="block text-sm font-medium text-evergreen"
+            className="block text-sm font-medium text-brand-primary"
             htmlFor="categoryId"
           >
             {t(locale, "common.categoryLabel")}
@@ -60,7 +60,7 @@ export function CreateDeckForm({
           </select>
         </div>
         <div className="flex-1">
-          <label className="block text-sm font-medium text-evergreen" htmlFor="language">
+          <label className="block text-sm font-medium text-brand-primary" htmlFor="language">
             {t(locale, "common.languageLabel")}
           </label>
           <select
@@ -78,7 +78,7 @@ export function CreateDeckForm({
           </select>
         </div>
         <div className="flex-1">
-          <label className="block text-sm font-medium text-evergreen" htmlFor="difficulty">
+          <label className="block text-sm font-medium text-brand-primary" htmlFor="difficulty">
             {t(locale, "common.difficultyLabel")}
           </label>
           <select
@@ -96,11 +96,11 @@ export function CreateDeckForm({
           </select>
         </div>
       </div>
-      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
+      {state?.error && <p className="text-sm text-status-danger">{state.error}</p>}
       <button
         disabled={pending}
         type="submit"
-        className="self-start rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+        className="self-start rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
         {pending ? t(locale, "common.createPending") : t(locale, "common.create")}
       </button>

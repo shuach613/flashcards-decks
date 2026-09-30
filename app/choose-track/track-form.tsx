@@ -23,18 +23,18 @@ export function TrackForm({
         {tracks.map((track) => (
           <label
             key={track.id}
-            className="flex cursor-pointer gap-3 rounded-2xl border border-sand bg-white p-4 transition hover:border-evergreen/40 has-checked:border-evergreen has-checked:bg-lime-green/60 has-focus-visible:ring-4 has-focus-visible:ring-evergreen/10"
+            className="flex cursor-pointer gap-3 rounded-2xl border border-neutral-muted bg-white p-4 transition hover:border-brand-primary/40 has-checked:border-brand-primary has-checked:bg-surface-accent/60 has-focus-visible:ring-4 has-focus-visible:ring-brand-primary/10"
           >
             <input
               type="radio"
               name="trackId"
               value={track.id}
               required
-              className="mt-1 size-4 accent-evergreen"
+              className="mt-1 size-4 accent-brand-primary"
             />
             <span>
-              <span className="block font-bold text-evergreen">{track.name}</span>
-              <span className="mt-1 block text-sm text-dark-gray">
+              <span className="block font-bold text-brand-primary">{track.name}</span>
+              <span className="mt-1 block text-sm text-text-muted">
                 {track.categoryNames.length > 0
                   ? track.categoryNames.join(" · ")
                   : t(locale, "track.noCategories")}
@@ -44,17 +44,17 @@ export function TrackForm({
         ))}
       </fieldset>
       {tracks.length === 0 && (
-        <p className="mt-3 text-sm text-sunset-orange">
+        <p className="mt-3 text-sm text-status-danger">
           {t(locale, "auth.noTracksAvailable")}
         </p>
       )}
       {state?.error && (
-        <p className="mt-3 text-sm text-sunset-orange">{state.error}</p>
+        <p className="mt-3 text-sm text-status-danger">{state.error}</p>
       )}
       <button
         type="submit"
         disabled={pending || tracks.length === 0}
-        className="mt-5 w-full rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+        className="mt-5 w-full rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
         {pending ? t(locale, "track.saving") : t(locale, "track.continue")}
       </button>

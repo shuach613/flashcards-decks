@@ -14,19 +14,19 @@ export function StudyReviewToggle({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="mb-6 flex cursor-pointer items-start gap-3 rounded-xl border border-sand bg-white px-4 py-3 text-sm text-dark-gray">
+    <label className="mb-6 flex cursor-pointer items-start gap-3 rounded-xl border border-neutral-muted bg-white px-4 py-3 text-sm text-text-muted">
       <input
         type="checkbox"
         checked={checked}
         disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
-        className="mt-0.5 size-4 accent-evergreen"
+        className="mt-0.5 size-4 accent-brand-primary"
       />
       <span>
-        <span className="block font-semibold text-evergreen">
+        <span className="block font-semibold text-brand-primary">
           {t(locale, "study.includeGoodCards")}
         </span>
-        <span className="block text-xs text-dark-gray">
+        <span className="block text-xs text-text-muted">
           {t(locale, "study.includeGoodCardsHint")}
         </span>
       </span>

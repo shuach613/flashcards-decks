@@ -146,7 +146,7 @@ export default async function AllDecksPage({
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
-      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
         {t(locale, "allDecks.title")}
       </h1>
       <DeckFilters
@@ -157,7 +157,7 @@ export default async function AllDecksPage({
         locale={locale}
       />
       {sections.length === 0 ? (
-        <p className="text-dark-gray">
+        <p className="text-text-muted">
           {languageFilter || categoryFilter
             ? t(locale, "deckFilters.noMatches")
             : t(locale, "allDecks.empty")}
@@ -169,7 +169,7 @@ export default async function AllDecksPage({
               <div className="flex flex-col gap-4">
                 {section.groups.map((group) => (
                   <div key={group.language}>
-                    <h3 className="mb-2 text-xs font-semibold tracking-wide text-dark-gray uppercase">
+                    <h3 className="mb-2 text-xs font-semibold tracking-wide text-text-muted uppercase">
                       {t(locale, `language.${group.language}` as "language.EN" | "language.DE")}
                     </h3>
                     <ul className="flex flex-col gap-2">
@@ -188,12 +188,12 @@ export default async function AllDecksPage({
                         return (
                           <li
                             key={deck.id}
-                            className="rounded-2xl border border-sand bg-white px-4 py-3 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
+                            className="rounded-2xl border border-neutral-muted bg-white px-4 py-3 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
                           >
                             <div className="flex items-center gap-2">
                               <Link
                                 href={`/decks/${deck.slug}`}
-                                className="font-semibold text-evergreen hover:underline"
+                                className="font-semibold text-brand-primary hover:underline"
                               >
                                 {deck.title}
                               </Link>
@@ -214,7 +214,7 @@ export default async function AllDecksPage({
                             />
                             <div className="mt-3 flex items-center justify-between gap-3">
                               {state === "complete" ? (
-                                <span className="rounded-full bg-bright-green px-2.5 py-1 text-xs font-semibold text-evergreen">
+                                <span className="rounded-full bg-brand-highlight px-2.5 py-1 text-xs font-semibold text-brand-primary">
                                   ✓ {t(locale, "deck.done")}
                                 </span>
                               ) : (
@@ -230,7 +230,7 @@ export default async function AllDecksPage({
                                   >
                                     <button
                                       type="submit"
-                                      className="rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                                      className="rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
                                     >
                                       {t(locale, "deck.restart")}
                                     </button>
@@ -238,7 +238,7 @@ export default async function AllDecksPage({
                                 ) : (
                                   <Link
                                     href={`/decks/${deck.slug}/study`}
-                                    className="rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                                    className="rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
                                   >
                                     {state === "in-progress"
                                       ? t(locale, "home.continue")

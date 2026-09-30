@@ -36,10 +36,10 @@ export default async function HomePage({
   if (!session?.user) {
     return (
       <div className="mx-auto mt-16 max-w-xl px-6 text-center">
-        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+        <h1 className="text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "home.title")}
         </h1>
-        <p className="mt-4 text-dark-gray">{t(locale, "home.loggedOutBody")}</p>
+        <p className="mt-4 text-text-muted">{t(locale, "home.loggedOutBody")}</p>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default async function HomePage({
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6">
-      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
         {t(locale, "home.yourDecks")}
       </h1>
       <DeckFilters
@@ -112,7 +112,7 @@ export default async function HomePage({
         locale={locale}
       />
       {filteredProgress.length === 0 ? (
-        <p className="text-dark-gray">
+        <p className="text-text-muted">
           {languageFilter || categoryFilter
             ? t(locale, "deckFilters.noMatches")
             : t(locale, "home.empty")}
@@ -133,22 +133,22 @@ export default async function HomePage({
             return (
               <li
                 key={p.id}
-                className="rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
+                className="rounded-2xl border border-neutral-muted bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
               >
                 <div className="flex items-end justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-evergreen">{p.deck.title}</p>
+                        <p className="font-semibold text-brand-primary">{p.deck.title}</p>
                         <LanguageIndicator language={p.deck.language} locale={locale} />
                         <DeckDifficultyIndicator difficulty={p.deck.difficulty} locale={locale} />
                       </div>
-                      <span className="rounded-full bg-sand px-2 py-0.5 text-xs font-medium text-dark-gray">
+                      <span className="rounded-full bg-surface-muted px-2 py-0.5 text-xs font-medium text-text-muted">
                         {p.deck.category?.name ??
                           t(locale, "common.uncategorized")}
                       </span>
                     </div>
-                    <p className="text-sm text-dark-gray">
+                    <p className="text-sm text-text-muted">
                       {tc(locale, "home.lastStudied", p.timesStudied, {
                         date: p.lastStudiedAt.toLocaleDateString(),
                       })}
@@ -163,7 +163,7 @@ export default async function HomePage({
                       progressLabel={t(locale, "study.progressLabel")}
                     />
                     {summary.isComplete && (
-                      <span className="mt-2 inline-block rounded-full bg-bright-green px-2 py-0.5 text-xs font-semibold text-evergreen">
+                      <span className="mt-2 inline-block rounded-full bg-brand-highlight px-2 py-0.5 text-xs font-semibold text-brand-primary">
                         ✓ {t(locale, "home.done")}
                       </span>
                     )}
@@ -172,7 +172,7 @@ export default async function HomePage({
                     <form action={restartDeckAndStudy.bind(null, p.deck.slug)}>
                       <button
                         type="submit"
-                        className="shrink-0 rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                        className="shrink-0 rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
                       >
                         {t(locale, "home.restart")}
                       </button>
@@ -180,7 +180,7 @@ export default async function HomePage({
                   ) : (
                     <Link
                       href={`/decks/${p.deck.slug}/study`}
-                      className="shrink-0 rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
+                      className="shrink-0 rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110"
                     >
                       {t(locale, "home.continue")}
                     </Link>

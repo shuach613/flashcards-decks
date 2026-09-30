@@ -2,74 +2,78 @@
 
 /* ShuachCloud palette sampled from the supplied logo. */
 :root {
-  --color-soft-black: #0a0a0a;
-  --color-evergreen: #0b3d78;
-  --color-grass-green: #087de2;
-  --color-bright-green: #a8e2ff;
-  --color-apple-green: #c9efff;
-  --color-lime-green: #e9f8ff;
-  --color-sunset-orange: #ff6f3c;
+  --color-text-strong: #0a0a0a;
+  --color-brand-primary: #0b3d78;
+  --color-brand-accent: #087de2;
+  --color-brand-highlight: #a8e2ff;
+  --color-brand-soft-highlight: #c9efff;
+  --color-surface-accent: #e9f8ff;
+  --color-status-danger: #ff6f3c;
   --color-peach: #ffbea4;
   --color-almond: #ffedd8;
   --color-lavender: #a6b2f7;
   --color-orchid-mist: #bfcbfb;
   --color-soft-sky: #e1e7ff;
-  --color-dark-gray: #8a897d;
-  --color-soft-gray: #d0d0c4;
-  --color-sand: #ecebe4;
-  --color-soft-sand: #f5f5f0;
-  --color-light-gray: #f9f9f9;
+  --color-text-muted: #8a897d;
+  --color-neutral-muted: #d0d0c4;
+  --color-surface-muted: #ecebe4;
+  --color-page-surface: #f5f5f0;
+  --color-surface-hover: #f9f9f9;
   --color-white: #ffffff;
   --surface: var(--color-white);
 
-  --background: var(--color-soft-sand);
-  --foreground: var(--color-evergreen);
+  --background: var(--color-page-surface);
+  --foreground: var(--color-brand-primary);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --color-soft-black: #f2f7fc;
-  --color-evergreen: #a9d5ff;
-  --color-grass-green: #4aa7ff;
-  --color-bright-green: #1f527d;
-  --color-apple-green: #2b6687;
-  --color-lime-green: #173f56;
+  --color-text-strong: #f2f7fc;
+  --color-brand-primary: #a9d5ff;
+  --color-brand-accent: #4aa7ff;
+  --color-brand-highlight: #1f527d;
+  --color-brand-soft-highlight: #2b6687;
+  --color-surface-accent: #173f56;
   --color-peach: #6b3f38;
   --color-almond: #4c3d32;
   --color-lavender: #59658f;
   --color-orchid-mist: #6573a5;
   --color-soft-sky: #263e65;
-  --color-dark-gray: #b5c3d1;
-  --color-soft-gray: #526272;
-  --color-sand: #2e4052;
-  --color-soft-sand: #0b1522;
-  --color-light-gray: #142334;
+  --color-text-muted: #b5c3d1;
+  --color-neutral-muted: #526272;
+  --color-surface-muted: #2e4052;
+  --color-page-surface: #0b1522;
+  --color-surface-hover: #142334;
   --surface: #142334;
-  --background: var(--color-soft-sand);
+  --background: var(--color-page-surface);
   --foreground: #e3f0fc;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
-  --color-soft-black: var(--color-soft-black);
-  --color-evergreen: var(--color-evergreen);
-  --color-grass-green: var(--color-grass-green);
-  --color-bright-green: var(--color-bright-green);
-  --color-apple-green: var(--color-apple-green);
-  --color-lime-green: var(--color-lime-green);
+  --color-text-strong: var(--color-text-strong);
+  --color-brand-primary: var(--color-brand-primary);
+  --color-brand-accent: var(--color-brand-accent);
+  --color-brand-highlight: var(--color-brand-highlight);
+  --color-brand-soft-highlight: var(--color-brand-soft-highlight);
+  --color-surface-accent: var(--color-surface-accent);
   --color-peach: var(--color-peach);
   --color-almond: var(--color-almond);
   --color-lavender: var(--color-lavender);
   --color-orchid-mist: var(--color-orchid-mist);
   --color-soft-sky: var(--color-soft-sky);
-  --color-sand: var(--color-sand);
-  --color-soft-sand: var(--color-soft-sand);
-  --color-soft-gray: var(--color-soft-gray);
-  --color-dark-gray: var(--color-dark-gray);
-  --color-light-gray: var(--color-light-gray);
-  --color-sunset-orange: var(--color-sunset-orange);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-page-surface: var(--color-page-surface);
+  --color-neutral-muted: var(--color-neutral-muted);
+  --color-text-muted: var(--color-text-muted);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-status-danger: var(--color-status-danger);
   --font-sans: var(--font-wix-madefor-display), system-ui, -apple-system,
     "Segoe UI", sans-serif;
   --shadow-brand-sm: 0 2px 8px rgba(11, 61, 120, 0.08);
@@ -92,27 +96,27 @@ body {
   background-color: rgb(20 35 52 / 95%);
 }
 
-[data-theme="dark"] .bg-evergreen {
+[data-theme="dark"] .bg-brand-primary {
   background-color: #0b4f91;
 }
 
-[data-theme="dark"] .text-evergreen {
+[data-theme="dark"] .text-brand-primary {
   color: #a9d5ff;
 }
 
-[data-theme="dark"] .border-evergreen {
+[data-theme="dark"] .border-brand-primary {
   border-color: #73baff;
 }
 
-[data-theme="dark"] .hover\:bg-evergreen:hover {
+[data-theme="dark"] .hover\:bg-brand-primary:hover {
   background-color: #1668b4;
 }
 
-[data-theme="dark"] .hover\:bg-evergreen\/5:hover {
+[data-theme="dark"] .hover\:bg-brand-primary\/5:hover {
   background-color: rgb(115 186 255 / 12%);
 }
 
 ::selection {
-  background: var(--color-bright-green);
-  color: var(--color-evergreen);
+  background: var(--color-brand-highlight);
+  color: var(--color-brand-primary);
 }

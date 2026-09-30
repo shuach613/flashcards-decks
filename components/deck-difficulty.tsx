@@ -8,7 +8,7 @@ const difficultyLevel: Record<DeckDifficulty, number> = {
 };
 
 const activeBarClass: Record<DeckDifficulty, string> = {
-  EASY: "bg-grass-green",
+  EASY: "bg-brand-accent",
   INTERMEDIATE: "bg-yellow-400",
   HARD: "bg-red-600",
 };
@@ -38,7 +38,7 @@ export function DeckDifficultyIndicator({
           key={bar}
           aria-hidden="true"
           className={`w-1.5 rounded-sm ${
-            bar <= level ? activeBarClass[difficulty] : "bg-soft-gray"
+            bar <= level ? activeBarClass[difficulty] : "bg-neutral-muted"
           } ${bar === 1 ? "h-1.5" : bar === 2 ? "h-2.5" : "h-3.5"}`}
         />
       ))}

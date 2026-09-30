@@ -19,7 +19,7 @@ export function SignupForm({
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div>
-        <label className="block text-sm font-medium text-evergreen" htmlFor="email">
+        <label className="block text-sm font-medium text-brand-primary" htmlFor="email">
           {t(locale, "auth.emailLabel")}
         </label>
         <input
@@ -27,11 +27,11 @@ export function SignupForm({
           name="email"
           type="email"
           required
-          className="mt-1 w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
+          className="mt-1 w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-evergreen" htmlFor="password">
+        <label className="block text-sm font-medium text-brand-primary" htmlFor="password">
           {t(locale, "auth.passwordLabel")}
         </label>
         <input
@@ -40,32 +40,32 @@ export function SignupForm({
           type="password"
           minLength={8}
           required
-          className="mt-1 w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
+          className="mt-1 w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
         />
-        <p className="mt-1 text-xs text-dark-gray">{t(locale, "auth.passwordHint")}</p>
+        <p className="mt-1 text-xs text-text-muted">{t(locale, "auth.passwordHint")}</p>
       </div>
       <fieldset>
-        <legend className="block text-sm font-medium text-evergreen">
+        <legend className="block text-sm font-medium text-brand-primary">
           {t(locale, "auth.trackLabel")}
         </legend>
         <div className="mt-2 space-y-2">
           {tracks.map((track) => (
             <label
               key={track.id}
-              className="flex cursor-pointer gap-2 rounded-xl border border-soft-gray px-3.5 py-2.5 text-sm transition has-checked:border-evergreen has-checked:bg-lime-green/60"
+              className="flex cursor-pointer gap-2 rounded-xl border border-neutral-muted px-3.5 py-2.5 text-sm transition has-checked:border-brand-primary has-checked:bg-surface-accent/60"
             >
               <input
                 type="radio"
                 name="trackId"
                 value={track.id}
                 required
-                className="accent-evergreen"
+                className="accent-brand-primary"
               />
               <span>
-                <span className="block font-medium text-evergreen">
+                <span className="block font-medium text-brand-primary">
                   {track.name}
                 </span>
-                <span className="block text-xs text-dark-gray">
+                <span className="block text-xs text-text-muted">
                   {track.categoryNames.length > 0
                     ? track.categoryNames.join(" · ")
                     : t(locale, "track.noCategories")}
@@ -75,19 +75,19 @@ export function SignupForm({
           ))}
         </div>
         {tracks.length === 0 && (
-          <p className="mt-2 text-sm text-sunset-orange">
+          <p className="mt-2 text-sm text-status-danger">
             {t(locale, "auth.noTracksAvailable")}
           </p>
         )}
-        <p className="mt-1 text-xs text-dark-gray">
+        <p className="mt-1 text-xs text-text-muted">
           {t(locale, "auth.trackHint")}
         </p>
       </fieldset>
-      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
+      {state?.error && <p className="text-sm text-status-danger">{state.error}</p>}
       <button
         disabled={pending || tracks.length === 0}
         type="submit"
-        className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
+        className="rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
       >
         {pending
           ? t(locale, "auth.signupButtonPending")

@@ -16,7 +16,7 @@ export function ChangeEmailForm({ locale }: { locale: Locale }) {
 
   return (
     <form action={formAction} className="mt-4 flex flex-col gap-3">
-      <label className="text-sm font-medium text-evergreen" htmlFor="new-email">
+      <label className="text-sm font-medium text-brand-primary" htmlFor="new-email">
         {t(locale, "settings.changeEmail")}
       </label>
       <input
@@ -24,9 +24,9 @@ export function ChangeEmailForm({ locale }: { locale: Locale }) {
         name="email"
         type="email"
         required
-        className="w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
+        className="w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
       />
-      <label className="text-sm font-medium text-evergreen" htmlFor="current-password">
+      <label className="text-sm font-medium text-brand-primary" htmlFor="current-password">
         {t(locale, "auth.passwordLabel")}
       </label>
       <input
@@ -34,9 +34,9 @@ export function ChangeEmailForm({ locale }: { locale: Locale }) {
         name="password"
         type="password"
         required
-        className="w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
+        className="w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
       />
-      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
+      {state?.error && <p className="text-sm text-status-danger">{state.error}</p>}
       <button
         type="submit"
         disabled={pending}
@@ -47,7 +47,7 @@ export function ChangeEmailForm({ locale }: { locale: Locale }) {
             event.preventDefault();
           }
         }}
-        className="self-start rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+        className="self-start rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
         {pending ? t(locale, "common.savePending") : t(locale, "common.save")}
       </button>
@@ -63,12 +63,12 @@ export function ResendVerificationForm({ locale }: { locale: Locale }) {
 
   return (
     <form action={formAction} className="mt-5 flex flex-col gap-3">
-      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
-      {state?.message && <p className="text-sm text-grass-green">{state.message}</p>}
+      {state?.error && <p className="text-sm text-status-danger">{state.error}</p>}
+      {state?.message && <p className="text-sm text-brand-accent">{state.message}</p>}
       <button
         type="submit"
         disabled={pending}
-        className="self-start rounded-full bg-evergreen px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+        className="self-start rounded-full bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
       >
         {pending
           ? t(locale, "settings.resendVerificationPending")
@@ -80,13 +80,13 @@ export function ResendVerificationForm({ locale }: { locale: Locale }) {
 
 export function ResetProgressList({ decks, locale }: { decks: Deck[]; locale: Locale }) {
   return decks.length === 0 ? (
-    <p className="mt-4 text-sm text-dark-gray">{t(locale, "settings.noDecks")}</p>
+    <p className="mt-4 text-sm text-text-muted">{t(locale, "settings.noDecks")}</p>
   ) : (
     <ul className="mt-4 flex flex-col gap-2">
       {decks.map((deck) => (
         <li key={deck.id} className="flex items-center justify-between gap-4 rounded-xl bg-cream px-4 py-3">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="truncate font-medium text-evergreen">{deck.title}</span>
+            <span className="truncate font-medium text-brand-primary">{deck.title}</span>
             <DeckDifficultyIndicator difficulty={deck.difficulty} locale={locale} />
           </div>
           <form
@@ -103,7 +103,7 @@ export function ResetProgressList({ decks, locale }: { decks: Deck[]; locale: Lo
               event.currentTarget.appendChild(input);
             }}
           >
-            <button type="submit" className="rounded-full border border-evergreen/20 px-3 py-1.5 text-sm font-semibold text-evergreen hover:bg-evergreen/5">
+            <button type="submit" className="rounded-full border border-brand-primary/20 px-3 py-1.5 text-sm font-semibold text-brand-primary hover:bg-brand-primary/5">
               {t(locale, "settings.resetProgress")}
             </button>
           </form>
@@ -136,7 +136,7 @@ export function DeleteAccountForm({ locale }: { locale: Locale }) {
         event.currentTarget.appendChild(input);
       }}
     >
-      <label className="text-sm font-medium text-evergreen" htmlFor="delete-password">
+      <label className="text-sm font-medium text-brand-primary" htmlFor="delete-password">
         {t(locale, "settings.deletePassword")}
       </label>
       <input
@@ -144,9 +144,9 @@ export function DeleteAccountForm({ locale }: { locale: Locale }) {
         name="password"
         type="password"
         required
-        className="w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-sunset-orange focus:ring-4 focus:ring-sunset-orange/10"
+        className="w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-status-danger focus:ring-4 focus:ring-status-danger/10"
       />
-      <button type="submit" className="self-start rounded-full border border-sunset-orange/30 px-4 py-1.5 text-sm font-semibold text-sunset-orange hover:bg-sunset-orange/5">
+      <button type="submit" className="self-start rounded-full border border-status-danger/30 px-4 py-1.5 text-sm font-semibold text-status-danger hover:bg-status-danger/5">
         {t(locale, "settings.deleteAccount")}
       </button>
     </form>

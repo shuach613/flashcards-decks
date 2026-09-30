@@ -33,7 +33,7 @@ export function CopyLinkButton({ slug, locale }: { slug: string; locale: Locale 
     <button
       type="button"
       onClick={handleCopy}
-      className="rounded-full border border-evergreen/20 px-4 py-1.5 text-sm font-medium text-evergreen transition hover:bg-evergreen/5"
+      className="rounded-full border border-brand-primary/20 px-4 py-1.5 text-sm font-medium text-brand-primary transition hover:bg-brand-primary/5"
     >
       {status === "copied"
         ? t(locale, "common.copied")

@@ -25,24 +25,24 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto mt-12 max-w-4xl px-6 pb-16">
-      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
         {t(locale, "admin.heading")}
       </h1>
       <AdminSubnav active="decks" locale={locale} />
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-evergreen">
+        <h2 className="text-xl font-bold tracking-tight text-brand-primary">
           {t(locale, "admin.title")}
         </h2>
         <Link
           href="/admin/categories"
-          className="text-sm font-medium text-evergreen underline underline-offset-4"
+          className="text-sm font-medium text-brand-primary underline underline-offset-4"
         >
           {t(locale, "admin.manageCategories")}
         </Link>
       </div>
 
-      <div className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <h2 className="mb-3 font-semibold text-evergreen">
+      <div className="mb-8 rounded-2xl border border-neutral-muted bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h2 className="mb-3 font-semibold text-brand-primary">
           {t(locale, "admin.newDeck")}
         </h2>
         <CreateDeckForm categories={categories} locale={locale} />
@@ -52,14 +52,14 @@ export default async function AdminPage() {
         {decks.map((deck) => (
           <li
             key={deck.id}
-            className="flex items-center justify-between gap-4 rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
+            className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-muted bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
           >
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-semibold text-evergreen">{deck.title}</p>
+                <p className="font-semibold text-brand-primary">{deck.title}</p>
                 <DeckDifficultyIndicator difficulty={deck.difficulty} locale={locale} />
               </div>
-              <p className="text-sm text-dark-gray">
+              <p className="text-sm text-text-muted">
                 /decks/{deck.slug} · {tc(locale, "deck.cardCount", deck._count.cards)} ·{" "}
                 {deck.category?.name ?? t(locale, "common.uncategorized")} ·{" "}
                 {t(locale, `language.${deck.language}` as "language.EN" | "language.DE")}
@@ -69,14 +69,14 @@ export default async function AdminPage() {
               <CopyLinkButton slug={deck.slug} locale={locale} />
               <Link
                 href={`/admin/decks/${deck.slug}`}
-                className="rounded-full border border-evergreen/20 px-4 py-1.5 text-sm font-medium text-evergreen transition hover:bg-evergreen/5"
+                className="rounded-full border border-brand-primary/20 px-4 py-1.5 text-sm font-medium text-brand-primary transition hover:bg-brand-primary/5"
               >
                 {t(locale, "common.edit")}
               </Link>
               <form action={deleteDeck.bind(null, deck.id)}>
                 <button
                   type="submit"
-                  className="rounded-full border border-sunset-orange/30 px-4 py-1.5 text-sm font-medium text-sunset-orange transition hover:bg-sunset-orange/5"
+                  className="rounded-full border border-status-danger/30 px-4 py-1.5 text-sm font-medium text-status-danger transition hover:bg-status-danger/5"
                 >
                   {t(locale, "common.delete")}
                 </button>
@@ -84,7 +84,7 @@ export default async function AdminPage() {
             </div>
           </li>
         ))}
-        {decks.length === 0 && <p className="text-dark-gray">{t(locale, "admin.noDecks")}</p>}
+        {decks.length === 0 && <p className="text-text-muted">{t(locale, "admin.noDecks")}</p>}
       </ul>
     </div>
   );
