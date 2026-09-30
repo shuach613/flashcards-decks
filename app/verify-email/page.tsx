@@ -40,14 +40,14 @@ export default async function VerifyEmailPage({
 
   return (
     <div className="mx-auto mt-16 max-w-sm px-6">
-      <div className="rounded-2xl border border-sand bg-white p-8 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+      <div className="rounded-2xl border border-neutral-muted bg-white p-8 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h1 className="text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "settings.activationRequired")}
         </h1>
-        <p className="mt-4 text-sm text-dark-gray">{message}</p>
+        <p className="mt-4 text-sm text-text-muted">{message}</p>
         <Link
           href="/login"
-          className="mt-6 inline-block rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white"
+          className="mt-6 inline-block rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white"
         >
           {t(locale, "nav.logIn")}
         </Link>

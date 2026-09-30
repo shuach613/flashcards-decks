@@ -127,37 +127,37 @@ export function StudySession({
 
   if (finished) {
     return (
-      <div className="rounded-2xl border border-sand bg-white p-10 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-bright-green text-2xl text-evergreen">
+      <div className="rounded-2xl border border-neutral-muted bg-white p-10 text-center shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-brand-highlight text-2xl text-brand-primary">
           ✓
         </div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+        <h1 className="text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "study.sessionComplete")}
         </h1>
-        <p className="mt-2 text-dark-gray">
+        <p className="mt-2 text-text-muted">
           {reviewed > 0
             ? tc(locale, "study.reviewed", reviewed, { title: deckTitle })
             : t(locale, "study.alreadyComplete", { title: deckTitle })}
         </p>
-        {error && <p className="mt-3 text-sm text-sunset-orange">{error}</p>}
+        {error && <p className="mt-3 text-sm text-status-danger">{error}</p>}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
             type="button"
             onClick={restart}
             disabled={pending}
-            className="rounded-full border border-evergreen/20 px-5 py-2.5 font-semibold text-evergreen transition hover:bg-evergreen/5 disabled:opacity-50"
+            className="rounded-full border border-brand-primary/20 px-5 py-2.5 font-semibold text-brand-primary transition hover:bg-brand-primary/5 disabled:opacity-50"
           >
             {pending ? t(locale, "study.restarting") : t(locale, "study.studyAgain")}
           </button>
           <Link
             href={`/decks/${deckSlug}`}
-            className="rounded-full border border-evergreen/20 px-5 py-2.5 font-semibold text-evergreen transition hover:bg-evergreen/5"
+            className="rounded-full border border-brand-primary/20 px-5 py-2.5 font-semibold text-brand-primary transition hover:bg-brand-primary/5"
           >
             {t(locale, "study.backToDeck")}
           </Link>
           <Link
             href="/"
-            className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
+            className="rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
           >
             {t(locale, "study.myDecks")}
           </Link>
@@ -171,12 +171,12 @@ export function StudySession({
 
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between gap-4 text-sm font-medium text-dark-gray">
+      <div className="mb-2 flex items-center justify-between gap-4 text-sm font-medium text-text-muted">
         <p>{tc(locale, "study.cardsLeft", queue.length, { title: deckTitle })}</p>
         <p>{t(locale, "study.progress", { good: goodCount, total })}</p>
       </div>
       <div
-        className="mb-6 h-2.5 w-full overflow-hidden rounded-full bg-sand"
+        className="mb-6 h-2.5 w-full overflow-hidden rounded-full bg-surface-muted"
         role="progressbar"
         aria-valuenow={goodCount}
         aria-valuemin={0}
@@ -185,11 +185,11 @@ export function StudySession({
       >
         <div className="relative h-full w-full">
           <div
-            className="absolute inset-y-0 left-0 bg-grass-green transition-[width] duration-300 ease-out"
+            className="absolute inset-y-0 left-0 bg-brand-accent transition-[width] duration-300 ease-out"
             style={{ width: `${goodPct}%` }}
           />
           <div
-            className="absolute inset-y-0 right-0 bg-sunset-orange transition-[width] duration-300 ease-out"
+            className="absolute inset-y-0 right-0 bg-status-danger transition-[width] duration-300 ease-out"
             style={{ width: `${againPct}%` }}
           />
         </div>
@@ -210,37 +210,37 @@ export function StudySession({
         disabled={pending}
         className={`flex min-h-56 w-full flex-col items-center justify-center rounded-2xl border p-8 text-center text-lg shadow-[0_2px_8px_rgba(25,51,37,0.08)] transition disabled:opacity-70 ${
           revealed
-            ? "border-transparent bg-lime-green"
+            ? "border-transparent bg-surface-accent"
             : current.previouslyGood
-              ? "border-grass-green bg-grass-green/5"
-              : "border-sand bg-white"
+              ? "border-brand-accent bg-brand-accent/5"
+              : "border-neutral-muted bg-white"
         }`}
       >
         {current.previouslyGood && (
-          <span className="mb-4 rounded-full bg-bright-green px-3 py-1 text-xs font-semibold text-evergreen">
+          <span className="mb-4 rounded-full bg-brand-highlight px-3 py-1 text-xs font-semibold text-brand-primary">
             ✓ {t(locale, "study.previouslyGood")}
           </span>
         )}
-        <span className="font-medium text-evergreen">{current.front}</span>
+        <span className="font-medium text-brand-primary">{current.front}</span>
         {revealed ? (
           <>
-            <hr className="my-4 w-full border-evergreen/10" />
-            <span className="text-dark-gray">{current.back}</span>
+            <hr className="my-4 w-full border-brand-primary/10" />
+            <span className="text-text-muted">{current.back}</span>
           </>
         ) : (
-          <span className="mt-4 text-xs tracking-wide text-dark-gray uppercase">
+          <span className="mt-4 text-xs tracking-wide text-text-muted uppercase">
             {t(locale, "study.tapToReveal")}
           </span>
         )}
       </button>
-      {error && <p className="mt-3 text-center text-sm text-sunset-orange">{error}</p>}
+      {error && <p className="mt-3 text-center text-sm text-status-danger">{error}</p>}
       {revealed && (
         <div className="mt-6 flex justify-center gap-3">
           <button
             type="button"
             onClick={() => rate("AGAIN")}
             disabled={pending}
-            className="rounded-full border border-sunset-orange/30 px-5 py-2.5 font-semibold text-sunset-orange transition hover:bg-sunset-orange/5 disabled:opacity-50"
+            className="rounded-full border border-status-danger/30 px-5 py-2.5 font-semibold text-status-danger transition hover:bg-status-danger/5 disabled:opacity-50"
           >
             {pending ? t(locale, "study.saving") : t(locale, "study.again")}
           </button>
@@ -248,7 +248,7 @@ export function StudySession({
             type="button"
             onClick={() => rate("GOOD")}
             disabled={pending}
-            className="rounded-full bg-bright-green px-5 py-2.5 font-semibold text-evergreen transition hover:brightness-110 disabled:opacity-50"
+            className="rounded-full bg-brand-highlight px-5 py-2.5 font-semibold text-brand-primary transition hover:brightness-110 disabled:opacity-50"
           >
             {pending ? t(locale, "study.saving") : t(locale, "study.good")}
           </button>

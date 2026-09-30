@@ -25,7 +25,7 @@ export function UserManagementActions({
       <form action={setUserAdmin.bind(null, userId, role !== "ADMIN")}>
         <button
           type="submit"
-          className="rounded-full border border-evergreen px-4 py-2 text-sm font-semibold text-evergreen transition hover:bg-evergreen hover:text-white"
+          className="rounded-full border border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary transition hover:bg-brand-primary hover:text-white"
         >
           {role === "ADMIN" ? labels.revokeAdmin : labels.makeAdmin}
         </button>
@@ -42,7 +42,7 @@ export function UserManagementActions({
         >
           <button
             type="submit"
-            className="rounded-full border border-evergreen px-4 py-2 text-sm font-semibold text-evergreen transition hover:bg-evergreen hover:text-white"
+            className="rounded-full border border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary transition hover:bg-brand-primary hover:text-white"
           >
             {labels.transferPrimary}
           </button>

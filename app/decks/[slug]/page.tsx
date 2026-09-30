@@ -52,17 +52,17 @@ export default async function DeckPage({
 
   return (
     <div className="mx-auto mt-12 max-w-xl px-6">
-      <div className="rounded-2xl border border-sand bg-white p-8 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+      <div className="rounded-2xl border border-neutral-muted bg-white p-8 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h1 className="text-2xl font-extrabold tracking-tight text-brand-primary">
           {deck.title}
         </h1>
         {deck.description && (
-          <p className="mt-2 text-dark-gray">{deck.description}</p>
+          <p className="mt-2 text-text-muted">{deck.description}</p>
         )}
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-dark-gray">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-text-muted">
           <span>{tc(locale, "deck.cardCount", progress.totalCount)}</span>
           {progress.isComplete && (
-            <span className="rounded-full bg-bright-green px-2.5 py-1 font-semibold text-evergreen">
+            <span className="rounded-full bg-brand-highlight px-2.5 py-1 font-semibold text-brand-primary">
               ✓ {t(locale, "deck.done")}
             </span>
           )}
@@ -79,7 +79,7 @@ export default async function DeckPage({
           />
         )}
         {progress.totalCount === 0 ? (
-          <p className="mt-6 text-dark-gray">{t(locale, "deck.noCards")}</p>
+          <p className="mt-6 text-text-muted">{t(locale, "deck.noCards")}</p>
         ) : (
           state === "complete" ? (
             <form
@@ -88,7 +88,7 @@ export default async function DeckPage({
             >
               <button
                 type="submit"
-                className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
+                className="rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
               >
                 {t(locale, "deck.restart")}
               </button>
@@ -96,7 +96,7 @@ export default async function DeckPage({
           ) : (
             <Link
               href={`/decks/${deck.slug}/study`}
-              className="mt-6 inline-block rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
+              className="mt-6 inline-block rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110"
             >
               {state === "in-progress"
                 ? t(locale, "deck.continueStudying")

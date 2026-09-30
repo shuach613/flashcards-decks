@@ -15,7 +15,7 @@ export function LanguageToggle({ current }: { current: Locale }) {
   }
 
   return (
-    <div className="flex items-center gap-0.5 rounded-full border border-evergreen/20 p-0.5 text-xs font-semibold">
+    <div className="flex items-center gap-0.5 rounded-full border border-brand-primary/20 p-0.5 text-xs font-semibold">
       {(["en", "de"] as const).map((locale) => (
         <button
           key={locale}
@@ -24,8 +24,8 @@ export function LanguageToggle({ current }: { current: Locale }) {
           disabled={isPending}
           className={`rounded-full px-2.5 py-1 uppercase transition ${
             current === locale
-              ? "bg-evergreen text-white"
-              : "text-evergreen hover:bg-evergreen/5"
+              ? "bg-brand-primary text-white"
+              : "text-brand-primary hover:bg-brand-primary/5"
           }`}
         >
           {locale}

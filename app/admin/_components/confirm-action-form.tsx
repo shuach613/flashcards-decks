@@ -23,7 +23,7 @@ export function ConfirmActionForm({
     >
       <button
         type="submit"
-        className="rounded-full border border-sunset-orange/30 px-4 py-1.5 text-sm font-medium text-sunset-orange transition hover:bg-sunset-orange/5"
+        className="rounded-full border border-status-danger/30 px-4 py-1.5 text-sm font-medium text-status-danger transition hover:bg-status-danger/5"
       >
         {label}
       </button>

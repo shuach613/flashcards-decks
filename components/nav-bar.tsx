@@ -23,7 +23,7 @@ export async function NavBar() {
   );
 
   return (
-    <header className="border-b border-sand bg-white/95 backdrop-blur">
+    <header className="border-b border-neutral-muted bg-white/95 backdrop-blur">
       <div className="mx-auto max-w-3xl px-6">
         <div className="flex items-center justify-between gap-4 py-3.5">
           <Link
@@ -40,17 +40,17 @@ export async function NavBar() {
               priority
             />
             <span
-              className="hidden h-6 w-px bg-sand sm:block"
+              className="hidden h-6 w-px bg-surface-muted sm:block"
               aria-hidden="true"
             />
-            <span className="hidden font-semibold text-evergreen sm:inline">
+            <span className="hidden font-semibold text-brand-primary sm:inline">
               {t(locale, "home.title")}
             </span>
           </Link>
           <div className="flex items-center gap-3 text-sm">
             {user ? (
               <>
-                <span className="hidden text-dark-gray sm:inline">{user.email}</span>
+                <span className="hidden text-text-muted sm:inline">{user.email}</span>
                 <form
                   action={async () => {
                     "use server";
@@ -58,7 +58,7 @@ export async function NavBar() {
                   }}
                 >
                   <button
-                    className="rounded-full border border-evergreen/20 px-4 py-1.5 font-medium text-evergreen transition hover:bg-evergreen hover:text-white"
+                    className="rounded-full border border-brand-primary/20 px-4 py-1.5 font-medium text-brand-primary transition hover:bg-brand-primary hover:text-white"
                     type="submit"
                   >
                     {t(locale, "nav.logOut")}
@@ -69,13 +69,13 @@ export async function NavBar() {
               <>
                 <Link
                   href="/login"
-                  className="font-medium text-evergreen underline-offset-4 hover:underline"
+                  className="font-medium text-brand-primary underline-offset-4 hover:underline"
                 >
                   {t(locale, "nav.logIn")}
                 </Link>
                 <Link
                   href="/signup"
-                  className="rounded-full bg-evergreen px-4 py-1.5 font-medium text-white transition hover:brightness-110"
+                  className="rounded-full bg-brand-primary px-4 py-1.5 font-medium text-white transition hover:brightness-110"
                 >
                   {t(locale, "nav.signUp")}
                 </Link>
@@ -86,18 +86,18 @@ export async function NavBar() {
           </div>
         </div>
         {user && (
-          <nav className="flex items-center gap-5 border-t border-sand py-2.5 text-sm">
+          <nav className="flex items-center gap-5 border-t border-neutral-muted py-2.5 text-sm">
             {canUseApp && (
               <>
                 <Link
                   href="/"
-                  className="font-medium text-evergreen underline-offset-4 hover:underline"
+                  className="font-medium text-brand-primary underline-offset-4 hover:underline"
                 >
                   {t(locale, "nav.myDecks")}
                 </Link>
                 <Link
                   href="/decks"
-                  className="font-medium text-evergreen underline-offset-4 hover:underline"
+                  className="font-medium text-brand-primary underline-offset-4 hover:underline"
                 >
                   {t(locale, "nav.allDecks")}
                 </Link>
@@ -105,14 +105,14 @@ export async function NavBar() {
             )}
             <Link
               href="/settings"
-              className="font-medium text-evergreen underline-offset-4 hover:underline"
+              className="font-medium text-brand-primary underline-offset-4 hover:underline"
             >
               {t(locale, "nav.settings")}
             </Link>
             {canUseApp && user.role === "ADMIN" && (
               <Link
                 href="/admin"
-                className="font-medium text-evergreen underline-offset-4 hover:underline"
+                className="font-medium text-brand-primary underline-offset-4 hover:underline"
               >
                 {t(locale, "nav.admin")}
               </Link>

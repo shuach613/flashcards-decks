@@ -18,7 +18,7 @@ export function LoginForm({
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div>
-        <label className="block text-sm font-medium text-evergreen" htmlFor="email">
+        <label className="block text-sm font-medium text-brand-primary" htmlFor="email">
           {t(locale, "auth.emailLabel")}
         </label>
         <input
@@ -26,16 +26,16 @@ export function LoginForm({
           name="email"
           type="email"
           required
-          className="mt-1 w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
+          className="mt-1 w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
         />
       </div>
       <div>
         <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-evergreen" htmlFor="password">
+          <label className="block text-sm font-medium text-brand-primary" htmlFor="password">
             {t(locale, "auth.passwordLabel")}
           </label>
           <Link
-            className="text-xs font-medium text-evergreen underline underline-offset-4"
+            className="text-xs font-medium text-brand-primary underline underline-offset-4"
             href="/forgot-password"
           >
             Forgot password?
@@ -46,14 +46,14 @@ export function LoginForm({
           name="password"
           type="password"
           required
-          className="mt-1 w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
+          className="mt-1 w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
         />
       </div>
-      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
+      {state?.error && <p className="text-sm text-status-danger">{state.error}</p>}
       <button
         disabled={pending}
         type="submit"
-        className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
+        className="rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
       >
         {pending ? t(locale, "auth.loginButtonPending") : t(locale, "auth.loginButton")}
       </button>

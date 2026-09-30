@@ -14,16 +14,16 @@ export default async function LoginPage({
 
   return (
     <div className="mx-auto mt-16 max-w-sm px-6">
-      <div className="rounded-2xl border border-sand bg-white p-8 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+      <div className="rounded-2xl border border-neutral-muted bg-white p-8 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "auth.loginTitle")}
         </h1>
         <LoginForm callbackUrl={target} locale={locale} />
       </div>
-      <p className="mt-4 text-center text-sm text-dark-gray">
+      <p className="mt-4 text-center text-sm text-text-muted">
         {t(locale, "auth.noAccount")}{" "}
         <Link
-          className="font-medium text-evergreen underline underline-offset-4"
+          className="font-medium text-brand-primary underline underline-offset-4"
           href={`/signup?callbackUrl=${encodeURIComponent(target)}`}
         >
           {t(locale, "nav.signUp")}

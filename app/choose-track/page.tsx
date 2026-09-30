@@ -30,14 +30,14 @@ export default async function ChooseTrackPage({
 
   return (
     <div className="mx-auto mt-12 max-w-xl px-6 pb-16">
-      <div className="rounded-2xl border border-sand bg-white p-6 shadow-[0_2px_8px_rgba(25,51,37,0.08)] sm:p-8">
-        <span className="inline-flex rounded-full bg-bright-green px-3 py-1 text-xs font-bold text-evergreen">
+      <div className="rounded-2xl border border-neutral-muted bg-white p-6 shadow-[0_2px_8px_rgba(25,51,37,0.08)] sm:p-8">
+        <span className="inline-flex rounded-full bg-brand-highlight px-3 py-1 text-xs font-bold text-brand-primary">
           {t(locale, "track.required")}
         </span>
-        <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-evergreen">
+        <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "track.chooseTitle")}
         </h1>
-        <p className="mt-2 text-dark-gray">{t(locale, "track.chooseBody")}</p>
+        <p className="mt-2 text-text-muted">{t(locale, "track.chooseBody")}</p>
         <TrackForm
           callbackUrl={callbackUrl}
           locale={locale}

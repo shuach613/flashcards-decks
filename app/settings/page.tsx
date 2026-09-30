@@ -37,17 +37,17 @@ export default async function SettingsPage({
   if (!isVerified) {
     return (
       <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
-        <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+        <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "settings.title")}
         </h1>
-        <section className="rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-          <h2 className="text-lg font-bold text-evergreen">
+        <section className="rounded-2xl border border-neutral-muted bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+          <h2 className="text-lg font-bold text-brand-primary">
             {t(locale, "settings.activationRequired")}
           </h2>
-          <p className="mt-2 text-sm text-dark-gray">
+          <p className="mt-2 text-sm text-text-muted">
             {t(locale, "settings.activationBody")}
           </p>
-          <p className="mt-3 text-sm text-dark-gray">
+          <p className="mt-3 text-sm text-text-muted">
             {t(locale, "settings.activationInstructions")}
           </p>
           <ResendVerificationForm locale={locale} />
@@ -67,58 +67,58 @@ export default async function SettingsPage({
 
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
-      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-evergreen">
+      <h1 className="mb-6 text-2xl font-extrabold tracking-tight text-brand-primary">
         {t(locale, "settings.title")}
       </h1>
       <SettingsSubnav active={tab} locale={locale} />
 
       {tab === "account" && (
-        <section className="rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-          <h2 className="text-lg font-bold text-evergreen">
+        <section className="rounded-2xl border border-neutral-muted bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+          <h2 className="text-lg font-bold text-brand-primary">
             {t(locale, "settings.account")}
           </h2>
-          <p className="mt-1 text-sm text-dark-gray">
+          <p className="mt-1 text-sm text-text-muted">
             {t(locale, "settings.accountBody")}
           </p>
           <div className="mt-5 flex flex-col gap-3 rounded-xl bg-cream px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-semibold tracking-wide text-dark-gray uppercase">
+              <p className="text-xs font-semibold tracking-wide text-text-muted uppercase">
                 {t(locale, "settings.currentEmail")}
               </p>
-              <p className="mt-1 font-medium text-evergreen">{user.email}</p>
+              <p className="mt-1 font-medium text-brand-primary">{user.email}</p>
             </div>
             <button
               type="button"
               disabled
-              className="rounded-full border border-evergreen/20 px-4 py-1.5 text-sm font-semibold text-evergreen opacity-60"
+              className="rounded-full border border-brand-primary/20 px-4 py-1.5 text-sm font-semibold text-brand-primary opacity-60"
             >
               {t(locale, "settings.changeEmail")}
             </button>
           </div>
-          <p className="mt-3 text-sm text-dark-gray">{t(locale, "settings.changeEmailBody")}</p>
+          <p className="mt-3 text-sm text-text-muted">{t(locale, "settings.changeEmailBody")}</p>
           <ChangeEmailForm locale={locale} />
         </section>
       )}
 
       {tab === "learning" && (
-        <section className="rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-          <h2 className="text-lg font-bold text-evergreen">
+        <section className="rounded-2xl border border-neutral-muted bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+          <h2 className="text-lg font-bold text-brand-primary">
             {t(locale, "settings.learning")}
           </h2>
-          <p className="mt-1 text-sm text-dark-gray">
+          <p className="mt-1 text-sm text-text-muted">
             {t(locale, "settings.learningBody")}
           </p>
-          <p className="mt-4 text-sm text-dark-gray">{t(locale, "settings.resetProgressBody")}</p>
+          <p className="mt-4 text-sm text-text-muted">{t(locale, "settings.resetProgressBody")}</p>
           <ResetProgressList decks={decks} locale={locale} />
         </section>
       )}
 
       {tab === "removal" && (
-        <section className="rounded-2xl border border-sunset-orange/30 bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-          <h2 className="text-lg font-bold text-sunset-orange">
+        <section className="rounded-2xl border border-status-danger/30 bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+          <h2 className="text-lg font-bold text-status-danger">
             {t(locale, "settings.accountRemoval")}
           </h2>
-          <p className="mt-1 text-sm text-dark-gray">
+          <p className="mt-1 text-sm text-text-muted">
             {t(locale, "settings.accountRemovalBody")}
           </p>
           <DeleteAccountForm locale={locale} />

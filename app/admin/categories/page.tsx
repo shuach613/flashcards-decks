@@ -27,22 +27,22 @@ export default async function AdminCategoriesPage() {
   return (
     <div className="mx-auto mt-12 max-w-2xl px-6 pb-16">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold tracking-tight text-evergreen">
+        <h1 className="text-2xl font-extrabold tracking-tight text-brand-primary">
           {t(locale, "category.title")}
         </h1>
         <Link
           href="/admin"
-          className="text-sm font-medium text-evergreen underline underline-offset-4"
+          className="text-sm font-medium text-brand-primary underline underline-offset-4"
         >
           {t(locale, "category.backToDecks")}
         </Link>
       </div>
 
-      <div className="mb-8 rounded-2xl border border-sand bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
-        <h2 className="mb-3 font-semibold text-evergreen">
+      <div className="mb-8 rounded-2xl border border-neutral-muted bg-white p-5 shadow-[0_2px_8px_rgba(25,51,37,0.08)]">
+        <h2 className="mb-3 font-semibold text-brand-primary">
           {t(locale, "category.addCategory")}
         </h2>
-        <p className="mb-3 text-sm text-dark-gray">{t(locale, "category.addHint")}</p>
+        <p className="mb-3 text-sm text-text-muted">{t(locale, "category.addHint")}</p>
         <CategoryForm locale={locale} tracks={tracks} />
       </div>
 
@@ -50,26 +50,26 @@ export default async function AdminCategoriesPage() {
         {categories.map((category) => (
           <li
             key={category.id}
-            className="flex items-center justify-between gap-4 rounded-2xl border border-sand bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
+            className="flex items-center justify-between gap-4 rounded-2xl border border-neutral-muted bg-white p-4 shadow-[0_2px_8px_rgba(25,51,37,0.08)]"
           >
             <div>
-              <p className="font-semibold text-evergreen">{category.name}</p>
+              <p className="font-semibold text-brand-primary">{category.name}</p>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {category.tracks.length > 0 ? (
                   category.tracks.map((assignment) => (
-                    <span key={assignment.trackId} className="rounded-full bg-lime-green px-2 py-0.5 text-xs font-medium text-evergreen">
+                    <span key={assignment.trackId} className="rounded-full bg-surface-accent px-2 py-0.5 text-xs font-medium text-brand-primary">
                       {assignment.track.name}
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-dark-gray">
+                  <span className="text-xs text-text-muted">
                     {t(locale, "category.noTracks")}
                   </span>
                 )}
               </div>
             </div>
             <div className="flex shrink-0 flex-col items-end gap-2">
-              <p className="text-sm text-dark-gray">
+              <p className="text-sm text-text-muted">
                 {tc(locale, "category.deckCount", category._count.decks)}
               </p>
               <ConfirmActionForm

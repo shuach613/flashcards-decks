@@ -10,7 +10,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="token" value={token} />
       <div>
-        <label className="block text-sm font-medium text-evergreen" htmlFor="password">
+        <label className="block text-sm font-medium text-brand-primary" htmlFor="password">
           New password
         </label>
         <input
@@ -20,11 +20,11 @@ export function ResetPasswordForm({ token }: { token: string }) {
           autoComplete="new-password"
           minLength={8}
           required
-          className="mt-1 w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
+          className="mt-1 w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-evergreen" htmlFor="confirmation">
+        <label className="block text-sm font-medium text-brand-primary" htmlFor="confirmation">
           Confirm new password
         </label>
         <input
@@ -34,14 +34,14 @@ export function ResetPasswordForm({ token }: { token: string }) {
           autoComplete="new-password"
           minLength={8}
           required
-          className="mt-1 w-full rounded-xl border border-soft-gray bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-evergreen focus:ring-4 focus:ring-evergreen/10"
+          className="mt-1 w-full rounded-xl border border-neutral-muted bg-white px-3.5 py-2.5 text-[15px] outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
         />
       </div>
-      {state?.error && <p className="text-sm text-sunset-orange">{state.error}</p>}
+      {state?.error && <p className="text-sm text-status-danger">{state.error}</p>}
       <button
         disabled={pending}
         type="submit"
-        className="rounded-full bg-evergreen px-5 py-2.5 font-semibold text-white transition hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
+        className="rounded-full bg-brand-primary px-5 py-2.5 font-semibold text-white transition hover:brightness-110 active:scale-[0.97] disabled:opacity-50"
       >
         {pending ? "Saving..." : "Set new password"}
       </button>

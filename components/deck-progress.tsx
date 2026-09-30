@@ -15,9 +15,9 @@ export function DeckProgress({
 
   return (
     <div className="mt-3">
-      <p className="mb-1.5 text-sm text-dark-gray">{label}</p>
+      <p className="mb-1.5 text-sm text-text-muted">{label}</p>
       <div
-        className="h-2.5 w-full overflow-hidden rounded-full bg-sand"
+        className="h-2.5 w-full overflow-hidden rounded-full bg-surface-muted"
         role="progressbar"
         aria-valuenow={goodCount}
         aria-valuemin={0}
@@ -26,7 +26,7 @@ export function DeckProgress({
         aria-label={progressLabel}
       >
         <div
-          className="h-full rounded-full bg-grass-green transition-[width] duration-300 ease-out"
+          className="h-full rounded-full bg-brand-accent transition-[width] duration-300 ease-out"
           style={{ width: `${percentage}%` }}
         />
       </div>
