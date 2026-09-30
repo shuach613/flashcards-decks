@@ -23,6 +23,7 @@ const en = {
   "home.done": "Done",
 
   "deckFilters.language": "Language",
+  "deckFilters.toggle": "Filters",
   "deckFilters.track": "Track",
   "deckFilters.category": "Category",
   "deckFilters.difficulty": "Difficulty",
@@ -376,6 +377,7 @@ const de: Record<TranslationKey, string> = {
   "home.done": "Erledigt",
 
   "deckFilters.language": "Sprache",
+  "deckFilters.toggle": "Filter",
   "deckFilters.track": "Lernpfad",
   "deckFilters.category": "Kategorie",
   "deckFilters.difficulty": "Schwierigkeit",
