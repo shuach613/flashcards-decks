@@ -9,6 +9,7 @@ import {
   ResetProgressList,
   ResendVerificationForm,
 } from "./settings-forms";
+import { MfaSettings } from "./mfa-forms";
 import { SettingsSubnav, type SettingsTab } from "./settings-subnav";
 
 function getTab(value: string | undefined): SettingsTab {
@@ -26,7 +27,7 @@ export default async function SettingsPage({
   const tab = getTab(requestedTab);
   const databaseUser = await prisma.user.findUnique({
     where: { id: user.id },
-    select: { id: true, role: true, isPrimaryAdmin: true, emailVerifiedAt: true },
+    select: { id: true, role: true, isPrimaryAdmin: true, emailVerifiedAt: true, mfaDevice: { select: { enabledAt: true } }, mfaPromptDismissedAt: true },
   });
   if (!databaseUser) return null;
   const isVerified = Boolean(
@@ -97,6 +98,7 @@ export default async function SettingsPage({
           </div>
           <p className="mt-3 text-sm text-text-muted">{t(locale, "settings.changeEmailBody")}</p>
           <ChangeEmailForm locale={locale} />
+          <MfaSettings enabled={Boolean(databaseUser.mfaDevice?.enabledAt)} locale={locale} />
         </section>
       )}
 

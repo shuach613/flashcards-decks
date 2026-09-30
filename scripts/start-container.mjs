@@ -26,6 +26,10 @@ function validateSecurityConfig() {
   if (adminApiKey && adminApiKey === authSecret) {
     throw new Error("AUTH_SECRET and ADMIN_API_KEY must be different values.");
   }
+  const mfaEncryptionKey = process.env.MFA_ENCRYPTION_KEY;
+  if (mfaEncryptionKey && (mfaEncryptionKey.length < 32 || /replace-with|example\.com|your-/i.test(mfaEncryptionKey))) {
+    throw new Error("MFA_ENCRYPTION_KEY must be at least 32 characters when configured and must not be a placeholder.");
+  }
 }
 
 async function backupDatabaseBeforeMigrations() {

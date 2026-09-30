@@ -6,6 +6,7 @@ import { getLocale } from "@/lib/i18n-server";
 import { LanguageToggle } from "@/components/language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { prisma } from "@/lib/db";
+import { MfaPrompt } from "@/components/mfa-prompt";
 
 export async function NavBar() {
   const session = await auth();
@@ -14,7 +15,7 @@ export async function NavBar() {
   const databaseUser = user
     ? await prisma.user.findUnique({
         where: { id: user.id },
-        select: { role: true, isPrimaryAdmin: true, emailVerifiedAt: true },
+        select: { role: true, isPrimaryAdmin: true, emailVerifiedAt: true, mfaDevice: { select: { enabledAt: true } }, mfaPromptDismissedAt: true },
       })
     : null;
   const canUseApp = Boolean(
@@ -120,6 +121,9 @@ export async function NavBar() {
           </nav>
         )}
       </div>
+      {user && databaseUser && !databaseUser.mfaDevice?.enabledAt && !databaseUser.mfaPromptDismissedAt && (
+        <MfaPrompt locale={locale} />
+      )}
     </header>
   );
 }
