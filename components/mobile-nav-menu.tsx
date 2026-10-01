@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 export function MobileNavMenu({
   label,
@@ -11,6 +11,8 @@ export function MobileNavMenu({
 }) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -21,6 +23,28 @@ export function MobileNavMenu({
 
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const dismissOutside = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (buttonRef.current?.contains(target) || menuRef.current?.contains(target)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      setOpen(false);
+    };
+
+    document.addEventListener("pointerdown", dismissOutside, true);
+    document.addEventListener("click", dismissOutside, true);
+    return () => {
+      document.removeEventListener("pointerdown", dismissOutside, true);
+      document.removeEventListener("click", dismissOutside, true);
+    };
   }, [open]);
 
   return (
@@ -35,6 +59,7 @@ export function MobileNavMenu({
       )}
       <button
         type="button"
+        ref={buttonRef}
         aria-expanded={open}
         aria-controls={menuId}
         aria-label={label}
@@ -47,6 +72,7 @@ export function MobileNavMenu({
       {open && (
         <div
           id={menuId}
+          ref={menuRef}
           className="absolute right-0 top-14 z-30 w-64 rounded-2xl border border-neutral-muted bg-white p-3 shadow-[0_6px_20px_rgba(25,51,37,0.14)]"
         >
           {children}
