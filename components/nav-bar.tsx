@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { ThemeLogo } from "@/components/theme-logo";
 import { prisma } from "@/lib/db";
 import { MfaPrompt } from "@/components/mfa-prompt";
+import { MobileNavMenu } from "@/components/mobile-nav-menu";
 
 export async function NavBar() {
   const session = await auth();
@@ -78,12 +79,7 @@ export async function NavBar() {
             <LanguageToggle current={locale} />
             <ThemeToggle />
           </div>
-          <details className="relative md:hidden">
-            <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-full border border-brand-primary/20 text-xl font-bold text-brand-primary [&::-webkit-details-marker]:hidden">
-              <span aria-hidden="true">☰</span>
-              <span className="sr-only">Open navigation</span>
-            </summary>
-            <div className="absolute right-0 top-14 z-20 w-64 rounded-2xl border border-neutral-muted bg-white p-3 shadow-[0_6px_20px_rgba(25,51,37,0.14)]">
+          <MobileNavMenu label="Open navigation">
               <div className="flex flex-col gap-1 text-sm">
                 {user ? (
                   <>
@@ -131,8 +127,7 @@ export async function NavBar() {
                 <LanguageToggle current={locale} />
                 <ThemeToggle />
               </div>
-            </div>
-          </details>
+          </MobileNavMenu>
         </div>
         {user && (
           <nav className="hidden items-center gap-5 border-t border-neutral-muted py-2.5 text-sm md:flex">
